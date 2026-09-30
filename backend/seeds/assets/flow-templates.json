@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "kind": "asset_package",
+  "assets": [
+    {
+      "id": "fa9df344-8b7b-5821-a9b2-29eb747ceab7",
+      "asset_id": "11e250a2-c9b8-5005-97d1-553d19f5ae8e",
+      "version": 1,
+      "asset_type": "flow_template",
+      "asset_key": "paint-order-to-ship",
+      "title": "도료 제조 수주→생산→출하",
+      "payload": {
+        "lanes": [
+          "영업",
+          "생산관리",
+          "생산",
+          "품질",
+          "물류"
+        ],
+        "nodes": [
+          {
+            "id": "start",
+            "type": "start",
+            "label": "시작",
+            "lane": "영업"
+          },
+          {
+            "id": "order",
+            "type": "task",
+            "label": "수주 접수",
+            "lane": "영업"
+          },
+          {
+            "id": "stock",
+            "type": "decision",
+            "label": "재고 확인?",
+            "lane": "생산관리"
+          },
+          {
+            "id": "plan",
+            "type": "task",
+            "label": "생산 계획 수립",
+            "lane": "생산관리"
+          },
+          {
+            "id": "recipe",
+            "type": "task",
+            "label": "배합표 확정",
+            "lane": "생산관리"
+          },
+          {
+            "id": "material",
+            "type": "task",
+            "label": "원자재 불출",
+            "lane": "생산"
+          },
+          {
+            "id": "mix",
+            "type": "task",
+            "label": "배합·분산",
+            "lane": "생산"
+          },
+          {
+            "id": "qc",
+            "type": "task",
+            "label": "출하 검사(점도·색차)",
+            "lane": "품질"
+          },
+          {
+            "id": "fill",
+            "type": "task",
+            "label": "충전·포장",
+            "lane": "생산"
+          },
+          {
+            "id": "ship",
+            "type": "task",
+            "label": "출하",
+            "lane": "물류"
+          },
+          {
+            "id": "end",
+            "type": "end",
+            "label": "종료",
+            "lane": "물류"
+          }
+        ],
+        "edges": [
+          {
+            "from": "start",
+            "to": "order"
+          },
+          {
+            "from": "order",
+            "to": "stock"
+          },
+          {
+            "from": "stock",
+            "to": "plan"
+          },
+          {
+            "from": "plan",
+            "to": "recipe"
+          },
+          {
+            "from": "recipe",
+            "to": "material"
+          },
+          {
+            "from": "material",
+            "to": "mix"
+          },
+          {
+            "from": "mix",
+            "to": "qc"
+          },
+          {
+            "from": "qc",
+            "to": "fill"
+          },
+          {
+            "from": "fill",
+            "to": "ship"
+          },
+          {
+            "from": "ship",
+            "to": "end"
+          }
+        ]
+      },
+      "status": "published",
+      "change_note": "초기 자산",
+      "created_at": "2026-09-30T00:00:00+00:00",
+      "updated_at": "2026-09-30T00:00:00+00:00",
+      "created_by": null
+    },
+    {
+      "id": "ad07d54e-8a3c-598a-b5f9-26a8c314259b",
+      "asset_id": "050326ae-927a-5a54-be22-a4b69e30debc",
+      "version": 1,
+      "asset_type": "flow_template",
+      "asset_key": "quality-nonconformance",
+      "title": "품질 검사 및 부적합 처리",
+      "payload": {
+        "lanes": [
+          "생산",
+          "품질",
+          "생산관리"
+        ],
+        "nodes": [
+          {
+            "id": "start",
+            "type": "start",
+            "label": "시작",
+            "lane": "생산"
+          },
+          {
+            "id": "sample",
+            "type": "task",
+            "label": "시료 채취",
+            "lane": "생산"
+          },
+          {
+            "id": "inspect",
+            "type": "task",
+            "label": "검사 수행",
+            "lane": "품질"
+          },
+          {
+            "id": "pass",
+            "type": "decision",
+            "label": "규격 적합?",
+            "lane": "품질"
+          },
+          {
+            "id": "ncr",
+            "type": "task",
+            "label": "부적합 보고서 작성",
+            "lane": "품질"
+          },
+          {
+            "id": "mrb",
+            "type": "task",
+            "label": "처리 방안 결정(재작업/폐기/특채)",
+            "lane": "생산관리"
+          },
+          {
+            "id": "rework",
+            "type": "task",
+            "label": "재작업 및 재검사",
+            "lane": "생산"
+          },
+          {
+            "id": "close",
+            "type": "task",
+            "label": "부적합 종결",
+            "lane": "품질"
+          },
+          {
+            "id": "end",
+            "type": "end",
+            "label": "종료",
+            "lane": "품질"
+          }
+        ],
+        "edges": [
+          {
+            "from": "start",
+            "to": "sample"
+          },
+          {
+            "from": "sample",
+            "to": "inspect"
+          },
+          {
+            "from": "inspect",
+            "to": "pass"
+          },
+          {
+            "from": "pass",
+            "to": "ncr"
+          },
+          {
+            "from": "ncr",
+            "to": "mrb"
+          },
+          {
+            "from": "mrb",
+            "to": "rework"
+          },
+          {
+            "from": "rework",
+            "to": "close"
+          },
+          {
+            "from": "close",
+            "to": "end"
+          }
+        ]
+      },
+      "status": "published",
+      "change_note": "초기 자산",
+      "created_at": "2026-09-30T00:00:00+00:00",
+      "updated_at": "2026-09-30T00:00:00+00:00",
+      "created_by": null
+    }
+  ],
+  "related": []
+}

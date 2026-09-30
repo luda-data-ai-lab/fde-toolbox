@@ -1,0 +1,79 @@
+{
+  "app": { "title": "FDE Toolbox" },
+  "nav": {
+    "group": { "home": "Home", "diagnose": "Diagnose", "analyze": "Analyze", "design": "Design", "build": "Build", "operate": "Operate", "common": "Common" },
+    "home": "Home", "engagements": "Engagements", "systems": "System registry", "files": "Attachments",
+    "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "Asset library", "audit": "Audit log",
+    "tenants": "Customers", "users": "Users"
+  },
+  "layout": {
+    "tenant": "Customer", "engagement": "Engagement", "allEngagements": "All engagements",
+    "noTenant": "No accessible customer", "locale": "한국어"
+  },
+  "auth": { "email": "Email", "password": "Password", "login": "Sign in", "logout": "Sign out" },
+  "common": {
+    "create": "Create", "save": "Save", "delete": "Delete", "name": "Name", "title": "Title", "status": "Status",
+    "description": "Description", "notes": "Notes", "createdAt": "Created", "empty": "No data.",
+    "loading": "Loading…", "none": "None", "more": "Load more", "selectTenant": "Select a customer at the top first."
+  },
+  "roles": { "luda_admin": "LUDA admin", "fde": "FDE", "client_admin": "Customer admin", "client_user": "Customer user" },
+  "home": {
+    "title_luda_admin": "Overview", "title_fde": "My customers", "title_client_admin": "Our company",
+    "title_client_user": "Our company", "open": "Switch to customer", "openTasks": "Open tasks",
+    "pausedTasks": "Paused tasks", "instances": "Agent instances by status",
+    "totals": { "tenants": "Customers", "users": "Users", "assets": "Assets" }
+  },
+  "engagementStatus": { "preparing": "Preparing", "in_progress": "In progress", "on_hold": "On hold", "completed": "Completed" },
+  "systems": { "shortName": "Short name", "type": "Type", "ownerDept": "Owner dept.", "hosting": "Hosting", "dbType": "DB type" },
+  "systemType": { "MES": "MES", "ERP": "ERP", "LIMS": "LIMS", "WMS": "WMS", "SCADA": "SCADA", "GROUPWARE": "Groupware", "OTHER": "Other" },
+  "hosting": { "on_premise": "On-premise", "cloud": "Cloud" },
+  "files": { "upload": "Upload file", "filename": "File name", "size": "Size" },
+  "audit": { "at": "At", "action": "Action", "target": "Target", "actor": "Actor", "exportCsv": "Export CSV" },
+  "assets": {
+    "type": "Asset type", "key": "Asset key", "latest": "Latest", "payload": "Payload (JSON)", "version": "Version",
+    "changeNote": "Change note", "newVersion": "New version", "diff": "Compare versions", "from": "From", "to": "To",
+    "promptDiff": "Prompt changes", "payloadDiff": "Payload changes", "exportPackage": "Export package", "importPackage": "Import package"
+  },
+  "assetType": {
+    "question_bank": "Question bank", "flow_template": "Flow template", "if_template": "I/F template",
+    "upper_ontology": "Upper ontology", "glossary_template": "Glossary template", "spec_template": "Document template",
+    "rule_pack": "Rule pack", "agent_template": "Agent template"
+  },
+  "assetStatus": { "draft": "Draft", "published": "Published", "deprecated": "Deprecated" },
+  "version": {},
+  "tenants": {
+    "code": "Code", "archive": "Archive", "restore": "Restore", "export": "Export (ZIP)", "importCode": "New customer code",
+    "importZip": "Import ZIP", "confirmDelete": "All data of {{name}} will be deleted. Continue?"
+  },
+  "tenantStatus": { "active": "Active", "archived": "Archived" },
+  "users": { "role": "Role", "tenant": "Customer", "tenants": "Assigned customers", "active": "Active", "inactive": "Inactive" },
+  "devtracker": {
+    "projects": "Dev projects", "stack": "Stack", "kanban": "Kanban", "list": "List", "addTask": "Add task",
+    "priority": "Priority", "due": "Due", "progress": "Progress", "totalTasks": "Total tasks", "overdue": "Overdue",
+    "recentPrompts": "Recent prompts", "pauseNote": "Pause note", "resumeNote": "Resume note", "pause": "Pause",
+    "resume": "Resume", "prompts": "Prompt log", "tool": "Tool", "prompt": "Prompt",
+    "resultSummary": "Result summary", "addPrompt": "Log prompt"
+  },
+  "projectStatus": { "planning": "Planning", "active": "Active", "on_hold": "On hold", "done": "Done" },
+  "taskStatus": { "todo": "To do", "in_progress": "In progress", "review": "Review", "done": "Done", "on_hold": "On hold" },
+  "priority": { "low": "Low", "medium": "Medium", "high": "High", "urgent": "Urgent" },
+  "agenthub": {
+    "templates": "Agent templates", "template": "Template", "instances": "Deployed instances", "deployment": "Deployment",
+    "devProject": "Dev project", "systems": "Connected systems", "evalCases": "Evaluation cases", "input": "Input",
+    "expected": "Expected", "criteria": "Criteria", "evalRuns": "Evaluation runs", "passRate": "Pass rate",
+    "passed": "passed", "recordRun": "Record evaluation", "systemPrompt": "System prompt"
+  },
+  "deployment": { "standalone": "Standalone", "hosted": "LUDA hosted", "customer_env": "Customer environment" },
+  "instanceStatus": { "ready": "Ready", "pilot": "Pilot", "production": "Production", "stopped": "Stopped" },
+  "errors": {
+    "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
+    "not_found": "Not found.", "forbidden": "Permission denied.", "unauthorized": "Please sign in.",
+    "invalid_credentials": "Invalid email or password.", "validation_error": "Please check the input.",
+    "email_taken": "Email already in use.", "tenant_code_taken": "Customer code already in use.",
+    "home_tenant_required": "Customer users need a home customer.", "file_too_large": "File exceeds the size limit.",
+    "file_type_not_allowed": "File type not allowed.", "invalid_reference": "Invalid reference.",
+    "invalid_cursor": "Invalid page cursor.", "invalid_bundle": "Invalid export bundle.",
+    "invalid_package": "Invalid asset package.", "unsupported_schema_version": "Unsupported schema version.",
+    "asset_version_frozen": "Published asset versions cannot be modified."
+  }
+}

@@ -1,0 +1,66 @@
+[project]
+name = "fde-toolbox-backend"
+version = "0.1.0"
+description = "LUDA FDE Toolbox backend"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "fastapi==0.142.2",
+    "pydantic==2.13.5",
+    "pydantic-settings==2.15.0",
+    "SQLAlchemy==2.1.1",
+    "alembic==1.20.0",
+    "uvicorn==0.54.0",
+    "python-multipart==0.0.32",
+    "argon2-cffi==25.1.0",
+    "PyJWT==2.15.1",
+    "cryptography==50.0.1",
+]
+
+[project.optional-dependencies]
+postgres = ["psycopg[binary]==3.3.6"]
+dev = [
+    "pytest==9.1.1",
+    "pytest-cov==7.1.0",
+    "httpx==0.28.1",
+    "ruff==0.16.9",
+    "mypy==2.3.1",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+include = ["app*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["alembic/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "S", "N", "SIM", "RUF"]
+ignore = ["B008", "S101", "UP046", "UP047"]
+
+[tool.ruff.lint.isort]
+known-third-party = ["alembic"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S", "N802"]
+"app/db/base.py" = ["N805"]
+
+[tool.mypy]
+python_version = "3.12"
+plugins = ["pydantic.mypy"]
+ignore_missing_imports = true
+warn_unused_ignores = true
+files = ["app"]
+
+[[tool.mypy.overrides]]
+module = "app.core.*"
+strict = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore:Using `httpx` with `starlette.testclient`"]

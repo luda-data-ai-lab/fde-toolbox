@@ -1,0 +1,35 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "tenant-export.v1.schema.json",
+  "title": "TenantExportManifest",
+  "description": "manifest.json inside a tenant export ZIP (kind=tenant_export, schema_version=1). The ZIP also contains files/<stored_file_id> for every attachment. Produced by GET /api/v1/t/{tenant_id}/export, consumed by POST /api/v1/admin/tenants/import. On import every primary key is re-issued and all foreign keys (including tenant_id) are remapped; asset references ({asset_id, version}) are kept as-is.",
+  "type": "object",
+  "required": ["schema_version", "kind", "exported_at", "tenant", "tables"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "kind": { "const": "tenant_export" },
+    "exported_at": { "type": "string", "format": "date-time" },
+    "tenant": {
+      "type": "object",
+      "description": "Row of the tenants table.",
+      "required": ["id", "name", "code"],
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "code": { "type": "string" }
+      }
+    },
+    "tables": {
+      "type": "object",
+      "description": "Tenant-scoped table name -> rows, in foreign-key dependency order. Includes audit_logs of the tenant. Datetimes are ISO-8601 strings; JSON columns are embedded as JSON.",
+      "additionalProperties": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "required": ["id", "tenant_id"],
+          "properties": { "id": { "type": "string" }, "tenant_id": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

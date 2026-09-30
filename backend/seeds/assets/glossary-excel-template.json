@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "kind": "asset_package",
+  "assets": [
+    {
+      "id": "7a306802-9ca0-53c6-b5a7-26d6e7899844",
+      "asset_id": "86a81c88-d8de-529b-9e36-83d27c091f7b",
+      "version": 1,
+      "asset_type": "glossary_template",
+      "asset_key": "glossary-excel",
+      "title": "용어 사전 엑셀 템플릿",
+      "payload": {
+        "sheets": [
+          {
+            "name": "용어 사전",
+            "columns": [
+              "표준 용어",
+              "정의",
+              "부서별 호칭",
+              "약어",
+              "관련 개념",
+              "비고"
+            ]
+          }
+        ]
+      },
+      "status": "published",
+      "change_note": "초기 자산",
+      "created_at": "2026-09-30T00:00:00+00:00",
+      "updated_at": "2026-09-30T00:00:00+00:00",
+      "created_by": null
+    }
+  ],
+  "related": []
+}

@@ -1,0 +1,193 @@
+export type Role = "luda_admin" | "fde" | "client_admin" | "client_user";
+
+export interface Base {
+  id: string;
+  created_at: string;
+  updated_at: string;
+  created_by?: string | null;
+}
+export interface Page<T> {
+  items: T[];
+  next_cursor?: string | null;
+}
+export interface User extends Base {
+  email: string;
+  name: string;
+  role: Role;
+  home_tenant_id: string | null;
+  is_active: boolean;
+}
+export interface UserAdmin extends User {
+  tenant_ids: string[];
+}
+export interface TenantBrief {
+  id: string;
+  name: string;
+  code: string;
+  status: string;
+}
+export interface Me {
+  user: User;
+  tenants: TenantBrief[];
+  adapters_allowed: boolean;
+}
+export interface Tenant extends Base {
+  name: string;
+  code: string;
+  status: string;
+  deployment_mode: string;
+  notes: string | null;
+}
+export interface Engagement extends Base {
+  tenant_id: string;
+  name: string;
+  status: string;
+  start_date: string | null;
+  end_date: string | null;
+  lead_fde_id: string | null;
+  description: string | null;
+}
+export interface System extends Base {
+  tenant_id: string;
+  name: string;
+  short_name: string | null;
+  type: string;
+  owner_dept: string | null;
+  hosting: string | null;
+  db_type: string | null;
+  notes: string | null;
+}
+export interface StoredFile extends Base {
+  tenant_id: string;
+  owner_type: string | null;
+  owner_id: string | null;
+  filename: string;
+  mime: string;
+  size: number;
+  sha256: string;
+}
+export interface AuditLog {
+  id: string;
+  tenant_id: string | null;
+  actor_id: string | null;
+  action: string;
+  target_type: string | null;
+  target_id: string | null;
+  detail: Record<string, unknown>;
+  ip: string | null;
+  at: string;
+}
+export interface AssetRef {
+  asset_id: string;
+  version: number;
+}
+export interface Asset extends Base, AssetRef {
+  asset_type: string;
+  asset_key: string;
+  title: string;
+  payload: Record<string, unknown>;
+  status: string;
+  change_note: string | null;
+}
+export interface AssetSummary {
+  asset_id: string;
+  asset_type: string;
+  asset_key: string;
+  title: string;
+  latest_version: number;
+  latest_status: string;
+  versions: number;
+}
+export interface AssetDiff {
+  asset_id: string;
+  from_version: number;
+  to_version: number;
+  payload_diff: string;
+  prompt_diff: string | null;
+}
+export interface Project extends Base {
+  tenant_id: string;
+  engagement_id: string;
+  name: string;
+  description: string | null;
+  status: string;
+  stack: string | null;
+  repo_url: string | null;
+  env_notes: string | null;
+  deploy_notes: string | null;
+  spec_document_ids: string[];
+}
+export interface Task extends Base {
+  tenant_id: string;
+  project_id: string;
+  title: string;
+  description: string | null;
+  status: TaskStatus;
+  priority: string;
+  assignee_id: string | null;
+  due: string | null;
+  pause_note: string | null;
+  resume_note: string | null;
+}
+export type TaskStatus = "todo" | "in_progress" | "review" | "done" | "on_hold";
+export interface Prompt extends Base {
+  task_id: string;
+  tool: string;
+  prompt: string;
+  result_summary: string | null;
+  at: string;
+}
+export interface ProjectDashboard {
+  project: Project;
+  status_counts: Record<string, number>;
+  total_tasks: number;
+  progress: number;
+  overdue_tasks: Task[];
+  paused_tasks: Task[];
+  recent_prompts: Prompt[];
+}
+export interface EvalCase extends Base, AssetRef {
+  name: string;
+  input: string;
+  expected: string;
+  criteria: string | null;
+}
+export interface EvalResult {
+  case_id: string;
+  passed: boolean;
+  note?: string | null;
+}
+export interface EvalRun extends Base {
+  template_ref: AssetRef;
+  run_at: string;
+  results: EvalResult[];
+  evidence_file_ids: string[];
+  notes: string | null;
+  pass_rate?: number | null;
+}
+export interface Instance extends Base {
+  tenant_id: string;
+  name: string;
+  template_ref: AssetRef;
+  engagement_id: string;
+  deployment: string;
+  system_ids: string[];
+  overrides: Record<string, unknown>;
+  status: string;
+  owner_id: string | null;
+  dev_project_id: string | null;
+  notes: string | null;
+}
+export interface TenantHome {
+  tenant_id: string;
+  name: string;
+  code: string;
+  engagements: { id: string; name: string; status: string }[];
+  devtracker: { open_tasks?: number; paused_tasks?: Task[]; recent_tasks?: Task[] };
+  agenthub: { instances_by_status?: Record<string, number> };
+}
+export interface Home {
+  role: Role;
+  totals: Record<string, number>;
+  tenants: TenantHome[];
+}

@@ -1,0 +1,59 @@
+# SQLite (default):     docker compose up -d --build
+# PostgreSQL:           DB_TYPE=postgresql DATABASE_URL=postgresql+psycopg://fde:fde@postgres:5432/fde \
+#                       docker compose --profile postgres up -d --build
+# First admin:          docker compose exec backend python -m app.cli init-admin --email admin@example.com
+# Demo data:            docker compose exec backend python -m app.cli seed-demo
+services:
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      DB_TYPE: ${DB_TYPE:-sqlite}
+      DATABASE_URL: ${DATABASE_URL:-sqlite:////data/fde.db}
+      SECRET_KEY: ${SECRET_KEY:-}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
+      DEPLOYMENT_MODE: ${DEPLOYMENT_MODE:-standalone}
+      ADAPTERS_ALLOWED: ${ADAPTERS_ALLOWED:-false}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-20}
+      DEFAULT_LOCALE: ${DEFAULT_LOCALE:-ko}
+      DEPLOYMENT_BASE_IRI: ${DEPLOYMENT_BASE_IRI:-https://ludaresearch.org/onto/}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+    volumes:
+      - fde-data:/data
+    depends_on:
+      postgres:
+        condition: service_healthy
+        required: false
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health')"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    ports:
+      - "${FDE_PORT:-8080}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+
+  postgres:
+    image: postgres:16-alpine
+    profiles: ["postgres"]
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: fde
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-fde}
+      POSTGRES_DB: fde
+    volumes:
+      - fde-pg:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U fde"]
+      interval: 5s
+      retries: 20
+
+volumes:
+  fde-data:
+  fde-pg:

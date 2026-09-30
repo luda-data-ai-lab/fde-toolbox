@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "kind": "asset_package",
+  "assets": [
+    {
+      "id": "a04103f9-89b0-5d8e-86a0-21c86cad1dbc",
+      "asset_id": "ee8bc71c-3dd5-5f86-ae1b-0ff0a2c53a82",
+      "version": 1,
+      "asset_type": "rule_pack",
+      "asset_key": "default-rules",
+      "title": "기본 규칙팩",
+      "payload": {
+        "rules": [
+          "완료는 실행 증거(테스트 결과, 실행 로그, 스크린샷)로만 선언한다.",
+          "작업은 작게 나누고 작업 단위로 커밋·PR 한다.",
+          "명세에 없는 기능이나 외부 호출을 추가하지 않는다.",
+          "여러 대안을 비교할 때 합의점·차이점·전제·판단 근거를 분리해 보고한다.",
+          "사용자가 해결책을 먼저 제시해도 문제 정의를 먼저 확인한다."
+        ]
+      },
+      "status": "published",
+      "change_note": "초기 자산",
+      "created_at": "2026-09-30T00:00:00+00:00",
+      "updated_at": "2026-09-30T00:00:00+00:00",
+      "created_by": null
+    }
+  ],
+  "related": []
+}

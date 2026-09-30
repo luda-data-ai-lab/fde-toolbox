@@ -1,0 +1,118 @@
+{
+  "schema_version": 1,
+  "kind": "asset_package",
+  "assets": [
+    {
+      "id": "9ea89e73-f1ae-5459-82b3-00446a7d70f1",
+      "asset_id": "524bf44f-1fab-5f1a-a6fd-c02df8575697",
+      "version": 1,
+      "asset_type": "spec_template",
+      "asset_key": "spec-md",
+      "title": "Spec.md 템플릿",
+      "payload": {
+        "doc": "spec",
+        "sections": [
+          {
+            "key": "overview",
+            "title": "1. 개요",
+            "rule": "목적, 대상 사용자, 핵심 설계 원칙을 정리한다."
+          },
+          {
+            "key": "terms",
+            "title": "2. 용어 정의",
+            "rule": "OntoMap 용어 사전이 선택되면 표로 삽입한다."
+          },
+          {
+            "key": "roles",
+            "title": "3. 역할과 권한",
+            "rule": "역할별 기능 허용 표를 작성한다."
+          },
+          {
+            "key": "structure",
+            "title": "4. 전체 구조",
+            "rule": "FlowDesk 흐름도와 I/F 목록을 요약한다."
+          },
+          {
+            "key": "features",
+            "title": "5. 기능 명세",
+            "rule": "CoachQ 인사이트와 요구사항을 기능 단위로 정리한다."
+          },
+          {
+            "key": "domain",
+            "title": "6. 도메인 개념 모델",
+            "rule": "OntoMap 개념·관계를 요약한다."
+          },
+          {
+            "key": "nfr",
+            "title": "7. 비기능 요구사항",
+            "rule": "보안, 성능, 배포 제약을 명시한다."
+          },
+          {
+            "key": "scope",
+            "title": "8. 범위 외",
+            "rule": "이번 과제에서 제외하는 항목을 나열한다."
+          }
+        ]
+      },
+      "status": "published",
+      "change_note": "초기 자산",
+      "created_at": "2026-09-30T00:00:00+00:00",
+      "updated_at": "2026-09-30T00:00:00+00:00",
+      "created_by": null
+    },
+    {
+      "id": "b8b76d57-728f-554f-977e-6f7a00fef53b",
+      "asset_id": "6a97ddfc-aab3-58a5-bf8d-a4e0035b4e67",
+      "version": 1,
+      "asset_type": "spec_template",
+      "asset_key": "devin-md",
+      "title": "Devin.md 템플릿",
+      "payload": {
+        "doc": "devin",
+        "sections": [
+          {
+            "key": "goal",
+            "title": "1. 작업 목표",
+            "rule": "Spec.md의 목적을 한 문단으로 요약한다."
+          },
+          {
+            "key": "rules",
+            "title": "2. 작업 규칙",
+            "rule": "선택한 규칙팩을 그대로 삽입한다."
+          },
+          {
+            "key": "stack",
+            "title": "3. 기술 스택",
+            "rule": "언어, 프레임워크, DB, 배포 방식을 명시한다."
+          },
+          {
+            "key": "structure",
+            "title": "4. 저장소 구조",
+            "rule": "디렉터리 구조와 역할을 적는다."
+          },
+          {
+            "key": "data_model",
+            "title": "5. 데이터 모델",
+            "rule": "개념-테이블 매핑표를 삽입하고 이 개념·용어를 따르도록 지시한다."
+          },
+          {
+            "key": "steps",
+            "title": "6. 단계별 작업",
+            "rule": "작고 검증 가능한 단위로 나눈다."
+          },
+          {
+            "key": "dod",
+            "title": "7. 완료 기준",
+            "rule": "테스트, 실행 증거, 리뷰 기준을 적는다."
+          }
+        ]
+      },
+      "status": "published",
+      "change_note": "초기 자산",
+      "created_at": "2026-09-30T00:00:00+00:00",
+      "updated_at": "2026-09-30T00:00:00+00:00",
+      "created_by": null
+    }
+  ],
+  "related": []
+}

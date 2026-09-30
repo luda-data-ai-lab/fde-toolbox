@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "asset-package.v1.schema.json",
+  "$defs": {
+    "PackageRow": {
+      "properties": {
+        "table": {
+          "title": "Table",
+          "type": "string"
+        },
+        "row": {
+          "additionalProperties": true,
+          "title": "Row",
+          "type": "object"
+        }
+      },
+      "required": [
+        "table",
+        "row"
+      ],
+      "title": "PackageRow",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "asset_package",
+      "default": "asset_package",
+      "title": "Kind",
+      "type": "string"
+    },
+    "assets": {
+      "items": {
+        "additionalProperties": true,
+        "type": "object"
+      },
+      "title": "Assets",
+      "type": "array"
+    },
+    "related": {
+      "items": {
+        "$ref": "#/$defs/PackageRow"
+      },
+      "title": "Related",
+      "type": "array"
+    }
+  },
+  "required": [
+    "assets"
+  ],
+  "title": "AssetPackage",
+  "type": "object",
+  "description": "LUDA asset package (kind=asset_package, schema_version=1). Produced by GET /api/v1/assets/export, consumed by POST /api/v1/assets/import and `python -m app.cli seed-assets`. Each entry in `assets` is one asset version row; `related` carries rows of asset-owned tables (e.g. agent eval cases) referencing assets by {asset_id, version}."
+}

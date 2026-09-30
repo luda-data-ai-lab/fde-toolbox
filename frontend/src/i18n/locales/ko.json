@@ -1,0 +1,79 @@
+{
+  "app": { "title": "FDE Toolbox" },
+  "nav": {
+    "group": { "home": "홈", "diagnose": "진단", "analyze": "분석", "design": "설계", "build": "구축", "operate": "운영", "common": "공통" },
+    "home": "홈", "engagements": "프로젝트(인게이지먼트)", "systems": "시스템 레지스트리", "files": "첨부파일",
+    "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "자산 라이브러리", "audit": "감사 로그",
+    "tenants": "고객사 관리", "users": "사용자 관리"
+  },
+  "layout": {
+    "tenant": "고객사", "engagement": "인게이지먼트", "allEngagements": "전체 인게이지먼트",
+    "noTenant": "접근 가능한 고객사 없음", "locale": "English"
+  },
+  "auth": { "email": "이메일", "password": "비밀번호", "login": "로그인", "logout": "로그아웃" },
+  "common": {
+    "create": "등록", "save": "저장", "delete": "삭제", "name": "이름", "title": "제목", "status": "상태",
+    "description": "설명", "notes": "비고", "createdAt": "등록일시", "empty": "데이터가 없습니다.",
+    "loading": "불러오는 중…", "none": "선택 안 함", "more": "더 보기", "selectTenant": "먼저 상단에서 고객사를 선택하세요."
+  },
+  "roles": { "luda_admin": "LUDA 관리자", "fde": "FDE", "client_admin": "고객사 관리자", "client_user": "고객사 사용자" },
+  "home": {
+    "title_luda_admin": "전체 현황", "title_fde": "담당 고객사 현황", "title_client_admin": "우리 회사 현황",
+    "title_client_user": "우리 회사 현황", "open": "이 고객사로 전환", "openTasks": "진행 중 태스크",
+    "pausedTasks": "중단된 태스크", "instances": "에이전트 인스턴스 상태",
+    "totals": { "tenants": "고객사", "users": "사용자", "assets": "자산" }
+  },
+  "engagementStatus": { "preparing": "준비", "in_progress": "진행", "on_hold": "보류", "completed": "완료" },
+  "systems": { "shortName": "약칭", "type": "유형", "ownerDept": "담당 부서", "hosting": "호스팅", "dbType": "DB 종류" },
+  "systemType": { "MES": "MES", "ERP": "ERP", "LIMS": "LIMS", "WMS": "WMS", "SCADA": "SCADA", "GROUPWARE": "그룹웨어", "OTHER": "기타" },
+  "hosting": { "on_premise": "온프레미스", "cloud": "클라우드" },
+  "files": { "upload": "파일 업로드", "filename": "파일명", "size": "크기" },
+  "audit": { "at": "일시", "action": "행위", "target": "대상", "actor": "수행자", "exportCsv": "CSV 내보내기" },
+  "assets": {
+    "type": "자산 유형", "key": "자산 키", "latest": "최신 버전", "payload": "내용(JSON)", "version": "버전",
+    "changeNote": "변경 사유", "newVersion": "새 버전 등록", "diff": "버전 비교", "from": "기준 버전", "to": "비교 버전",
+    "promptDiff": "프롬프트 변경", "payloadDiff": "내용 변경", "exportPackage": "패키지 내보내기", "importPackage": "패키지 가져오기"
+  },
+  "assetType": {
+    "question_bank": "질문 은행", "flow_template": "프로세스 템플릿", "if_template": "I/F 템플릿",
+    "upper_ontology": "상위 온톨로지", "glossary_template": "용어집 템플릿", "spec_template": "문서 템플릿",
+    "rule_pack": "규칙 팩", "agent_template": "에이전트 템플릿"
+  },
+  "assetStatus": { "draft": "초안", "published": "배포", "deprecated": "폐기" },
+  "version": {},
+  "tenants": {
+    "code": "코드", "archive": "보관", "restore": "복원", "export": "내보내기(ZIP)", "importCode": "새 고객사 코드",
+    "importZip": "ZIP 가져오기", "confirmDelete": "{{name}} 고객사의 모든 데이터가 삭제됩니다. 계속할까요?"
+  },
+  "tenantStatus": { "active": "활성", "archived": "보관" },
+  "users": { "role": "역할", "tenant": "고객사", "tenants": "배정 고객사", "active": "활성", "inactive": "비활성" },
+  "devtracker": {
+    "projects": "개발 프로젝트", "stack": "기술 스택", "kanban": "칸반", "list": "목록", "addTask": "태스크 추가",
+    "priority": "우선순위", "due": "마감일", "progress": "진행률", "totalTasks": "전체 태스크", "overdue": "지연 태스크",
+    "recentPrompts": "최근 프롬프트", "pauseNote": "중단 메모", "resumeNote": "재개 메모", "pause": "작업 중단",
+    "resume": "작업 재개", "prompts": "프롬프트 기록", "tool": "도구", "prompt": "프롬프트",
+    "resultSummary": "결과 요약", "addPrompt": "프롬프트 기록"
+  },
+  "projectStatus": { "planning": "계획", "active": "진행", "on_hold": "보류", "done": "완료" },
+  "taskStatus": { "todo": "할 일", "in_progress": "진행 중", "review": "검토", "done": "완료", "on_hold": "보류" },
+  "priority": { "low": "낮음", "medium": "보통", "high": "높음", "urgent": "긴급" },
+  "agenthub": {
+    "templates": "에이전트 템플릿", "template": "템플릿", "instances": "배포 인스턴스", "deployment": "배포 형태",
+    "devProject": "개발 프로젝트", "systems": "연결 시스템", "evalCases": "평가 케이스", "input": "입력",
+    "expected": "기대 결과", "criteria": "판정 기준", "evalRuns": "평가 결과", "passRate": "통과율",
+    "passed": "통과", "recordRun": "평가 결과 기록", "systemPrompt": "시스템 프롬프트"
+  },
+  "deployment": { "standalone": "독립 실행", "hosted": "LUDA 호스팅", "customer_env": "고객사 환경" },
+  "instanceStatus": { "ready": "준비", "pilot": "시범", "production": "운영", "stopped": "중지" },
+  "errors": {
+    "unknown": "요청을 처리하지 못했습니다.", "invalid_json": "JSON 형식이 올바르지 않습니다.",
+    "not_found": "대상을 찾을 수 없습니다.", "forbidden": "권한이 없습니다.", "unauthorized": "로그인이 필요합니다.",
+    "invalid_credentials": "이메일 또는 비밀번호가 올바르지 않습니다.", "validation_error": "입력값을 확인하세요.",
+    "email_taken": "이미 사용 중인 이메일입니다.", "tenant_code_taken": "이미 사용 중인 고객사 코드입니다.",
+    "home_tenant_required": "고객사 사용자는 소속 고객사가 필요합니다.", "file_too_large": "파일 크기가 제한을 초과했습니다.",
+    "file_type_not_allowed": "허용되지 않는 파일 형식입니다.", "invalid_reference": "참조 대상이 올바르지 않습니다.",
+    "invalid_cursor": "페이지 정보가 올바르지 않습니다.", "invalid_bundle": "내보내기 파일이 올바르지 않습니다.",
+    "invalid_package": "자산 패키지가 올바르지 않습니다.", "unsupported_schema_version": "지원하지 않는 스키마 버전입니다.",
+    "asset_version_frozen": "배포된 자산 버전은 수정할 수 없습니다."
+  }
+}

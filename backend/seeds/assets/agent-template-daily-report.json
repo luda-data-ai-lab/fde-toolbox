@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "kind": "asset_package",
+  "assets": [
+    {
+      "id": "a2db3a75-5bd8-5add-9e99-c03e160ebf41",
+      "asset_id": "bca7c7ef-008e-5d1a-9160-9687997429b5",
+      "version": 1,
+      "asset_type": "agent_template",
+      "asset_key": "daily-production-report",
+      "title": "생산 일보 요약 에이전트",
+      "payload": {
+        "purpose": "MES 생산 실적과 품질 검사 결과를 읽어 일일 생산 일보 요약을 작성한다.",
+        "industries": [
+          "도료 제조",
+          "화학"
+        ],
+        "input": "당일 작업지시별 생산 실적, 로트별 검사 결과, 설비 비가동 기록",
+        "output": "요약문(5줄 이내), 이상 로트 목록, 조치 필요 사항",
+        "system_prompt": "당신은 제조 현장의 생산 일보를 요약하는 도우미입니다. 제공된 데이터만 사용하고, 수치를 추측하지 마십시오. 규격을 벗어난 로트와 비가동 30분 이상 설비를 반드시 표시하십시오.",
+        "tools": "MES 조회(읽기 전용), 품질 검사 결과 조회(읽기 전용)",
+        "recommended_model": "사내 승인 모델",
+        "guardrails": {
+          "forbidden": [
+            "데이터 수정",
+            "외부 전송"
+          ],
+          "human_approval": [
+            "부적합 판정 변경 제안"
+          ],
+          "data_scope": [
+            "작업지시",
+            "로트",
+            "품질검사",
+            "설비"
+          ]
+        },
+        "concepts": [
+          "work_order",
+          "lot",
+          "inspection",
+          "equipment"
+        ]
+      },
+      "status": "published",
+      "change_note": "초기 자산",
+      "created_at": "2026-09-30T00:00:00+00:00",
+      "updated_at": "2026-09-30T00:00:00+00:00",
+      "created_by": null
+    }
+  ],
+  "related": [
+    {
+      "table": "agent_eval_cases",
+      "row": {
+        "id": "90988a5f-62f2-5a39-a0ee-2851a528e248",
+        "asset_id": "bca7c7ef-008e-5d1a-9160-9687997429b5",
+        "version": 1,
+        "name": "정상 일자 요약",
+        "input": "작업지시 3건 모두 완료, 검사 전건 합격, 비가동 없음",
+        "expected": "이상 로트 없음을 명시한 5줄 이내 요약",
+        "criteria": "이상 항목을 만들어내지 않는다",
+        "created_at": "2026-09-30T00:00:00+00:00",
+        "updated_at": "2026-09-30T00:00:00+00:00",
+        "created_by": null
+      }
+    },
+    {
+      "table": "agent_eval_cases",
+      "row": {
+        "id": "0f1db248-3fca-5c34-888b-2bfdc645f15d",
+        "asset_id": "bca7c7ef-008e-5d1a-9160-9687997429b5",
+        "version": 1,
+        "name": "규격 이탈 로트",
+        "input": "로트 L-0412 점도 150 KU(규격 80~120 KU)",
+        "expected": "L-0412를 이상 로트로 표시하고 점도 값과 규격을 함께 제시",
+        "criteria": "로트번호와 측정값이 정확히 인용된다",
+        "created_at": "2026-09-30T00:00:00+00:00",
+        "updated_at": "2026-09-30T00:00:00+00:00",
+        "created_by": null
+      }
+    },
+    {
+      "table": "agent_eval_cases",
+      "row": {
+        "id": "acb5d0db-fb0b-5e0e-94d4-b796fd5930a7",
+        "asset_id": "bca7c7ef-008e-5d1a-9160-9687997429b5",
+        "version": 1,
+        "name": "설비 비가동",
+        "input": "분산기 D-2 45분 비가동(모터 과열)",
+        "expected": "D-2 비가동 45분과 원인을 조치 필요 사항에 포함",
+        "criteria": "30분 이상 비가동이 누락되지 않는다",
+        "created_at": "2026-09-30T00:00:00+00:00",
+        "updated_at": "2026-09-30T00:00:00+00:00",
+        "created_by": null
+      }
+    }
+  ]
+}

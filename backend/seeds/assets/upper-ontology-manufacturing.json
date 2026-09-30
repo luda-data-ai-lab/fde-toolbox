@@ -1,0 +1,328 @@
+{
+  "schema_version": 1,
+  "kind": "asset_package",
+  "assets": [
+    {
+      "id": "717c93b1-be2b-5284-b5e9-1486db1574bc",
+      "asset_id": "4767ff2d-a419-52e8-aecd-a2bd10c694b7",
+      "version": 1,
+      "asset_type": "upper_ontology",
+      "asset_key": "manufacturing-common",
+      "title": "제조 공통",
+      "payload": {
+        "namespace": "https://ludaresearch.org/onto/manufacturing-common/",
+        "concepts": [
+          {
+            "key": "product",
+            "label": "제품",
+            "iri_local": "Product",
+            "properties": [
+              "제품코드",
+              "제품명",
+              "규격"
+            ]
+          },
+          {
+            "key": "raw_material",
+            "label": "원자재",
+            "iri_local": "RawMaterial",
+            "properties": [
+              "자재코드",
+              "자재명",
+              "단위"
+            ]
+          },
+          {
+            "key": "recipe",
+            "label": "배합·레시피",
+            "iri_local": "Recipe",
+            "properties": [
+              "레시피 번호",
+              "개정",
+              "배합비"
+            ]
+          },
+          {
+            "key": "process",
+            "label": "공정",
+            "iri_local": "Process",
+            "properties": [
+              "공정코드",
+              "공정명",
+              "표준 시간"
+            ]
+          },
+          {
+            "key": "equipment",
+            "label": "설비",
+            "iri_local": "Equipment",
+            "properties": [
+              "설비번호",
+              "설비명",
+              "상태"
+            ]
+          },
+          {
+            "key": "work_order",
+            "label": "작업지시",
+            "iri_local": "WorkOrder",
+            "properties": [
+              "지시번호",
+              "지시 수량",
+              "지시일"
+            ]
+          },
+          {
+            "key": "lot",
+            "label": "로트",
+            "iri_local": "Lot",
+            "properties": [
+              "로트번호",
+              "생산일",
+              "수량"
+            ]
+          },
+          {
+            "key": "inspection",
+            "label": "품질검사",
+            "iri_local": "Inspection",
+            "properties": [
+              "검사번호",
+              "검사일",
+              "판정"
+            ]
+          },
+          {
+            "key": "inspection_item",
+            "label": "검사항목",
+            "iri_local": "InspectionItem",
+            "properties": [
+              "항목명",
+              "측정값",
+              "단위"
+            ]
+          },
+          {
+            "key": "nonconformance",
+            "label": "부적합",
+            "iri_local": "Nonconformance",
+            "properties": [
+              "부적합 번호",
+              "유형",
+              "처리 방안"
+            ]
+          },
+          {
+            "key": "customer",
+            "label": "고객",
+            "iri_local": "Customer",
+            "properties": [
+              "고객코드",
+              "고객명"
+            ]
+          },
+          {
+            "key": "order",
+            "label": "주문",
+            "iri_local": "Order",
+            "properties": [
+              "주문번호",
+              "납기",
+              "수량"
+            ]
+          },
+          {
+            "key": "shipment",
+            "label": "출하",
+            "iri_local": "Shipment",
+            "properties": [
+              "출하번호",
+              "출하일",
+              "수량"
+            ]
+          },
+          {
+            "key": "supplier",
+            "label": "공급사",
+            "iri_local": "Supplier",
+            "properties": [
+              "공급사코드",
+              "공급사명"
+            ]
+          },
+          {
+            "key": "receipt",
+            "label": "입고",
+            "iri_local": "Receipt",
+            "properties": [
+              "입고번호",
+              "입고일",
+              "수량"
+            ]
+          },
+          {
+            "key": "warehouse",
+            "label": "창고",
+            "iri_local": "Warehouse",
+            "properties": [
+              "창고코드",
+              "창고명"
+            ]
+          },
+          {
+            "key": "inventory",
+            "label": "재고",
+            "iri_local": "Inventory",
+            "properties": [
+              "현재고",
+              "안전재고"
+            ]
+          },
+          {
+            "key": "worker",
+            "label": "작업자",
+            "iri_local": "Worker",
+            "properties": [
+              "사번",
+              "이름",
+              "자격"
+            ]
+          },
+          {
+            "key": "shift",
+            "label": "교대",
+            "iri_local": "Shift",
+            "properties": [
+              "교대조",
+              "시작 시각",
+              "종료 시각"
+            ]
+          },
+          {
+            "key": "specification",
+            "label": "규격",
+            "iri_local": "Specification",
+            "properties": [
+              "규격번호",
+              "하한",
+              "상한"
+            ]
+          }
+        ],
+        "relations": [
+          {
+            "from": "recipe",
+            "predicate": "produces",
+            "to": "product"
+          },
+          {
+            "from": "recipe",
+            "predicate": "uses",
+            "to": "raw_material"
+          },
+          {
+            "from": "work_order",
+            "predicate": "for_product",
+            "to": "product"
+          },
+          {
+            "from": "work_order",
+            "predicate": "follows",
+            "to": "recipe"
+          },
+          {
+            "from": "work_order",
+            "predicate": "runs_on",
+            "to": "equipment"
+          },
+          {
+            "from": "work_order",
+            "predicate": "yields",
+            "to": "lot"
+          },
+          {
+            "from": "process",
+            "predicate": "uses",
+            "to": "equipment"
+          },
+          {
+            "from": "lot",
+            "predicate": "inspected_by",
+            "to": "inspection"
+          },
+          {
+            "from": "inspection",
+            "predicate": "has_item",
+            "to": "inspection_item"
+          },
+          {
+            "from": "inspection_item",
+            "predicate": "checked_against",
+            "to": "specification"
+          },
+          {
+            "from": "inspection",
+            "predicate": "raises",
+            "to": "nonconformance"
+          },
+          {
+            "from": "order",
+            "predicate": "placed_by",
+            "to": "customer"
+          },
+          {
+            "from": "order",
+            "predicate": "fulfilled_by",
+            "to": "shipment"
+          },
+          {
+            "from": "shipment",
+            "predicate": "ships",
+            "to": "lot"
+          },
+          {
+            "from": "receipt",
+            "predicate": "from_supplier",
+            "to": "supplier"
+          },
+          {
+            "from": "receipt",
+            "predicate": "receives",
+            "to": "raw_material"
+          },
+          {
+            "from": "inventory",
+            "predicate": "stored_in",
+            "to": "warehouse"
+          },
+          {
+            "from": "inventory",
+            "predicate": "of_lot",
+            "to": "lot"
+          },
+          {
+            "from": "worker",
+            "predicate": "works_in",
+            "to": "shift"
+          },
+          {
+            "from": "work_order",
+            "predicate": "assigned_to",
+            "to": "worker"
+          },
+          {
+            "from": "product",
+            "predicate": "conforms_to",
+            "to": "specification"
+          }
+        ]
+      },
+      "status": "published",
+      "change_note": "초기 자산",
+      "created_at": "2026-09-30T00:00:00+00:00",
+      "updated_at": "2026-09-30T00:00:00+00:00",
+      "created_by": null
+    }
+  ],
+  "related": []
+}

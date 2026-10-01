@@ -17,6 +17,7 @@ import { UsersPage } from "../core/UsersPage";
 import { AgentHubPage, TemplatePage } from "../modules/agenthub/AgentHubPage";
 import { CoachQPage } from "../modules/coachq/CoachQPage";
 import { InterfacesPage } from "../modules/interfaces/InterfacesPage";
+import { OntoMapPage } from "../modules/ontomap/OntoMapPage";
 import { ProjectPage } from "../modules/devtracker/ProjectPage";
 import { ProjectsPage } from "../modules/devtracker/ProjectsPage";
 
@@ -63,6 +64,7 @@ export function App() {
         <Route path="agenthub" element={<AgentHubPage />} />
         <Route path="coachq" element={<CoachQPage />} />
         <Route path="interfaces" element={<InterfacesPage />} />
+        <Route path="ontomap" element={<OntoMapPage />} />
         <Route path="agenthub/templates/:assetId" element={<TemplatePage />} />
         <Route
           path="admin/tenants"

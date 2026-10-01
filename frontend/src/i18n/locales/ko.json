@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "홈", "diagnose": "진단", "analyze": "분석", "design": "설계", "build": "구축", "operate": "운영", "common": "공통" },
     "home": "홈", "engagements": "프로젝트(인게이지먼트)", "systems": "시스템 레지스트리", "files": "첨부파일",
-    "interfaces": "I/F 관리", "coachq": "CoachQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "자산 라이브러리", "audit": "감사 로그",
+    "interfaces": "I/F 관리", "ontomap": "OntoMap 용어 사전", "coachq": "CoachQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "자산 라이브러리", "audit": "감사 로그",
     "tenants": "고객사 관리", "users": "사용자 관리"
   },
   "layout": {
@@ -105,6 +105,22 @@
   "sessionType": { "interview": "현장 인터뷰", "coaching": "코칭" },
   "coachSessionStatus": { "planned": "예정", "in_progress": "진행 중", "done": "완료" },
   "actionStatus": { "open": "미착수", "in_progress": "진행 중", "done": "완료", "cancelled": "취소" },
+  "ontomap": {
+    "aliasHint": "생산팀: 배합표; BOM", "noDefinition": "정의 없음",
+    "tab": { "glossary": "용어 사전", "candidates": "후보", "import": "엑셀 가져오기" },
+    "term": { "new": "용어 등록", "edit": "용어 수정" },
+    "field": { "term": "표준 용어", "definition": "정의", "abbreviation": "약어", "aliases": "부서별 호칭", "department": "부서", "status": "상태", "notes": "비고" },
+    "candidate": { "accept": "확정", "ignore": "무시", "reopen": "다시 열기", "similar": "유사 용어", "mergeInto": "{{term}}에 병합", "fromSession": "CoachQ 세션", "hint": "후보를 확정하면 용어 사전에 추가되고, 병합하면 기존 용어의 호칭으로 등록됩니다." },
+    "import": {
+      "file": "용어 사전 엑셀 파일", "hint": "LUDA 용어 사전 템플릿(용어 사전 시트) 형식의 .xlsx 파일을 선택하세요. 기존 용어는 갱신되고 호칭은 추가됩니다.",
+      "applied": "반영 완료: 신규 {{created}}건, 갱신 {{updated}}건, 건너뜀 {{skipped}}건",
+      "actions": { "create": "신규", "update": "갱신", "skip": "건너뜀" },
+      "err": { "required": "필수 항목", "too_long": "너무 김", "duplicate_in_file": "파일 내 중복", "invalid_status": "알 수 없는 상태" }
+    },
+    "register": { "title": "용어로 등록", "term": "용어 후보", "hint": "답변에서 표현을 선택한 뒤 클릭", "submit": "용어로 등록", "done": "후보로 등록됨", "listed": "이 세션에서 등록한 용어 후보" }
+  },
+  "termStatus": { "candidate": "후보", "confirmed": "확정", "deprecated": "폐기" },
+  "candidateStatus": { "open": "검토 대기", "accepted": "확정됨", "merged": "병합됨", "ignored": "무시됨" },
   "errors": {
     "unknown": "요청을 처리하지 못했습니다.", "invalid_json": "JSON 형식이 올바르지 않습니다.",
     "not_found": "대상을 찾을 수 없습니다.", "forbidden": "권한이 없습니다.", "unauthorized": "로그인이 필요합니다.",
@@ -117,6 +133,7 @@
     "asset_version_frozen": "배포된 자산 버전은 수정할 수 없습니다.",
     "invalid_workbook": "엑셀 파일 형식이 템플릿과 맞지 않습니다.", "too_many_rows": "행 수가 너무 많습니다.",
     "if_code_taken": "이미 사용 중인 I/F ID입니다.", "upload_already_applied": "이미 반영된 업로드입니다.",
-    "conflict": "다른 데이터에서 참조 중이라 처리할 수 없습니다."
+    "conflict": "다른 데이터에서 참조 중이라 처리할 수 없습니다.",
+    "term_taken": "이미 등록된 용어입니다. 기존 용어에 병합하세요.", "candidate_resolved": "이미 처리된 후보입니다."
   }
 }

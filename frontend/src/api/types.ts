@@ -183,7 +183,11 @@ export interface TenantHome {
   name: string;
   code: string;
   engagements: { id: string; name: string; status: string }[];
-  devtracker: { open_tasks?: number; paused_tasks?: Task[]; recent_tasks?: Task[] };
+  devtracker: {
+    open_tasks?: number;
+    paused_tasks?: Task[];
+    recent_tasks?: Task[];
+  };
   agenthub: { instances_by_status?: Record<string, number> };
 }
 export interface Home {
@@ -192,7 +196,8 @@ export interface Home {
   tenants: TenantHome[];
 }
 export type LinkType = "db_link" | "api" | "file" | "mq" | "eai" | "other";
-export type InterfaceStatus = "planned" | "developing" | "operating" | "retired";
+export type InterfaceStatus =
+  "planned" | "developing" | "operating" | "retired";
 export interface Interface extends Base {
   tenant_id: string;
   if_code: string;
@@ -225,7 +230,13 @@ export interface InterfaceUpload extends Base {
   status: "validated" | "applied";
   result: {
     filename: string;
-    summary: { total: number; valid: number; invalid: number; create: number; update: number };
+    summary: {
+      total: number;
+      valid: number;
+      invalid: number;
+      create: number;
+      update: number;
+    };
     rows: UploadRow[];
     unregistered_systems: UnregisteredSystem[];
     applied?: {
@@ -240,7 +251,12 @@ export interface InterfaceDashboard {
   total: number;
   by_link_type: Record<string, number>;
   by_status: Record<string, number>;
-  by_system: { system_id: string; name: string; outgoing: number; incoming: number }[];
+  by_system: {
+    system_id: string;
+    name: string;
+    outgoing: number;
+    incoming: number;
+  }[];
 }
 export interface GraphNode {
   id: string;
@@ -261,4 +277,95 @@ export interface GraphEdge {
 export interface InterfaceGraph {
   nodes: GraphNode[];
   edges: GraphEdge[];
+}
+
+export type SessionType = "interview" | "coaching";
+export type CoachSessionStatus = "planned" | "in_progress" | "done";
+export type ActionStatus = "open" | "in_progress" | "done" | "cancelled";
+export interface QuestionRef {
+  asset_id: string;
+  version: number;
+  question_id: string;
+}
+export interface BankQuestion {
+  id: string;
+  text: string;
+  tags: string[];
+  audience: string[];
+  follow_ups: string[];
+}
+export interface BankCategory {
+  key: string;
+  name: string;
+  questions: BankQuestion[];
+}
+export interface QuestionBank {
+  asset_id: string;
+  version: number;
+  title: string;
+  session_types: Record<string, string[]>;
+  audiences: string[];
+  categories: BankCategory[];
+}
+export interface QuestionBankResponse {
+  bank: QuestionBank | null;
+  banks: { asset_id: string; version: number; title: string }[];
+}
+export interface CoachSubject extends Base {
+  engagement_id: string;
+  name: string;
+  department: string | null;
+  job_title: string | null;
+  system_ids: string[];
+  notes: string | null;
+}
+export interface CustomQuestion extends Base {
+  engagement_id: string | null;
+  category: string | null;
+  text: string;
+  tags: string[];
+  audience: string[];
+  follow_ups: string[];
+  source_ref: QuestionRef | null;
+}
+export interface CoachSession extends Base {
+  engagement_id: string;
+  type: SessionType;
+  subject_id: string | null;
+  title: string;
+  session_date: string | null;
+  status: CoachSessionStatus;
+  summary: string | null;
+}
+export interface SessionQuestion extends Base {
+  session_id: string;
+  question_ref: QuestionRef | null;
+  custom_question_id: string | null;
+  custom_text: string | null;
+  text: string;
+  category: string | null;
+  follow_ups: string[];
+  answer: string | null;
+  position: number;
+}
+export interface CoachInsight extends Base {
+  session_id: string;
+  session_question_id: string | null;
+  text: string;
+  tags: string[];
+}
+export interface CoachActionItem extends Base {
+  session_id: string;
+  insight_id: string | null;
+  title: string;
+  assignee: string | null;
+  due: string | null;
+  status: ActionStatus;
+}
+export interface Worksheet {
+  session: CoachSession;
+  subject: CoachSubject | null;
+  questions: SessionQuestion[];
+  insights: CoachInsight[];
+  action_items: CoachActionItem[];
 }

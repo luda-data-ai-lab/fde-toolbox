@@ -8,6 +8,7 @@ from app.core.tenants import models as _tenants  # noqa: F401
 from app.core.users import models as _users  # noqa: F401
 from app.db.base import Base
 from app.modules.agenthub import models as _agenthub  # noqa: F401
+from app.modules.coachq import models as _coachq  # noqa: F401
 from app.modules.devtracker import models as _devtracker  # noqa: F401
 from app.modules.interfaces import models as _interfaces  # noqa: F401
 

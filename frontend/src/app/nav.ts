@@ -18,7 +18,7 @@ export function navGroups(role: Role | undefined): NavGroup[] {
   if (role === "luda_admin") common.push(["/admin/tenants", "nav.tenants"], ["/admin/users", "nav.users"]);
   const groups: NavGroup[] = [
     { key: "home", links: [["/", "nav.home"]] },
-    { key: "diagnose", links: [] },
+    { key: "diagnose", links: [["/coachq", "nav.coachq"]] },
     { key: "analyze", links: [["/interfaces", "nav.interfaces"]] },
     { key: "design", links: [] },
     { key: "build", links: [["/devtracker", "nav.devtracker"]] },

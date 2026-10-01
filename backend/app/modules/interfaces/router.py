@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, File, Response, UploadFile
 
 from app.core.auth.deps import DB
+from app.core.exports import attachment
 from app.core.pagination import Page
 from app.core.tenancy.deps import Ctx, ExportCtx, WriteCtx, path_entity, repo
 from app.modules.interfaces import service
@@ -24,12 +25,6 @@ router = APIRouter(prefix="/t/{tenant_id}/interfaces", tags=["interfaces"])
 InterfaceDep = Annotated[Interface, Depends(path_entity(Interface, "interface_id"))]
 UploadDep = Annotated[InterfaceUpload, Depends(path_entity(InterfaceUpload, "upload_id"))]
 XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-
-
-def _attachment(data: bytes | str, media_type: str, filename: str) -> Response:
-    return Response(
-        content=data, media_type=media_type, headers={"Content-Disposition": f'attachment; filename="{filename}"'}
-    )
 
 
 @router.get("", response_model=Page[InterfaceOut])
@@ -65,17 +60,17 @@ def graph(ctx: Ctx, db: DB, link_type: LinkType | None = None, status: Interface
 
 @router.get("/template.xlsx")
 def template(ctx: Ctx) -> Response:
-    return _attachment(service.template_workbook(), XLSX, "interface-template.xlsx")
+    return attachment(service.template_workbook(), XLSX, "interface-template.xlsx")
 
 
 @router.get("/export.xlsx")
 def export_xlsx(ctx: ExportCtx, db: DB) -> Response:
-    return _attachment(service.export_workbook(ctx, db), XLSX, "interfaces.xlsx")
+    return attachment(service.export_workbook(ctx, db), XLSX, "interfaces.xlsx")
 
 
 @router.get("/export.csv")
 def export_csv(ctx: ExportCtx, db: DB) -> Response:
-    return _attachment(service.export_csv(ctx, db), "text/csv; charset=utf-8", "interfaces.csv")
+    return attachment(service.export_csv(ctx, db), "text/csv; charset=utf-8", "interfaces.csv")
 
 
 @router.post("/uploads", response_model=UploadOut, status_code=201)

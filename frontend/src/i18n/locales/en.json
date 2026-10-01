@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "Home", "diagnose": "Diagnose", "analyze": "Analyze", "design": "Design", "build": "Build", "operate": "Operate", "common": "Common" },
     "home": "Home", "engagements": "Engagements", "systems": "System registry", "files": "Attachments",
-    "interfaces": "Interfaces", "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "Asset library", "audit": "Audit log",
+    "interfaces": "Interfaces", "coachq": "CoachQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "Asset library", "audit": "Audit log",
     "tenants": "Customers", "users": "Users"
   },
   "layout": {
@@ -89,6 +89,22 @@
   },
   "linkType": { "db_link": "DB Link", "api": "API", "file": "File", "mq": "MQ", "eai": "EAI", "other": "Other" },
   "ifStatus": { "planned": "Planned", "developing": "In development", "operating": "Operating", "retired": "Retired" },
+  "coachq": {
+    "allEngagements": "All engagements",
+    "bank": { "missing": "No question bank asset found. Ask an administrator to publish one.", "copy": "Copy to client questions", "copied": "Copied" },
+    "custom": { "new": "New client question", "edit": "Edit client question", "source": "Source question", "own": "Written here" },
+    "exportCsv": "Action items CSV",
+    "exportMd": "Export Markdown",
+    "field": { "action": "Action item", "answer": "Answer", "assignee": "Assignee", "audience": "Audience", "category": "Category", "date": "Date", "department": "Department", "due": "Due", "insight": "Insight", "jobTitle": "Job title", "mentee": "Mentee", "question": "Question", "session": "Session", "subject": "Interviewee", "subjectName": "Name", "summary": "Summary", "systems": "Systems", "tags": "Tags", "type": "Session type" },
+    "followUps": "Follow-up questions",
+    "session": { "new": "New session", "open": "Open worksheet" },
+    "subject": { "new": "New subject" },
+    "tab": { "sessions": "Sessions", "subjects": "Subjects", "bank": "Question bank", "custom": "Client questions", "actions": "Action items" },
+    "worksheet": { "add": "Add", "addAction": "Add action", "addInsight": "Add insight", "back": "Back to list", "freeText": "Write your own question", "newAction": "Add action item", "otherInsights": "Other insights", "pickCustom": "Pick a client question…", "picker": "Pick questions", "saved": "Saved" }
+  },
+  "sessionType": { "interview": "Field interview", "coaching": "Coaching" },
+  "coachSessionStatus": { "planned": "Planned", "in_progress": "In progress", "done": "Done" },
+  "actionStatus": { "open": "Open", "in_progress": "In progress", "done": "Done", "cancelled": "Cancelled" },
   "errors": {
     "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
     "not_found": "Not found.", "forbidden": "Permission denied.", "unauthorized": "Please sign in.",

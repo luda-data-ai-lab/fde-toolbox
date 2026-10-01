@@ -369,3 +369,55 @@ export interface Worksheet {
   insights: CoachInsight[];
   action_items: CoachActionItem[];
 }
+export type TermStatus = "candidate" | "confirmed" | "deprecated";
+export type CandidateStatus = "open" | "accepted" | "merged" | "ignored";
+export interface TermAlias {
+  alias: string;
+  department: string | null;
+}
+export interface OntoTerm extends Base {
+  term: string;
+  definition: string | null;
+  abbreviation: string | null;
+  status: TermStatus;
+  concept_id: string | null;
+  source_type: string | null;
+  source_id: string | null;
+  notes: string | null;
+  aliases: TermAlias[];
+}
+export interface SimilarTerm {
+  term_id: string;
+  term: string;
+  matched: string;
+  score: number;
+}
+export interface OntoCandidate extends Base {
+  kind: string;
+  name: string;
+  payload: { context?: string; definition?: string; department?: string; session_question_id?: string };
+  source_type: string;
+  source_id: string | null;
+  status: CandidateStatus;
+  resolved_into_id: string | null;
+  similar: SimilarTerm[];
+}
+export interface GlossaryImportRow {
+  row: number;
+  values: {
+    term: string | null;
+    definition: string | null;
+    abbreviation: string | null;
+    aliases: TermAlias[];
+    status: TermStatus | null;
+    notes: string | null;
+  };
+  action: "create" | "update" | "skip";
+  errors: { field: string; code: string }[];
+}
+export interface GlossaryImportResult {
+  filename: string;
+  applied: boolean;
+  summary: { total: number; valid: number; invalid: number; create: number; update: number };
+  rows: GlossaryImportRow[];
+}

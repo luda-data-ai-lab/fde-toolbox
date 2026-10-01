@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     allowed_upload_extensions: str = "pdf,png,jpg,jpeg,gif,txt,md,csv,json,xlsx,xlsm,xls,docx,pptx,zip,log"
     default_locale: str = "ko"
     deployment_base_iri: str = "https://ludaresearch.org/onto/"
+    onto_similarity_threshold: int = Field(default=80, ge=0, le=100)
     session_cookie_name: str = "fde_session"
     session_ttl_minutes: int = 60 * 12
     cookie_secure: bool = False

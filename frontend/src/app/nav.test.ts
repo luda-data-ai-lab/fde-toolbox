@@ -14,6 +14,13 @@ describe("navGroups", () => {
     expect(paths("client_admin")).toContain("/audit");
     expect(paths("client_user")).not.toContain("/audit");
   });
+
+  it("lists the analyze-stage modules", () => {
+    expect(navGroups("client_user").find((g) => g.key === "analyze")?.links.map(([to]) => to)).toEqual([
+      "/interfaces",
+      "/ontomap",
+    ]);
+  });
 });
 
 describe("tenantListPath", () => {

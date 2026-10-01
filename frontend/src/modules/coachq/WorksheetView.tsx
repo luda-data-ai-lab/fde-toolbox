@@ -2,7 +2,13 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../api/client";
-import type { CoachSession, SessionQuestion, Worksheet } from "../../api/types";
+import type {
+  CoachSession,
+  OntoCandidate,
+  Page,
+  SessionQuestion,
+  Worksheet,
+} from "../../api/types";
 import {
   Empty,
   ErrorText,
@@ -12,6 +18,7 @@ import {
   StatusBadge,
 } from "../../components/ui";
 import { AUDIT_ROLES, useCanWrite, useRole } from "../../app/hooks";
+import { ontoKeys, ontoPath } from "../ontomap/shared";
 import { ActionItemRow } from "./ActionItemsView";
 import {
   SESSION_STATUSES,
@@ -153,21 +160,128 @@ function QuestionPicker({
   );
 }
 
+function TermRegister({
+  tenantId,
+  sessionId,
+  questionId,
+  department,
+  context,
+  initial,
+}: {
+  tenantId: string;
+  sessionId: string;
+  questionId: string;
+  department: string | null;
+  context: string;
+  initial: string;
+}) {
+  const { t } = useTranslation();
+  const qc = useQueryClient();
+  const [name, setName] = useState(initial);
+  const register = useMutation({
+    mutationFn: () =>
+      api<OntoCandidate>(ontoPath(tenantId, "/candidates"), {
+        method: "POST",
+        body: {
+          name,
+          source_type: "coach_session",
+          source_id: sessionId,
+          session_question_id: questionId,
+          context: context || null,
+          department,
+        },
+      }),
+    onSuccess: () => {
+      setName("");
+      void qc.invalidateQueries({ queryKey: ontoKeys(tenantId).all });
+    },
+  });
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    register.mutate();
+  };
+  return (
+    <form
+      className="flex items-end gap-2"
+      onSubmit={submit}
+      aria-label={t("ontomap.register.title")}
+    >
+      <div className="flex-1">
+        <Field label={t("ontomap.register.term")}>
+          <input
+            className="input"
+            required
+            placeholder={t("ontomap.register.hint")}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        </Field>
+      </div>
+      <button className="btn" type="submit" disabled={register.isPending}>
+        {t("ontomap.register.submit")}
+      </button>
+      {register.isSuccess && (
+        <span className="text-xs text-green-700" role="status">
+          {t("ontomap.register.done")}
+        </span>
+      )}
+      <ErrorText error={register.error} />
+    </form>
+  );
+}
+
+function SessionTerms({
+  tenantId,
+  sessionId,
+}: {
+  tenantId: string;
+  sessionId: string;
+}) {
+  const { t } = useTranslation();
+  const { data } = useQuery({
+    queryKey: ontoKeys(tenantId).candidates({ source_id: sessionId }),
+    queryFn: () =>
+      api<Page<OntoCandidate>>(ontoPath(tenantId, "/candidates"), {
+        query: {
+          source_type: "coach_session",
+          source_id: sessionId,
+          limit: 200,
+        },
+      }),
+  });
+  if (!data?.items.length) return null;
+  return (
+    <section className="card space-y-1" data-testid="session-terms">
+      <h3 className="font-medium">{t("ontomap.register.listed")}</h3>
+      <div className="flex flex-wrap gap-1">
+        {data.items.map((c) => (
+          <span key={c.id} className="badge">
+            {c.name} · {t(`candidateStatus.${c.status}`)}
+          </span>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function QuestionCard({
   tenantId,
   sessionId,
   question,
   index,
   insights,
+  department,
 }: {
   tenantId: string;
   sessionId: string;
   question: SessionQuestion;
   index: number;
   insights: Worksheet["insights"];
+  department: string | null;
 }) {
   const { t } = useTranslation();
   const canWrite = useCanWrite();
+  const [picked, setPicked] = useState("");
   const [answer, setAnswer] = useState(question.answer ?? "");
   const [insight, setInsight] = useState({ text: "", tags: "" });
   const save = useWorksheetMutation(
@@ -220,6 +334,11 @@ function QuestionCard({
       )}
       <Field label={t("coachq.field.answer")}>
         <textarea
+          onSelect={(e) => {
+            const el = e.currentTarget;
+            const text = el.value.slice(el.selectionStart, el.selectionEnd);
+            if (text.trim()) setPicked(text.trim());
+          }}
           className="input"
           rows={3}
           readOnly={!canWrite}
@@ -244,6 +363,17 @@ function QuestionCard({
             </li>
           ))}
         </ul>
+      )}
+      {canWrite && (
+        <TermRegister
+          key={picked}
+          initial={picked}
+          context={answer}
+          tenantId={tenantId}
+          sessionId={sessionId}
+          questionId={question.id}
+          department={department}
+        />
       )}
       {canWrite && (
         <form className="flex items-end gap-2" onSubmit={submitInsight}>
@@ -499,10 +629,12 @@ export function WorksheetView({
                   question={q}
                   index={n + 1}
                   insights={byQuestion(q.id)}
+                  department={ws.subject?.department ?? null}
                 />
               ))}
             </ol>
           )}
+          <SessionTerms tenantId={tenantId} sessionId={sessionId} />
           {unlinked.length > 0 && (
             <section className="card">
               <h3 className="mb-1 font-medium">

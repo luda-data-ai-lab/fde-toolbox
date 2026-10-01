@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "Home", "diagnose": "Diagnose", "analyze": "Analyze", "design": "Design", "build": "Build", "operate": "Operate", "common": "Common" },
     "home": "Home", "engagements": "Engagements", "systems": "System registry", "files": "Attachments",
-    "interfaces": "Interfaces", "coachq": "CoachQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "Asset library", "audit": "Audit log",
+    "interfaces": "Interfaces", "ontomap": "OntoMap glossary", "coachq": "CoachQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "Asset library", "audit": "Audit log",
     "tenants": "Customers", "users": "Users"
   },
   "layout": {
@@ -105,6 +105,22 @@
   "sessionType": { "interview": "Field interview", "coaching": "Coaching" },
   "coachSessionStatus": { "planned": "Planned", "in_progress": "In progress", "done": "Done" },
   "actionStatus": { "open": "Open", "in_progress": "In progress", "done": "Done", "cancelled": "Cancelled" },
+  "ontomap": {
+    "aliasHint": "Production: Recipe sheet; BOM", "noDefinition": "No definition",
+    "tab": { "glossary": "Glossary", "candidates": "Candidates", "import": "Excel import" },
+    "term": { "new": "New term", "edit": "Edit term" },
+    "field": { "term": "Standard term", "definition": "Definition", "abbreviation": "Abbreviation", "aliases": "Department aliases", "department": "Department", "status": "Status", "notes": "Notes" },
+    "candidate": { "accept": "Confirm", "ignore": "Ignore", "reopen": "Reopen", "similar": "Similar terms", "mergeInto": "Merge into {{term}}", "fromSession": "CoachQ session", "hint": "Confirming adds the candidate to the glossary; merging records it as an alias of an existing term." },
+    "import": {
+      "file": "Glossary workbook", "hint": "Choose an .xlsx file in the LUDA glossary template layout (glossary sheet). Existing terms are updated and aliases added.",
+      "applied": "Applied: {{created}} new, {{updated}} updated, {{skipped}} skipped",
+      "actions": { "create": "New", "update": "Update", "skip": "Skip" },
+      "err": { "required": "required", "too_long": "too long", "duplicate_in_file": "duplicate in file", "invalid_status": "unknown status" }
+    },
+    "register": { "title": "Register as term", "term": "Term candidate", "hint": "Select an expression in the answer, then click", "submit": "Register as term", "done": "Registered as candidate", "listed": "Term candidates from this session" }
+  },
+  "termStatus": { "candidate": "Candidate", "confirmed": "Confirmed", "deprecated": "Deprecated" },
+  "candidateStatus": { "open": "Pending review", "accepted": "Confirmed", "merged": "Merged", "ignored": "Ignored" },
   "errors": {
     "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
     "not_found": "Not found.", "forbidden": "Permission denied.", "unauthorized": "Please sign in.",
@@ -117,6 +133,7 @@
     "asset_version_frozen": "Published asset versions cannot be modified.",
     "invalid_workbook": "The workbook does not match the template.", "too_many_rows": "Too many rows.",
     "if_code_taken": "That interface ID is already in use.", "upload_already_applied": "This upload was already applied.",
-    "conflict": "It is still referenced by other data."
+    "conflict": "It is still referenced by other data.",
+    "term_taken": "That term already exists. Merge into it instead.", "candidate_resolved": "This candidate was already resolved."
   }
 }

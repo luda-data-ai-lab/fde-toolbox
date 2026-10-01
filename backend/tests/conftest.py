@@ -196,6 +196,16 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
             json={"title": f"Action {code}", "insight_id": ids["insight_id"]},
         )
     )["id"]
+    onto = f"{base}/ontomap"
+    ids["term_id"] = _ok(
+        fde.post(f"{onto}/terms", json={"term": f"Term {code}", "aliases": [{"alias": f"T{code}", "department": "QA"}]})
+    )["id"]
+    ids["candidate_id"] = _ok(
+        fde.post(
+            f"{onto}/candidates",
+            json={"name": f"Cand {code}", "source_type": "coach_session", "source_id": ids["session_id"]},
+        )
+    )["id"]
     ref = {"asset_id": template["asset_id"], "version": 2}
     ids["run_id"] = _ok(
         fde.post(

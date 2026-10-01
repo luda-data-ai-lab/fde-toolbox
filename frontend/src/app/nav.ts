@@ -19,7 +19,7 @@ export function navGroups(role: Role | undefined): NavGroup[] {
   const groups: NavGroup[] = [
     { key: "home", links: [["/", "nav.home"]] },
     { key: "diagnose", links: [] },
-    { key: "analyze", links: [] },
+    { key: "analyze", links: [["/interfaces", "nav.interfaces"]] },
     { key: "design", links: [] },
     { key: "build", links: [["/devtracker", "nav.devtracker"]] },
     { key: "operate", links: [["/agenthub", "nav.agenthub"]] },

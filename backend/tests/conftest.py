@@ -26,9 +26,11 @@ from app.core.users.service import create_user_record  # noqa: E402
 from app.db.base import Base  # noqa: E402
 from app.db.session import configure_engine, new_session  # noqa: E402
 from app.main import create_app  # noqa: E402
+from app.modules.interfaces.excel import build_workbook  # noqa: E402
 
 BACKEND = Path(__file__).resolve().parents[1]
 PASSWORD = "password-1234"
+XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
 @pytest.fixture(scope="session")
@@ -148,6 +150,19 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
     ids["prompt_id"] = _ok(
         fde.post(f"{base}/devtracker/tasks/{ids['task_id']}/prompts", json={"tool": "devin", "prompt": f"p {code}"})
     )["id"]
+    ids["interface_id"] = _ok(
+        fde.post(
+            f"{base}/interfaces",
+            json={
+                "if_code": f"IF-{code}-001",
+                "name": f"I/F {code}",
+                "source_system_id": ids["system_id"],
+                "target_system_id": ids["system_id"],
+            },
+        )
+    )["id"]
+    workbook = build_workbook([[f"IF-{code}-002", "실적", f"ERP {code}", f"MES {code}"]], [])
+    ids["upload_id"] = _ok(fde.post(f"{base}/interfaces/uploads", files={"file": ("if.xlsx", workbook, XLSX)}))["id"]
     ref = {"asset_id": template["asset_id"], "version": 2}
     ids["run_id"] = _ok(
         fde.post(

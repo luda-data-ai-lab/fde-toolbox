@@ -5,7 +5,7 @@ const paths = (role: Parameters<typeof navGroups>[0]) => navGroups(role).flatMap
 
 describe("navGroups", () => {
   it("orders stage groups and hides empty ones", () => {
-    expect(navGroups("fde").map((g) => g.key)).toEqual(["home", "build", "operate", "common"]);
+    expect(navGroups("fde").map((g) => g.key)).toEqual(["home", "analyze", "build", "operate", "common"]);
   });
 
   it("shows admin screens only to luda_admin and audit to audit roles", () => {

@@ -1,5 +1,3 @@
-import csv
-import io
 from typing import Any
 
 from fastapi import UploadFile
@@ -8,6 +6,7 @@ from sqlalchemy.orm import InstrumentedAttribute, Session
 
 from app.core.audit.service import audited, record
 from app.core.errors import AppError
+from app.core.exports import csv_text
 from app.core.files.service import read_upload, store_bytes
 from app.core.systems.models import System
 from app.core.tenancy.context import TenantContext
@@ -389,18 +388,8 @@ def export_workbook(ctx: TenantContext, db: Session) -> bytes:
     return data
 
 
-def _csv_safe(value: Any) -> Any:
-    if isinstance(value, str) and value[:1] in ("=", "+", "-", "@", "\t", "\r"):
-        return "'" + value
-    return value
-
-
 def export_csv(ctx: TenantContext, db: Session) -> str:
     rows, _ = _export_rows(ctx, db)
-    buf = io.StringIO()
-    writer = csv.writer(buf)
-    writer.writerow([h for _, h in excel.IF_COLUMNS])
-    for row in rows:
-        writer.writerow([_csv_safe(v) for v in row])
+    text = csv_text([h for _, h in excel.IF_COLUMNS], rows)
     _record_export(ctx, db, "csv")
-    return "\ufeff" + buf.getvalue()
+    return text

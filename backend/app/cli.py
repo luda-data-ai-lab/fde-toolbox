@@ -11,10 +11,11 @@ from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import select
+from sqlalchemy import create_engine, make_url, select, text
 from sqlalchemy.orm import Session
 
 import app.db.models  # noqa: F401
+from app.config import get_settings
 from app.core.assets.models import AssetItem
 from app.core.assets.schemas import AssetPackage
 from app.core.assets.service import import_package, latest
@@ -50,6 +51,22 @@ def migrate() -> None:
     command.upgrade(cfg, "head")
 
 
+def create_database(url: str) -> bool:
+    """Create the SQL Server database named in ``url`` when missing; other backends need no step."""
+    target = make_url(url)
+    if target.get_backend_name() != "mssql" or not target.database:
+        return False
+    engine = create_engine(target.set(database="master"), isolation_level="AUTOCOMMIT")
+    try:
+        with engine.connect() as conn:
+            if conn.scalar(text("SELECT DB_ID(:name)"), {"name": target.database}) is not None:
+                return False
+            conn.exec_driver_sql(f"CREATE DATABASE {conn.dialect.identifier_preparer.quote(target.database)}")
+    finally:
+        engine.dispose()
+    return True
+
+
 def _password(given: str | None, env: str, prompt: str) -> str:
     value = given or os.environ.get(env)
     if value:
@@ -63,9 +80,7 @@ def _password(given: str | None, env: str, prompt: str) -> str:
 
 
 def _admin(db: Session) -> Principal:
-    user = db.scalars(
-        select(User).where(User.role == "luda_admin", User.is_active.is_(True)).order_by(User.created_at)
-    ).first()
+    user = db.scalars(select(User).where(User.role == "luda_admin", User.is_active).order_by(User.created_at)).first()
     if user is None:
         raise SystemExit("no LUDA admin exists; run init-admin first")
     return Principal(user=user, ip=None)
@@ -209,6 +224,7 @@ def main(argv: Sequence[str] | None = None) -> None:
     parser = argparse.ArgumentParser(prog="python -m app.cli")
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("migrate", help="apply database migrations")
+    sub.add_parser("create-db", help="create the SQL Server database from DATABASE_URL if missing")
     p = sub.add_parser("init-admin", help="create the first LUDA admin")
     p.add_argument("--email", required=True)
     p.add_argument("--name", default="LUDA Admin")
@@ -218,7 +234,9 @@ def main(argv: Sequence[str] | None = None) -> None:
     p.add_argument("--password", help="password for demo users (random if omitted)")
     args = parser.parse_args(argv)
 
-    if args.cmd == "migrate":
+    if args.cmd == "create-db":
+        _out("database created" if create_database(get_settings().database_url) else "database ready")
+    elif args.cmd == "migrate":
         migrate()
         _out("database at head")
     elif args.cmd == "init-admin":

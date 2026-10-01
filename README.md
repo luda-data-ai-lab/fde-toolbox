@@ -37,6 +37,7 @@ docker compose exec backend python -m app.cli seed-demo   # 선택: 데모 고�
   DB_TYPE=postgresql DATABASE_URL=postgresql+psycopg://fde:fde@postgres:5432/fde \
     docker compose --profile postgres up -d --build
   ```
+- SQL Server 사용: [docs/mssql.md](docs/mssql.md) (`WITH_MSSQL=true`로 이미지 빌드, `--profile mssql`).
 - 백엔드는 기동 시 `migrate`와 `seed-assets`(관리자 존재 시)를 자동 실행한다.
 
 ## 단독 실행 (Docker 없이)
@@ -70,25 +71,26 @@ npm run dev                          # http://127.0.0.1:5173, /api는 8000으로
 | 대상 | 명령 |
 | --- | --- |
 | backend lint·type | `ruff check . && ruff format --check . && mypy` |
-| backend test | `pytest --cov=app` (PostgreSQL: `TEST_DATABASE_URL=postgresql+psycopg://...`) |
+| backend test | `pytest --cov=app` (PostgreSQL: `TEST_DATABASE_URL=postgresql+psycopg://...`, SQL Server: [docs/mssql.md](docs/mssql.md)) |
 | 격리·외부 통신 금지 | `pytest tests/isolation tests/architecture` |
 | frontend | `npm run typecheck && npm run lint && npm run test && npm run build && npm run check:external` |
 | E2E | `npx playwright install chromium && npm run e2e` (빌드된 `dist`와 `backend/.venv` 사용, 임시 DB로 서버 기동) |
 
-CI(`.github/workflows/ci.yml`)는 위 검사를 SQLite·PostgreSQL 양쪽에서 실행하고, 커버리지(전체 80%, `app/core` 90%)와 Docker Compose 기동을 확인한다.
+CI(`.github/workflows/ci.yml`)는 위 검사를 SQLite·PostgreSQL·SQL Server에서 실행하고, 커버리지(전체 80%, `app/core` 90%)와 Docker Compose 기동을 확인한다.
 
 ## CLI
 
 | 명령 | 설명 |
 | --- | --- |
 | `python -m app.cli migrate` | Alembic `head`까지 마이그레이션 |
+| `python -m app.cli create-db` | SQL Server에서 `DATABASE_URL`의 DB가 없으면 생성(다른 DB는 변화 없음) |
 | `python -m app.cli init-admin --email ... [--name ...] [--password ...]` | 최초 LUDA 관리자 생성(이미 있으면 거부). 비밀번호는 `FDE_ADMIN_PASSWORD` 또는 프롬프트로도 입력 |
 | `python -m app.cli seed-assets` | 기본 자산 패키지(`backend/seeds/assets`) 가져오기, 재실행해도 중복 생성 없음 |
 | `python -m app.cli seed-demo [--password ...]` | "데모 제조사" 고객사, FDE·고객사 관리자, 과제, 시스템 6개, DevTracker 프로젝트, AgentHub 인스턴스 생성 |
 
 ## 환경 변수
 
-`backend/.env.example` 참고. 주요 값: `DB_TYPE`(sqlite/postgresql), `DATABASE_URL`, `DATA_DIR`, `SECRET_KEY`(필수, 32자 이상), `ENCRYPTION_KEY`(필수), `DEPLOYMENT_MODE`(standalone/hosted), `ADAPTERS_ALLOWED`(기본 false), `MAX_UPLOAD_MB`(20), `DEFAULT_LOCALE`(ko), `DEPLOYMENT_BASE_IRI`, `COOKIE_SECURE`, `STATIC_DIR`(빌드된 프론트엔드를 백엔드가 직접 서빙할 때), `FDE_SECRETS_DIR`(설정값을 파일로 읽을 디렉터리).
+`backend/.env.example` 참고. 주요 값: `DB_TYPE`(sqlite/postgresql/mssql), `DATABASE_URL`, `DATA_DIR`, `SECRET_KEY`(필수, 32자 이상), `ENCRYPTION_KEY`(필수), `DEPLOYMENT_MODE`(standalone/hosted), `ADAPTERS_ALLOWED`(기본 false), `MAX_UPLOAD_MB`(20), `DEFAULT_LOCALE`(ko), `DEPLOYMENT_BASE_IRI`, `COOKIE_SECURE`, `STATIC_DIR`(빌드된 프론트엔드를 백엔드가 직접 서빙할 때), `FDE_SECRETS_DIR`(설정값을 파일로 읽을 디렉터리).
 
 ## 레포 구조
 

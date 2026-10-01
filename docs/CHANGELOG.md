@@ -6,6 +6,7 @@
 
 ### Added — Phase 1
 - I/F 관리: `interfaces`·`interface_uploads` 모델(마이그레이션 0002), I/F 엑셀 템플릿(`인터페이스 리스트`/`시스템 연동정보`) 다운로드·업로드·행 단위 검증·미등록 시스템 선택 등록 후 반영, 목록 CRUD·필터, 대시보드, 연결 그래프, 엑셀/CSV 내보내기(수식 주입 방지), 15건 샘플 워크북.
+- SQL Server 지원(`pip install ".[mssql]"`, ODBC Driver 18): 문자열 `NVARCHAR` 생성·바인드, 연쇄 삭제 앱 수준 대체(ADR 0002), `create-db` CLI, Docker `WITH_MSSQL` 빌드 인자와 `mssql` 프로필, CI `backend (mssql)` 잡, 수동 검증 절차(`docs/mssql.md`).
 - 다른 데이터가 참조 중인 행 삭제 등 무결성 위반은 `409 conflict`로 응답.
 
 ### Added — Phase 0

@@ -27,8 +27,8 @@ def test_export_import_roundtrip(world: World, db: Session) -> None:
     systems = c.get(f"{base}/systems").json()["items"]
     assert inst["system_ids"] == [systems[0]["id"]]
     assert inst["template_ref"]["asset_id"] == world.template["asset_id"]
-    files = c.get(f"{base}/files").json()["items"]
-    assert c.get(f"{base}/files/{files[0]['id']}/download").content == b"secret of TA"
+    files = {f["filename"]: f for f in c.get(f"{base}/files").json()["items"]}
+    assert c.get(f"{base}/files/{files['note-TA.txt']['id']}/download").content == b"secret of TA"
     tasks = c.get(f"{base}/devtracker/projects/{inst['dev_project_id']}/tasks").json()["items"]
     assert tasks[0]["title"] == "Task TA"
     original = world.a.fde.get(f"/api/v1/t/{world.a.tenant_id}/systems").json()["items"]

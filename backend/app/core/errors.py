@@ -3,6 +3,7 @@ from typing import Any
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 
@@ -46,6 +47,10 @@ def install_error_handlers(app: FastAPI) -> None:
     async def _http_error(_req: Request, exc: StarletteHTTPException) -> JSONResponse:
         code = _STATUS_CODES.get(exc.status_code, "http_error")
         return JSONResponse(status_code=exc.status_code, content=_body(code, f"errors.{code}"))
+
+    @app.exception_handler(IntegrityError)
+    async def _integrity_error(_req: Request, _exc: IntegrityError) -> JSONResponse:
+        return JSONResponse(status_code=409, content=_body("conflict", "errors.conflict"))
 
     @app.exception_handler(RequestValidationError)
     async def _validation_error(_req: Request, exc: RequestValidationError) -> JSONResponse:

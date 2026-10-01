@@ -48,13 +48,12 @@ def store_bytes(
     )
 
 
-@audited("file.upload", "file")
-def upload(
-    ctx: TenantContext, db: Session, file: UploadFile, owner_type: str | None, owner_id: str | None
-) -> StoredFile:
+def read_upload(file: UploadFile, extensions: set[str] | None = None) -> tuple[str, bytes]:
+    """Read an upload within the size limit; extensions default to the configured allow-list."""
     s = get_settings()
     name = safe_filename(file.filename or "file")
-    if _extension(name) not in s.upload_extensions:
+    allowed = s.upload_extensions if extensions is None else extensions & s.upload_extensions
+    if _extension(name) not in allowed:
         raise AppError(400, "file_type_not_allowed")
     limit = s.max_upload_mb * 1024 * 1024
     chunks: list[bytes] = []
@@ -64,7 +63,15 @@ def upload(
         if total > limit:
             raise AppError(413, "file_too_large")
         chunks.append(chunk)
-    return store_bytes(ctx, db, name, b"".join(chunks), owner_type, owner_id)
+    return name, b"".join(chunks)
+
+
+@audited("file.upload", "file")
+def upload(
+    ctx: TenantContext, db: Session, file: UploadFile, owner_type: str | None, owner_id: str | None
+) -> StoredFile:
+    name, data = read_upload(file)
+    return store_bytes(ctx, db, name, data, owner_type, owner_id)
 
 
 def absolute_path(obj: StoredFile) -> Path:

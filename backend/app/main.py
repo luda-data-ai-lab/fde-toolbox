@@ -21,6 +21,7 @@ from app.home.router import router as home_router
 from app.modules.agenthub.router import asset_router as agenthub_asset_router
 from app.modules.agenthub.router import router as agenthub_router
 from app.modules.devtracker.router import router as devtracker_router
+from app.modules.interfaces.router import router as interfaces_router
 
 API_PREFIX = "/api/v1"
 
@@ -48,6 +49,7 @@ def api_router() -> APIRouter:
         home_router,
         devtracker_router,
         agenthub_router,
+        interfaces_router,
     ):
         api.include_router(r)
     return api

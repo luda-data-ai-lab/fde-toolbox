@@ -191,3 +191,74 @@ export interface Home {
   totals: Record<string, number>;
   tenants: TenantHome[];
 }
+export type LinkType = "db_link" | "api" | "file" | "mq" | "eai" | "other";
+export type InterfaceStatus = "planned" | "developing" | "operating" | "retired";
+export interface Interface extends Base {
+  tenant_id: string;
+  if_code: string;
+  name: string;
+  source_system_id: string;
+  target_system_id: string;
+  link_type: LinkType;
+  schedule: string | null;
+  description: string | null;
+  daily_volume: number | null;
+  owner: string | null;
+  status: InterfaceStatus;
+  notes: string | null;
+}
+export interface UploadRow {
+  row: number;
+  values: Record<string, string | number | null>;
+  errors: { field: string; code: string }[];
+  unregistered: string[];
+  action: "create" | "update" | "error";
+}
+export interface UnregisteredSystem {
+  name: string;
+  rows: number;
+  in_system_sheet: boolean;
+  system: { name: string; type: string; short_name?: string | null };
+}
+export interface InterfaceUpload extends Base {
+  file_id: string;
+  status: "validated" | "applied";
+  result: {
+    filename: string;
+    summary: { total: number; valid: number; invalid: number; create: number; update: number };
+    rows: UploadRow[];
+    unregistered_systems: UnregisteredSystem[];
+    applied?: {
+      created: number;
+      updated: number;
+      skipped: { row: number; if_code: string; code: string }[];
+      systems_created: string[];
+    };
+  };
+}
+export interface InterfaceDashboard {
+  total: number;
+  by_link_type: Record<string, number>;
+  by_status: Record<string, number>;
+  by_system: { system_id: string; name: string; outgoing: number; incoming: number }[];
+}
+export interface GraphNode {
+  id: string;
+  name: string;
+  short_name: string | null;
+  type: string;
+  degree: number;
+}
+export interface GraphEdge {
+  id: string;
+  source: string;
+  target: string;
+  if_code: string;
+  name: string;
+  link_type: LinkType;
+  status: InterfaceStatus;
+}
+export interface InterfaceGraph {
+  nodes: GraphNode[];
+  edges: GraphEdge[];
+}

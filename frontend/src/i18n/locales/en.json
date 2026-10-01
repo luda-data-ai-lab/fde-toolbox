@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "Home", "diagnose": "Diagnose", "analyze": "Analyze", "design": "Design", "build": "Build", "operate": "Operate", "common": "Common" },
     "home": "Home", "engagements": "Engagements", "systems": "System registry", "files": "Attachments",
-    "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "Asset library", "audit": "Audit log",
+    "interfaces": "Interfaces", "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "Asset library", "audit": "Audit log",
     "tenants": "Customers", "users": "Users"
   },
   "layout": {
@@ -14,7 +14,7 @@
   "common": {
     "create": "Create", "save": "Save", "delete": "Delete", "name": "Name", "title": "Title", "status": "Status",
     "description": "Description", "notes": "Notes", "createdAt": "Created", "empty": "No data.",
-    "loading": "Loading…", "none": "None", "more": "Load more", "selectTenant": "Select a customer at the top first."
+    "loading": "Loading…", "none": "None", "more": "Load more", "selectTenant": "Select a customer at the top first.", "cancel": "Cancel", "edit": "Edit", "search": "Search", "all": "All"
   },
   "roles": { "luda_admin": "LUDA admin", "fde": "FDE", "client_admin": "Customer admin", "client_user": "Customer user" },
   "home": {
@@ -65,6 +65,30 @@
   },
   "deployment": { "standalone": "Standalone", "hosted": "LUDA hosted", "customer_env": "Customer environment" },
   "instanceStatus": { "ready": "Ready", "pilot": "Pilot", "production": "Production", "stopped": "Stopped" },
+  "interfaces": {
+    "template": "Excel template", "exportXlsx": "Export Excel", "exportCsv": "Export CSV", "system": "System",
+    "total": "Total interfaces", "bySystem": "Per-system traffic", "outgoing": "Outgoing", "incoming": "Incoming", "downloadPng": "Save PNG",
+    "tab": { "list": "List", "upload": "Excel upload", "dashboard": "Dashboard", "graph": "Connection graph" },
+    "upload": {
+      "file": "Interface workbook", "hint": "Choose an .xlsx file in the LUDA interface template layout (interface list and system sheets).",
+      "summary": { "total": "Rows", "valid": "Valid", "invalid": "Errors", "create": "New", "update": "Updates" },
+      "unregistered": "Unregistered systems", "unregisteredHint": "Checked systems are added to the system registry when applying. Rows referring to unchecked systems are skipped.",
+      "rowCount": "{{count}} row(s)", "inSheet": "listed in the system sheet",
+      "row": "Row", "action": "Action", "problems": "Issues", "missingSystems": "Unregistered: {{names}}",
+      "apply": "Apply", "appliedSummary": "Applied: {{created}} new, {{updated}} updated, {{skipped}} skipped, {{systems}} systems registered",
+      "actions": { "create": "New", "update": "Update", "error": "Error" },
+      "err": {
+        "required": "required", "unknown_link_type": "unknown link type", "unknown_status": "unknown status",
+        "invalid_number": "not a number", "too_long": "too long", "duplicate_in_file": "duplicate in file"
+      }
+    }
+  },
+  "ifField": {
+    "if_code": "I/F ID", "name": "Name", "source": "Source system", "target": "Target system", "link_type": "Link type",
+    "schedule": "Schedule", "description": "Data items", "daily_volume": "Daily volume", "owner": "Owner", "status": "Status", "notes": "Notes"
+  },
+  "linkType": { "db_link": "DB Link", "api": "API", "file": "File", "mq": "MQ", "eai": "EAI", "other": "Other" },
+  "ifStatus": { "planned": "Planned", "developing": "In development", "operating": "Operating", "retired": "Retired" },
   "errors": {
     "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
     "not_found": "Not found.", "forbidden": "Permission denied.", "unauthorized": "Please sign in.",
@@ -74,6 +98,9 @@
     "file_type_not_allowed": "File type not allowed.", "invalid_reference": "Invalid reference.",
     "invalid_cursor": "Invalid page cursor.", "invalid_bundle": "Invalid export bundle.",
     "invalid_package": "Invalid asset package.", "unsupported_schema_version": "Unsupported schema version.",
-    "asset_version_frozen": "Published asset versions cannot be modified."
+    "asset_version_frozen": "Published asset versions cannot be modified.",
+    "invalid_workbook": "The workbook does not match the template.", "too_many_rows": "Too many rows.",
+    "if_code_taken": "That interface ID is already in use.", "upload_already_applied": "This upload was already applied.",
+    "conflict": "It is still referenced by other data."
   }
 }

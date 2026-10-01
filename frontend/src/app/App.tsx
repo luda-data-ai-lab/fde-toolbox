@@ -15,6 +15,7 @@ import { SystemsPage } from "../core/SystemsPage";
 import { TenantsPage } from "../core/TenantsPage";
 import { UsersPage } from "../core/UsersPage";
 import { AgentHubPage, TemplatePage } from "../modules/agenthub/AgentHubPage";
+import { InterfacesPage } from "../modules/interfaces/InterfacesPage";
 import { ProjectPage } from "../modules/devtracker/ProjectPage";
 import { ProjectsPage } from "../modules/devtracker/ProjectsPage";
 
@@ -59,6 +60,7 @@ export function App() {
         <Route path="devtracker" element={<ProjectsPage />} />
         <Route path="devtracker/projects/:projectId" element={<ProjectPage />} />
         <Route path="agenthub" element={<AgentHubPage />} />
+        <Route path="interfaces" element={<InterfacesPage />} />
         <Route path="agenthub/templates/:assetId" element={<TemplatePage />} />
         <Route
           path="admin/tenants"

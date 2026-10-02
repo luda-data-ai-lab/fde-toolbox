@@ -6,6 +6,7 @@ from app.core.files import models as _files  # noqa: F401
 from app.core.systems import models as _systems  # noqa: F401
 from app.core.tenants import models as _tenants  # noqa: F401
 from app.core.users import models as _users  # noqa: F401
+from app.db import mssql as _mssql  # noqa: F401
 from app.db.base import Base
 from app.modules.agenthub import models as _agenthub  # noqa: F401
 from app.modules.coachq import models as _coachq  # noqa: F401

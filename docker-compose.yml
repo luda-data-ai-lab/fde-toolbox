@@ -1,11 +1,15 @@
 # SQLite (default):     docker compose up -d --build
 # PostgreSQL:           DB_TYPE=postgresql DATABASE_URL=postgresql+psycopg://fde:fde@postgres:5432/fde \
 #                       docker compose --profile postgres up -d --build
+# SQL Server:           see docs/mssql.md (WITH_MSSQL=true, --profile mssql)
 # First admin:          docker compose exec backend python -m app.cli init-admin --email admin@example.com
 # Demo data:            docker compose exec backend python -m app.cli seed-demo
 services:
   backend:
-    build: ./backend
+    build:
+      context: ./backend
+      args:
+        WITH_MSSQL: ${WITH_MSSQL:-false}
     restart: unless-stopped
     environment:
       DB_TYPE: ${DB_TYPE:-sqlite}
@@ -22,6 +26,9 @@ services:
       - fde-data:/data
     depends_on:
       postgres:
+        condition: service_healthy
+        required: false
+      mssql:
         condition: service_healthy
         required: false
     healthcheck:
@@ -54,6 +61,21 @@ services:
       interval: 5s
       retries: 20
 
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    profiles: ["mssql"]
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Fde-Mssql-Pass-123}
+    volumes:
+      - fde-mssql:/var/opt/mssql
+    healthcheck:
+      test: ["CMD-SHELL", "/opt/mssql-tools18/bin/sqlcmd -C -S localhost -U sa -P \"$$MSSQL_SA_PASSWORD\" -Q 'SELECT 1' -b -o /dev/null"]
+      interval: 10s
+      retries: 20
+
 volumes:
   fde-data:
   fde-pg:
+  fde-mssql:

@@ -88,13 +88,13 @@ def test_term_crud_and_aliases(world: World) -> None:
         assert a in actions
 
 
-def test_candidates_from_coachq(world: World) -> None:
+def test_candidates_from_discoveryq(world: World) -> None:
     base = _base(world)
     fde = world.a.fde
     sid = world.a.ids["session_id"]
     body = {
         "name": "배합 지시서",
-        "source_type": "coach_session",
+        "source_type": "discovery_session",
         "source_id": sid,
         "session_question_id": world.a.ids["session_question_id"],
         "context": "생산팀은 배합 지시서를 매일 출력한다",
@@ -120,7 +120,7 @@ def test_candidates_from_coachq(world: World) -> None:
     accepted = fde.post(f"{base}/candidates/{cand['id']}/accept", json={"definition": "배합 작업 지시 문서"}).json()
     assert accepted["status"] == "accepted"
     term = fde.get(f"{base}/terms/{accepted['resolved_into_id']}").json()
-    assert term["status"] == "confirmed" and term["source_type"] == "coach_session" and term["source_id"] == sid
+    assert term["status"] == "confirmed" and term["source_type"] == "discovery_session" and term["source_id"] == sid
     assert term["definition"] == "배합 작업 지시 문서"
     assert term["aliases"] == [{"alias": "배합 지시서", "department": "생산팀"}]
     assert fde.post(f"{base}/candidates/{cand['id']}/ignore").status_code == 409

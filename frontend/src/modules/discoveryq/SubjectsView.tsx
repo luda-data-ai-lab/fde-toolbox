@@ -2,13 +2,18 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../api/client";
-import type { CoachSubject } from "../../api/types";
+import type { DiscoverySubject } from "../../api/types";
 import { Empty, ErrorText, Field } from "../../components/ui";
 import { useCanWrite } from "../../app/hooks";
 import { useWorkspace } from "../../app/store";
 import { useSystems } from "../interfaces/shared";
 import { EngagementSelect } from "./EngagementSelect";
-import { coachKeys, coachPath, useEngagements, useSubjects } from "./shared";
+import {
+  discoveryKeys,
+  discoveryPath,
+  useEngagements,
+  useSubjects,
+} from "./shared";
 
 const EMPTY = {
   engagement_id: "",
@@ -28,10 +33,10 @@ export function SubjectsView({ tenantId }: { tenantId: string }) {
   const engagements = useEngagements(tenantId).data?.items ?? [];
   const [form, setForm] = useState(EMPTY);
   const invalidate = () =>
-    qc.invalidateQueries({ queryKey: coachKeys(tenantId).all });
+    qc.invalidateQueries({ queryKey: discoveryKeys(tenantId).all });
   const create = useMutation({
     mutationFn: () =>
-      api<CoachSubject>(coachPath(tenantId, "/subjects"), {
+      api<DiscoverySubject>(discoveryPath(tenantId, "/subjects"), {
         method: "POST",
         body: {
           ...form,
@@ -47,7 +52,7 @@ export function SubjectsView({ tenantId }: { tenantId: string }) {
   });
   const remove = useMutation({
     mutationFn: (id: string) =>
-      api(coachPath(tenantId, `/subjects/${id}`), { method: "DELETE" }),
+      api(discoveryPath(tenantId, `/subjects/${id}`), { method: "DELETE" }),
     onSuccess: () => void invalidate(),
   });
   const systemName = new Map(systems.map((s) => [s.id, s.name]));
@@ -62,14 +67,14 @@ export function SubjectsView({ tenantId }: { tenantId: string }) {
         <form
           className="card grid grid-cols-2 gap-3 md:grid-cols-5"
           onSubmit={submit}
-          aria-label={t("coachq.subject.new")}
+          aria-label={t("discoveryq.subject.new")}
         >
           <EngagementSelect
             tenantId={tenantId}
             value={form.engagement_id}
             onChange={(v) => setForm({ ...form, engagement_id: v })}
           />
-          <Field label={t("coachq.field.subjectName")}>
+          <Field label={t("discoveryq.field.subjectName")}>
             <input
               className="input"
               required
@@ -77,21 +82,21 @@ export function SubjectsView({ tenantId }: { tenantId: string }) {
               onChange={(e) => setForm({ ...form, name: e.target.value })}
             />
           </Field>
-          <Field label={t("coachq.field.department")}>
+          <Field label={t("discoveryq.field.department")}>
             <input
               className="input"
               value={form.department}
               onChange={(e) => setForm({ ...form, department: e.target.value })}
             />
           </Field>
-          <Field label={t("coachq.field.jobTitle")}>
+          <Field label={t("discoveryq.field.jobTitle")}>
             <input
               className="input"
               value={form.job_title}
               onChange={(e) => setForm({ ...form, job_title: e.target.value })}
             />
           </Field>
-          <Field label={t("coachq.field.systems")}>
+          <Field label={t("discoveryq.field.systems")}>
             <select
               className="input"
               multiple
@@ -128,10 +133,10 @@ export function SubjectsView({ tenantId }: { tenantId: string }) {
           <table className="table" data-testid="subject-table">
             <thead>
               <tr>
-                <th>{t("coachq.field.subjectName")}</th>
-                <th>{t("coachq.field.department")}</th>
-                <th>{t("coachq.field.jobTitle")}</th>
-                <th>{t("coachq.field.systems")}</th>
+                <th>{t("discoveryq.field.subjectName")}</th>
+                <th>{t("discoveryq.field.department")}</th>
+                <th>{t("discoveryq.field.jobTitle")}</th>
+                <th>{t("discoveryq.field.systems")}</th>
                 <th>{t("nav.engagements")}</th>
                 <th />
               </tr>

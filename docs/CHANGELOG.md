@@ -4,10 +4,14 @@
 
 ## [Unreleased]
 
+### Changed
+- CoachQ를 DiscoveryQ로 이름 변경: 화면·문서, API 경로 `/coachq` → `/discoveryq`, 모듈, 테이블 `coach_*` → `discovery_*`(마이그레이션 0005, 데이터 이전·되돌리기 지원), OntoMap 후보 출처 `coach_session` → `discovery_session`, 질문 뱅크 자산 키 `discoveryq-question-bank`. 이전 경로 별칭은 두지 않으며, 이름 변경 전에 만든 고객사 ZIP은 다시 가져올 수 없다.
+
 ### Added — Phase 1
+- DiscoveryQ Word 보고서(`python-docx`, 오프라인 생성): 세션 보고서 `GET /discoveryq/sessions/{id}/report.docx`, 인게이지먼트 진단 보고서 `GET /discoveryq/engagements/{id}/report.docx`(ko/en, 내보내기 권한, 감사 로그 기록).
 - I/F 관리: `interfaces`·`interface_uploads` 모델(마이그레이션 0002), I/F 엑셀 템플릿(`인터페이스 리스트`/`시스템 연동정보`) 다운로드·업로드·행 단위 검증·미등록 시스템 선택 등록 후 반영, 목록 CRUD·필터, 대시보드, 연결 그래프, 엑셀/CSV 내보내기(수식 주입 방지), 15건 샘플 워크북.
-- CoachQ: 질문 뱅크 탐색, 인터뷰 대상자, 세션 워크시트(질문·답변·인사이트·태그), 액션 아이템, 직접 질문, 세션 Markdown·액션 아이템 CSV 내보내기(마이그레이션 0003).
-- OntoMap 용어 사전: 표준 용어·부서별 호칭·약어, 용어 사전 엑셀 가져오기/내보내기·CSV 내보내기, CoachQ 답변에서 용어 후보 등록 후 확정·병합·무시(마이그레이션 0004).
+- DiscoveryQ: 질문 뱅크 탐색, 인터뷰 대상자, 세션 워크시트(질문·답변·인사이트·태그), 액션 아이템, 직접 질문, 세션 Markdown·액션 아이템 CSV 내보내기(마이그레이션 0003).
+- OntoMap 용어 사전: 표준 용어·부서별 호칭·약어, 용어 사전 엑셀 가져오기/내보내기·CSV 내보내기, DiscoveryQ 답변에서 용어 후보 등록 후 확정·병합·무시(마이그레이션 0004).
 - 데모 시드 확장: `seed-demo`가 샘플 워크북으로 I/F 15건을 업로드·반영하고, 도료 제조 용어 20개(배합비·점도 규격·도막 검사 포함, 부서별 호칭)를 확정 상태로 생성(`backend/seeds/samples/demo-glossary.json`).
 - Phase 1 인수 E2E(`e2e/phase1.spec.ts`): 샘플 엑셀 업로드 → 연결 그래프 확인 → 인터뷰 세션 기록 → 세션에서 용어 3건 등록 → 용어 사전에서 확정 → 엑셀 내보내기 내용 확인.
 - SQL Server 지원(`pip install ".[mssql]"`, ODBC Driver 18): 문자열 `NVARCHAR` 생성·바인드, 연쇄 삭제 앱 수준 대체(ADR 0002), `create-db` CLI, Docker `WITH_MSSQL` 빌드 인자와 `mssql` 프로필, CI `backend (mssql)` 잡, 수동 검증 절차(`docs/mssql.md`).

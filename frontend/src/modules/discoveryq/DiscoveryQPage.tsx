@@ -12,7 +12,7 @@ import { WorksheetView } from "./WorksheetView";
 const TABS = ["sessions", "subjects", "bank", "custom", "actions"] as const;
 type Tab = (typeof TABS)[number];
 
-export function CoachQPage() {
+export function DiscoveryQPage() {
   const { t } = useTranslation();
   const tenantId = useTenantId();
   const [params, setParams] = useSearchParams();
@@ -22,7 +22,7 @@ export function CoachQPage() {
   if (!tenantId) return <NeedTenant />;
   return (
     <div className="space-y-4">
-      <PageHeader title={t("nav.coachq")} />
+      <PageHeader title={t("nav.discoveryq")} />
       <div role="tablist" className="flex gap-1 border-b border-slate-200">
         {TABS.map((x) => (
           <button
@@ -32,7 +32,7 @@ export function CoachQPage() {
             className={`-mb-px border-b-2 px-3 py-2 text-sm ${tab === x && !sessionId ? "border-blue-700 font-semibold text-blue-800" : "border-transparent text-slate-600"}`}
             onClick={() => setParams({ tab: x })}
           >
-            {t(`coachq.tab.${x}`)}
+            {t(`discoveryq.tab.${x}`)}
           </button>
         ))}
       </div>

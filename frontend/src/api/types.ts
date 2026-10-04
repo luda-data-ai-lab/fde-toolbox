@@ -280,7 +280,7 @@ export interface InterfaceGraph {
 }
 
 export type SessionType = "interview" | "coaching";
-export type CoachSessionStatus = "planned" | "in_progress" | "done";
+export type DiscoverySessionStatus = "planned" | "in_progress" | "done";
 export type ActionStatus = "open" | "in_progress" | "done" | "cancelled";
 export interface QuestionRef {
   asset_id: string;
@@ -311,7 +311,7 @@ export interface QuestionBankResponse {
   bank: QuestionBank | null;
   banks: { asset_id: string; version: number; title: string }[];
 }
-export interface CoachSubject extends Base {
+export interface DiscoverySubject extends Base {
   engagement_id: string;
   name: string;
   department: string | null;
@@ -328,13 +328,13 @@ export interface CustomQuestion extends Base {
   follow_ups: string[];
   source_ref: QuestionRef | null;
 }
-export interface CoachSession extends Base {
+export interface DiscoverySession extends Base {
   engagement_id: string;
   type: SessionType;
   subject_id: string | null;
   title: string;
   session_date: string | null;
-  status: CoachSessionStatus;
+  status: DiscoverySessionStatus;
   summary: string | null;
 }
 export interface SessionQuestion extends Base {
@@ -348,13 +348,13 @@ export interface SessionQuestion extends Base {
   answer: string | null;
   position: number;
 }
-export interface CoachInsight extends Base {
+export interface DiscoveryInsight extends Base {
   session_id: string;
   session_question_id: string | null;
   text: string;
   tags: string[];
 }
-export interface CoachActionItem extends Base {
+export interface DiscoveryActionItem extends Base {
   session_id: string;
   insight_id: string | null;
   title: string;
@@ -363,11 +363,11 @@ export interface CoachActionItem extends Base {
   status: ActionStatus;
 }
 export interface Worksheet {
-  session: CoachSession;
-  subject: CoachSubject | null;
+  session: DiscoverySession;
+  subject: DiscoverySubject | null;
   questions: SessionQuestion[];
-  insights: CoachInsight[];
-  action_items: CoachActionItem[];
+  insights: DiscoveryInsight[];
+  action_items: DiscoveryActionItem[];
 }
 export type TermStatus = "candidate" | "confirmed" | "deprecated";
 export type CandidateStatus = "open" | "accepted" | "merged" | "ignored";
@@ -395,7 +395,12 @@ export interface SimilarTerm {
 export interface OntoCandidate extends Base {
   kind: string;
   name: string;
-  payload: { context?: string; definition?: string; department?: string; session_question_id?: string };
+  payload: {
+    context?: string;
+    definition?: string;
+    department?: string;
+    session_question_id?: string;
+  };
   source_type: string;
   source_id: string | null;
   status: CandidateStatus;
@@ -418,6 +423,12 @@ export interface GlossaryImportRow {
 export interface GlossaryImportResult {
   filename: string;
   applied: boolean;
-  summary: { total: number; valid: number; invalid: number; create: number; update: number };
+  summary: {
+    total: number;
+    valid: number;
+    invalid: number;
+    create: number;
+    update: number;
+  };
   rows: GlossaryImportRow[];
 }

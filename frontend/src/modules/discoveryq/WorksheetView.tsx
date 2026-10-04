@@ -3,7 +3,7 @@ import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../api/client";
 import type {
-  CoachSession,
+  DiscoverySession,
   OntoCandidate,
   Page,
   SessionQuestion,
@@ -22,8 +22,8 @@ import { ontoKeys, ontoPath } from "../ontomap/shared";
 import { ActionItemRow } from "./ActionItemsView";
 import {
   SESSION_STATUSES,
-  coachKeys,
-  coachPath,
+  discoveryKeys,
+  discoveryPath,
   splitTags,
   useCustomQuestions,
   useQuestionBank,
@@ -40,9 +40,9 @@ function useWorksheetMutation(
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (body: Record<string, unknown>) =>
-      api(coachPath(tenantId, path), { method, body }),
+      api(discoveryPath(tenantId, path), { method, body }),
     onSuccess: () =>
-      void qc.invalidateQueries({ queryKey: coachKeys(tenantId).all }),
+      void qc.invalidateQueries({ queryKey: discoveryKeys(tenantId).all }),
     mutationKey: [path, sessionId],
   });
 }
@@ -53,7 +53,7 @@ function QuestionPicker({
   add,
 }: {
   tenantId: string;
-  session: CoachSession;
+  session: DiscoverySession;
   add: Mutate;
 }) {
   const { t } = useTranslation();
@@ -75,10 +75,10 @@ function QuestionPicker({
   return (
     <section
       className="card space-y-3"
-      aria-label={t("coachq.worksheet.picker")}
+      aria-label={t("discoveryq.worksheet.picker")}
     >
       <h2 className="font-semibold text-slate-800">
-        {t("coachq.worksheet.picker")}
+        {t("discoveryq.worksheet.picker")}
       </h2>
       {bank && (
         <>
@@ -105,7 +105,7 @@ function QuestionPicker({
                 <span>{q.text}</span>
                 <button
                   className="btn shrink-0"
-                  aria-label={`${t("coachq.worksheet.add")}: ${q.text}`}
+                  aria-label={`${t("discoveryq.worksheet.add")}: ${q.text}`}
                   onClick={() =>
                     add({
                       question_ref: {
@@ -116,7 +116,7 @@ function QuestionPicker({
                     })
                   }
                 >
-                  {t("coachq.worksheet.add")}
+                  {t("discoveryq.worksheet.add")}
                 </button>
               </li>
             ))}
@@ -124,7 +124,7 @@ function QuestionPicker({
         </>
       )}
       {custom.length > 0 && (
-        <Field label={t("coachq.tab.custom")}>
+        <Field label={t("discoveryq.tab.custom")}>
           <select
             className="input"
             value=""
@@ -132,7 +132,7 @@ function QuestionPicker({
               e.target.value && add({ custom_question_id: e.target.value })
             }
           >
-            <option value="">{t("coachq.worksheet.pickCustom")}</option>
+            <option value="">{t("discoveryq.worksheet.pickCustom")}</option>
             {custom.map((q) => (
               <option key={q.id} value={q.id}>
                 {q.text}
@@ -143,7 +143,7 @@ function QuestionPicker({
       )}
       <form className="flex items-end gap-2" onSubmit={submitFree}>
         <div className="flex-1">
-          <Field label={t("coachq.worksheet.freeText")}>
+          <Field label={t("discoveryq.worksheet.freeText")}>
             <input
               className="input"
               required
@@ -153,7 +153,7 @@ function QuestionPicker({
           </Field>
         </div>
         <button className="btn" type="submit">
-          {t("coachq.worksheet.add")}
+          {t("discoveryq.worksheet.add")}
         </button>
       </form>
     </section>
@@ -184,7 +184,7 @@ function TermRegister({
         method: "POST",
         body: {
           name,
-          source_type: "coach_session",
+          source_type: "discovery_session",
           source_id: sessionId,
           session_question_id: questionId,
           context: context || null,
@@ -243,7 +243,7 @@ function SessionTerms({
     queryFn: () =>
       api<Page<OntoCandidate>>(ontoPath(tenantId, "/candidates"), {
         query: {
-          source_type: "coach_session",
+          source_type: "discovery_session",
           source_id: sessionId,
           limit: 200,
         },
@@ -329,10 +329,10 @@ function QuestionCard({
       </div>
       {question.follow_ups.length > 0 && (
         <p className="text-xs text-slate-500">
-          {t("coachq.followUps")}: {question.follow_ups.join(" / ")}
+          {t("discoveryq.followUps")}: {question.follow_ups.join(" / ")}
         </p>
       )}
-      <Field label={t("coachq.field.answer")}>
+      <Field label={t("discoveryq.field.answer")}>
         <textarea
           onSelect={(e) => {
             const el = e.currentTarget;
@@ -352,7 +352,9 @@ function QuestionCard({
         />
       </Field>
       {save.isSuccess && (
-        <p className="text-xs text-green-700">{t("coachq.worksheet.saved")}</p>
+        <p className="text-xs text-green-700">
+          {t("discoveryq.worksheet.saved")}
+        </p>
       )}
       <ErrorText error={save.error ?? remove.error ?? addInsight.error} />
       {insights.length > 0 && (
@@ -378,7 +380,7 @@ function QuestionCard({
       {canWrite && (
         <form className="flex items-end gap-2" onSubmit={submitInsight}>
           <div className="flex-1">
-            <Field label={t("coachq.field.insight")}>
+            <Field label={t("discoveryq.field.insight")}>
               <input
                 className="input"
                 required
@@ -390,7 +392,7 @@ function QuestionCard({
             </Field>
           </div>
           <div className="w-40">
-            <Field label={t("coachq.field.tags")}>
+            <Field label={t("discoveryq.field.tags")}>
               <input
                 className="input"
                 value={insight.tags}
@@ -401,7 +403,7 @@ function QuestionCard({
             </Field>
           </div>
           <button className="btn" type="submit">
-            {t("coachq.worksheet.addInsight")}
+            {t("discoveryq.worksheet.addInsight")}
           </button>
         </form>
       )}
@@ -422,14 +424,14 @@ function SessionMeta({ tenantId, ws }: { tenantId: string; ws: Worksheet }) {
   );
   return (
     <section className="card grid grid-cols-2 gap-3 md:grid-cols-4">
-      <Field label={t("coachq.field.type")}>
+      <Field label={t("discoveryq.field.type")}>
         <StatusBadge group="sessionType" value={s.type} />
       </Field>
       <Field
         label={
           s.type === "coaching"
-            ? t("coachq.field.mentee")
-            : t("coachq.field.subject")
+            ? t("discoveryq.field.mentee")
+            : t("discoveryq.field.subject")
         }
       >
         <span className="text-sm">
@@ -440,7 +442,7 @@ function SessionMeta({ tenantId, ws }: { tenantId: string; ws: Worksheet }) {
             : "—"}
         </span>
       </Field>
-      <Field label={t("coachq.field.date")}>
+      <Field label={t("discoveryq.field.date")}>
         <input
           className="input"
           type="date"
@@ -457,14 +459,14 @@ function SessionMeta({ tenantId, ws }: { tenantId: string; ws: Worksheet }) {
             value={s.status}
             onChange={(v) => patch.mutate({ status: v })}
             options={SESSION_STATUSES}
-            group="coachSessionStatus"
+            group="discoverySessionStatus"
           />
         ) : (
-          <StatusBadge group="coachSessionStatus" value={s.status} />
+          <StatusBadge group="discoverySessionStatus" value={s.status} />
         )}
       </Field>
       <div className="col-span-full">
-        <Field label={t("coachq.field.summary")}>
+        <Field label={t("discoveryq.field.summary")}>
           <textarea
             className="input"
             rows={2}
@@ -509,9 +511,9 @@ function ActionForm({ tenantId, ws }: { tenantId: string; ws: Worksheet }) {
     <form
       className="grid grid-cols-2 gap-3 md:grid-cols-5"
       onSubmit={submit}
-      aria-label={t("coachq.worksheet.newAction")}
+      aria-label={t("discoveryq.worksheet.newAction")}
     >
-      <Field label={t("coachq.field.action")}>
+      <Field label={t("discoveryq.field.action")}>
         <input
           className="input"
           required
@@ -519,14 +521,14 @@ function ActionForm({ tenantId, ws }: { tenantId: string; ws: Worksheet }) {
           onChange={(e) => setForm({ ...form, title: e.target.value })}
         />
       </Field>
-      <Field label={t("coachq.field.assignee")}>
+      <Field label={t("discoveryq.field.assignee")}>
         <input
           className="input"
           value={form.assignee}
           onChange={(e) => setForm({ ...form, assignee: e.target.value })}
         />
       </Field>
-      <Field label={t("coachq.field.due")}>
+      <Field label={t("discoveryq.field.due")}>
         <input
           className="input"
           type="date"
@@ -534,7 +536,7 @@ function ActionForm({ tenantId, ws }: { tenantId: string; ws: Worksheet }) {
           onChange={(e) => setForm({ ...form, due: e.target.value })}
         />
       </Field>
-      <Field label={t("coachq.field.insight")}>
+      <Field label={t("discoveryq.field.insight")}>
         <select
           className="input"
           value={form.insight_id}
@@ -550,7 +552,7 @@ function ActionForm({ tenantId, ws }: { tenantId: string; ws: Worksheet }) {
       </Field>
       <div className="flex items-end gap-2">
         <button className="btn btn-primary" type="submit">
-          {t("coachq.worksheet.addAction")}
+          {t("discoveryq.worksheet.addAction")}
         </button>
       </div>
       <div className="col-span-full">
@@ -577,9 +579,9 @@ export function WorksheetView({
     isLoading,
     error,
   } = useQuery({
-    queryKey: coachKeys(tenantId).worksheet(sessionId),
+    queryKey: discoveryKeys(tenantId).worksheet(sessionId),
     queryFn: () =>
-      api<Worksheet>(coachPath(tenantId, `/sessions/${sessionId}`)),
+      api<Worksheet>(discoveryPath(tenantId, `/sessions/${sessionId}`)),
   });
   const add = useWorksheetMutation(
     tenantId,
@@ -597,19 +599,27 @@ export function WorksheetView({
       <div className="flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
           <button className="btn" onClick={onBack}>
-            {t("coachq.worksheet.back")}
+            {t("discoveryq.worksheet.back")}
           </button>
           <h2 className="text-lg font-semibold text-slate-800">
             {ws.session.title}
           </h2>
         </div>
         {role && AUDIT_ROLES.includes(role) && (
-          <a
-            className="btn"
-            href={`/api/v1/t/${tenantId}/coachq/sessions/${sessionId}/export.md?lang=${lang}`}
-          >
-            {t("coachq.exportMd")}
-          </a>
+          <div className="flex items-center gap-2">
+            <a
+              className="btn"
+              href={`/api/v1/t/${tenantId}/discoveryq/sessions/${sessionId}/export.md?lang=${lang}`}
+            >
+              {t("discoveryq.exportMd")}
+            </a>
+            <a
+              className="btn"
+              href={`/api/v1/t/${tenantId}/discoveryq/sessions/${sessionId}/report.docx?lang=${lang}`}
+            >
+              {t("discoveryq.reportDocx")}
+            </a>
+          </div>
         )}
       </div>
       <SessionMeta key={ws.session.updated_at} tenantId={tenantId} ws={ws} />
@@ -638,7 +648,7 @@ export function WorksheetView({
           {unlinked.length > 0 && (
             <section className="card">
               <h3 className="mb-1 font-medium">
-                {t("coachq.worksheet.otherInsights")}
+                {t("discoveryq.worksheet.otherInsights")}
               </h3>
               <ul className="space-y-1 text-sm">
                 {unlinked.map((i) => (
@@ -661,9 +671,12 @@ export function WorksheetView({
           </div>
         )}
       </div>
-      <section className="card space-y-3" aria-label={t("coachq.tab.actions")}>
+      <section
+        className="card space-y-3"
+        aria-label={t("discoveryq.tab.actions")}
+      >
         <h2 className="font-semibold text-slate-800">
-          {t("coachq.tab.actions")}
+          {t("discoveryq.tab.actions")}
         </h2>
         {canWrite && <ActionForm tenantId={tenantId} ws={ws} />}
         {ws.action_items.length === 0 ? (
@@ -672,9 +685,9 @@ export function WorksheetView({
           <table className="table">
             <thead>
               <tr>
-                <th>{t("coachq.field.action")}</th>
-                <th>{t("coachq.field.assignee")}</th>
-                <th>{t("coachq.field.due")}</th>
+                <th>{t("discoveryq.field.action")}</th>
+                <th>{t("discoveryq.field.assignee")}</th>
+                <th>{t("discoveryq.field.due")}</th>
                 <th>{t("common.status")}</th>
                 <th />
               </tr>

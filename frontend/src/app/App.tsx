@@ -15,7 +15,7 @@ import { SystemsPage } from "../core/SystemsPage";
 import { TenantsPage } from "../core/TenantsPage";
 import { UsersPage } from "../core/UsersPage";
 import { AgentHubPage, TemplatePage } from "../modules/agenthub/AgentHubPage";
-import { CoachQPage } from "../modules/coachq/CoachQPage";
+import { DiscoveryQPage } from "../modules/discoveryq/DiscoveryQPage";
 import { InterfacesPage } from "../modules/interfaces/InterfacesPage";
 import { OntoMapPage } from "../modules/ontomap/OntoMapPage";
 import { ProjectPage } from "../modules/devtracker/ProjectPage";
@@ -28,10 +28,17 @@ function Protected() {
   return <Layout />;
 }
 
-export function RequireRole({ roles, children }: { roles: Role[]; children: ReactNode }) {
+export function RequireRole({
+  roles,
+  children,
+}: {
+  roles: Role[];
+  children: ReactNode;
+}) {
   const { t } = useTranslation();
   const role = useRole();
-  if (!role || !roles.includes(role)) return <p className="card">{t("errors.forbidden")}</p>;
+  if (!role || !roles.includes(role))
+    return <p className="card">{t("errors.forbidden")}</p>;
   return <>{children}</>;
 }
 
@@ -60,9 +67,12 @@ export function App() {
         <Route path="assets" element={<AssetsPage />} />
         <Route path="assets/:assetId" element={<AssetDetailPage />} />
         <Route path="devtracker" element={<ProjectsPage />} />
-        <Route path="devtracker/projects/:projectId" element={<ProjectPage />} />
+        <Route
+          path="devtracker/projects/:projectId"
+          element={<ProjectPage />}
+        />
         <Route path="agenthub" element={<AgentHubPage />} />
-        <Route path="coachq" element={<CoachQPage />} />
+        <Route path="discoveryq" element={<DiscoveryQPage />} />
         <Route path="interfaces" element={<InterfacesPage />} />
         <Route path="ontomap" element={<OntoMapPage />} />
         <Route path="agenthub/templates/:assetId" element={<TemplatePage />} />

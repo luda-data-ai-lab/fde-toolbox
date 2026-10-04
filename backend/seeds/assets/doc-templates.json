@@ -35,7 +35,7 @@
           {
             "key": "features",
             "title": "5. 기능 명세",
-            "rule": "CoachQ 인사이트와 요구사항을 기능 단위로 정리한다."
+            "rule": "DiscoveryQ 인사이트와 요구사항을 기능 단위로 정리한다."
           },
           {
             "key": "domain",

@@ -11,10 +11,10 @@ SESSION_STATUSES = ("planned", "in_progress", "done")
 ACTION_STATUSES = ("open", "in_progress", "done", "cancelled")
 
 
-class CoachSubject(TenantScopedModel):
+class DiscoverySubject(TenantScopedModel):
     """Interviewee (or mentee for coaching sessions) within an engagement."""
 
-    __tablename__ = "coach_subjects"
+    __tablename__ = "discovery_subjects"
 
     engagement_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("engagements.id", ondelete="CASCADE"), nullable=False, index=True
@@ -26,10 +26,10 @@ class CoachSubject(TenantScopedModel):
     notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
-class CoachCustomQuestion(TenantScopedModel):
+class DiscoveryCustomQuestion(TenantScopedModel):
     """Tenant-owned question, optionally cloned from a question bank asset."""
 
-    __tablename__ = "coach_custom_questions"
+    __tablename__ = "discovery_custom_questions"
 
     engagement_id: Mapped[str | None] = mapped_column(
         String(36), ForeignKey("engagements.id", ondelete="CASCADE"), nullable=True, index=True
@@ -42,15 +42,15 @@ class CoachCustomQuestion(TenantScopedModel):
     source_ref: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
 
 
-class CoachSession(TenantScopedModel):
-    __tablename__ = "coach_sessions"
+class DiscoverySession(TenantScopedModel):
+    __tablename__ = "discovery_sessions"
 
     engagement_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("engagements.id", ondelete="CASCADE"), nullable=False, index=True
     )
     type: Mapped[str] = mapped_column(String(20), nullable=False, default="interview")
     subject_id: Mapped[str | None] = mapped_column(
-        String(36), ForeignKey("coach_subjects.id", ondelete="SET NULL"), nullable=True, index=True
+        String(36), ForeignKey("discovery_subjects.id", ondelete="SET NULL"), nullable=True, index=True
     )
     title: Mapped[str] = mapped_column(String(200), nullable=False)
     session_date: Mapped[date | None] = mapped_column(Date, nullable=True)
@@ -58,17 +58,17 @@ class CoachSession(TenantScopedModel):
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 
-class CoachSessionQuestion(TenantScopedModel):
+class DiscoverySessionQuestion(TenantScopedModel):
     """A question on a session worksheet; text is snapshotted from the bank or custom question."""
 
-    __tablename__ = "coach_session_questions"
+    __tablename__ = "discovery_session_questions"
 
     session_id: Mapped[str] = mapped_column(
-        String(36), ForeignKey("coach_sessions.id", ondelete="CASCADE"), nullable=False, index=True
+        String(36), ForeignKey("discovery_sessions.id", ondelete="CASCADE"), nullable=False, index=True
     )
     question_ref: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
     custom_question_id: Mapped[str | None] = mapped_column(
-        String(36), ForeignKey("coach_custom_questions.id", ondelete="SET NULL"), nullable=True, index=True
+        String(36), ForeignKey("discovery_custom_questions.id", ondelete="SET NULL"), nullable=True, index=True
     )
     custom_text: Mapped[str | None] = mapped_column(Text, nullable=True)
     text: Mapped[str] = mapped_column(Text, nullable=False)
@@ -78,27 +78,27 @@ class CoachSessionQuestion(TenantScopedModel):
     position: Mapped[int] = mapped_column(Integer, nullable=False, default=0)
 
 
-class CoachInsight(TenantScopedModel):
-    __tablename__ = "coach_insights"
+class DiscoveryInsight(TenantScopedModel):
+    __tablename__ = "discovery_insights"
 
     session_id: Mapped[str] = mapped_column(
-        String(36), ForeignKey("coach_sessions.id", ondelete="CASCADE"), nullable=False, index=True
+        String(36), ForeignKey("discovery_sessions.id", ondelete="CASCADE"), nullable=False, index=True
     )
     session_question_id: Mapped[str | None] = mapped_column(
-        String(36), ForeignKey("coach_session_questions.id", ondelete="SET NULL"), nullable=True, index=True
+        String(36), ForeignKey("discovery_session_questions.id", ondelete="SET NULL"), nullable=True, index=True
     )
     text: Mapped[str] = mapped_column(Text, nullable=False)
     tags: Mapped[list[str]] = mapped_column(JSON, nullable=False, default=list)
 
 
-class CoachActionItem(TenantScopedModel):
-    __tablename__ = "coach_action_items"
+class DiscoveryActionItem(TenantScopedModel):
+    __tablename__ = "discovery_action_items"
 
     session_id: Mapped[str] = mapped_column(
-        String(36), ForeignKey("coach_sessions.id", ondelete="CASCADE"), nullable=False, index=True
+        String(36), ForeignKey("discovery_sessions.id", ondelete="CASCADE"), nullable=False, index=True
     )
     insight_id: Mapped[str | None] = mapped_column(
-        String(36), ForeignKey("coach_insights.id", ondelete="SET NULL"), nullable=True, index=True
+        String(36), ForeignKey("discovery_insights.id", ondelete="SET NULL"), nullable=True, index=True
     )
     title: Mapped[str] = mapped_column(String(300), nullable=False)
     assignee: Mapped[str | None] = mapped_column(String(100), nullable=True)

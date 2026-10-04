@@ -64,8 +64,8 @@ CI의 `backend (mssql)` 잡이 같은 절차를 SQL Server 2022 서비스 컨테
 4. 스키마 확인: `SELECT DATA_TYPE, COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS GROUP BY DATA_TYPE` 결과에 `varchar`/`text`가 없어야 한다.
 5. 자동 테스트: 같은 서버의 별도 빈 DB를 `TEST_DATABASE_URL`로 지정해 `pytest` 전체 통과(테스트는 매번 모든 테이블을 비운다 — 검증용 DB에서만 실행).
 6. 수동 시나리오: `init-admin` → `seed-assets` → `seed-demo` 후 브라우저에서
-   - 고객사·과제 이름, CoachQ 답변, OntoMap 용어·부서별 호칭에 한글을 입력하고 새로고침 후 그대로 보이는지,
+   - 고객사·과제 이름, DiscoveryQ 답변, OntoMap 용어·부서별 호칭에 한글을 입력하고 새로고침 후 그대로 보이는지,
    - I/F 엑셀 업로드·반영, 용어 사전 엑셀 가져오기·내보내기,
-   - 과제 삭제 시 하위 CoachQ 세션·DevTracker 프로젝트가 함께 지워지는지,
+   - 과제 삭제 시 하위 DiscoveryQ 세션·DevTracker 프로젝트가 함께 지워지는지,
    - 관리자 화면에서 검증용 고객사 삭제가 204로 끝나고 다른 고객사 데이터는 남는지.
 7. 정리: 검증용 DB 삭제.

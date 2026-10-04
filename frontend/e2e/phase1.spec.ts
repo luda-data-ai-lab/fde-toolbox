@@ -1,7 +1,7 @@
 import { expect, test } from "@playwright/test";
 import { join } from "node:path";
 import { readFile } from "node:fs/promises";
-import { inflateRawSync } from "node:zlib";
+import { zipText } from "./zip";
 
 const RUN = `P${Date.now().toString(36).toUpperCase()}`;
 const PASSWORD = "e2e-user-pass-123";
@@ -15,29 +15,6 @@ const SAMPLE = join(
 );
 const ANSWER = "배합지시서에 따라 원료를 칭량하고 점도 규격을 확인합니다.";
 const TERMS = ["배합지시서", "칭량", "점도 규격"];
-
-function xlsxText(zip: Buffer): string {
-  const eocd = zip.lastIndexOf(Buffer.from([0x50, 0x4b, 0x05, 0x06]));
-  let p = zip.readUInt32LE(eocd + 16);
-  let text = "";
-  for (let i = zip.readUInt16LE(eocd + 10); i > 0; i--) {
-    const nameLen = zip.readUInt16LE(p + 28);
-    if (zip.toString("utf-8", p + 46, p + 46 + nameLen).startsWith("xl/")) {
-      const local = zip.readUInt32LE(p + 42);
-      const start =
-        local +
-        30 +
-        zip.readUInt16LE(local + 26) +
-        zip.readUInt16LE(local + 28);
-      const data = zip.subarray(start, start + zip.readUInt32LE(p + 20));
-      text += (
-        zip.readUInt16LE(p + 10) === 8 ? inflateRawSync(data) : data
-      ).toString("utf-8");
-    }
-    p += 46 + nameLen + zip.readUInt16LE(p + 30) + zip.readUInt16LE(p + 32);
-  }
-  return text;
-}
 
 test("Phase 1 acceptance: I/F workbook → graph, interview → 3 terms → confirm → glossary Excel", async ({
   page,
@@ -90,7 +67,7 @@ test("Phase 1 acceptance: I/F workbook → graph, interview → 3 terms → conf
   await page.getByTestId("graph-node").filter({ hasText: "GW" }).click();
   await expect(page.getByTestId("graph-selection")).toContainText("IF-ERP-002");
 
-  await page.getByRole("link", { name: "CoachQ" }).click();
+  await page.getByRole("link", { name: "DiscoveryQ" }).click();
   await page.getByRole("tab", { name: "대상자" }).click();
   const subjectForm = page.getByRole("form", { name: "대상자 등록" });
   await subjectForm
@@ -162,7 +139,7 @@ test("Phase 1 acceptance: I/F workbook → graph, interview → 3 terms → conf
   await page.getByRole("link", { name: "엑셀 내보내기" }).click();
   const xlsx = await download;
   expect(xlsx.suggestedFilename()).toBe("glossary.xlsx");
-  const strings = xlsxText(await readFile(await xlsx.path()));
+  const strings = zipText(await readFile(await xlsx.path()), "xl/");
   for (const name of [...TERMS, "생산팀: 칭량", "확정"])
     expect(strings).toContain(name);
 });

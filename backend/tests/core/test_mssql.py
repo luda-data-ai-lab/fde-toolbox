@@ -42,4 +42,4 @@ def test_on_delete_emulation_purges_one_tenant(world: World, engine: Engine) -> 
                 remaining[table.name] = conn.scalar(count.where(table.c.tenant_id == other))
         users = Base.metadata.tables["users"]
         assert conn.scalar(select(func.count()).select_from(users).where(users.c.home_tenant_id == tid)) == 0
-    assert remaining["interfaces"] and remaining["coach_session_questions"] and remaining["onto_term_aliases"]
+    assert remaining["interfaces"] and remaining["discovery_session_questions"] and remaining["onto_term_aliases"]

@@ -2,11 +2,15 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../api/client";
-import type { CoachActionItem, CoachSession, Page } from "../../api/types";
+import type {
+  DiscoveryActionItem,
+  DiscoverySession,
+  Page,
+} from "../../api/types";
 import { Empty, ErrorText, Field, Select } from "../../components/ui";
 import { AUDIT_ROLES, useCanWrite, useRole } from "../../app/hooks";
 import { useWorkspace } from "../../app/store";
-import { ACTION_STATUSES, coachKeys, coachPath } from "./shared";
+import { ACTION_STATUSES, discoveryKeys, discoveryPath } from "./shared";
 
 export function ActionItemRow({
   tenantId,
@@ -14,25 +18,28 @@ export function ActionItemRow({
   sessionTitle,
 }: {
   tenantId: string;
-  item: CoachActionItem;
+  item: DiscoveryActionItem;
   sessionTitle?: string;
 }) {
   const { t } = useTranslation();
   const canWrite = useCanWrite();
   const qc = useQueryClient();
   const invalidate = () =>
-    qc.invalidateQueries({ queryKey: coachKeys(tenantId).all });
+    qc.invalidateQueries({ queryKey: discoveryKeys(tenantId).all });
   const patch = useMutation({
     mutationFn: (body: Record<string, unknown>) =>
-      api<CoachActionItem>(coachPath(tenantId, `/action-items/${item.id}`), {
-        method: "PATCH",
-        body,
-      }),
+      api<DiscoveryActionItem>(
+        discoveryPath(tenantId, `/action-items/${item.id}`),
+        {
+          method: "PATCH",
+          body,
+        },
+      ),
     onSuccess: () => void invalidate(),
   });
   const remove = useMutation({
     mutationFn: () =>
-      api(coachPath(tenantId, `/action-items/${item.id}`), {
+      api(discoveryPath(tenantId, `/action-items/${item.id}`), {
         method: "DELETE",
       }),
     onSuccess: () => void invalidate(),
@@ -47,7 +54,7 @@ export function ActionItemRow({
           <input
             className="input"
             type="date"
-            aria-label={t("coachq.field.due")}
+            aria-label={t("discoveryq.field.due")}
             value={item.due ?? ""}
             onChange={(e) => patch.mutate({ due: e.target.value || null })}
           />
@@ -86,22 +93,22 @@ export function ActionItemsView({ tenantId }: { tenantId: string }) {
   const engagementId = useWorkspace((s) => s.engagementId);
   const [status, setStatus] = useState("");
   const { data } = useQuery({
-    queryKey: coachKeys(tenantId).actions({ status, engagementId }),
+    queryKey: discoveryKeys(tenantId).actions({ status, engagementId }),
     queryFn: () =>
-      api<Page<CoachActionItem>>(coachPath(tenantId, "/action-items"), {
+      api<Page<DiscoveryActionItem>>(discoveryPath(tenantId, "/action-items"), {
         query: { limit: 200, status, engagement_id: engagementId },
       }),
   });
   const sessions = useQuery({
-    queryKey: coachKeys(tenantId).sessions({ all: true }),
+    queryKey: discoveryKeys(tenantId).sessions({ all: true }),
     queryFn: () =>
-      api<Page<CoachSession>>(coachPath(tenantId, "/sessions"), {
+      api<Page<DiscoverySession>>(discoveryPath(tenantId, "/sessions"), {
         query: { limit: 200 },
       }),
   }).data?.items;
   const title = new Map((sessions ?? []).map((s) => [s.id, s.title]));
   const exportUrl = new URL(
-    `/api/v1/t/${tenantId}/coachq/action-items/export.csv`,
+    `/api/v1/t/${tenantId}/discoveryq/action-items/export.csv`,
     window.location.origin,
   );
   if (status) exportUrl.searchParams.set("status", status);
@@ -122,7 +129,7 @@ export function ActionItemsView({ tenantId }: { tenantId: string }) {
         </div>
         {role && AUDIT_ROLES.includes(role) && (
           <a className="btn" href={exportUrl.pathname + exportUrl.search}>
-            {t("coachq.exportCsv")}
+            {t("discoveryq.exportCsv")}
           </a>
         )}
       </div>
@@ -133,10 +140,10 @@ export function ActionItemsView({ tenantId }: { tenantId: string }) {
           <table className="table">
             <thead>
               <tr>
-                <th>{t("coachq.field.session")}</th>
-                <th>{t("coachq.field.action")}</th>
-                <th>{t("coachq.field.assignee")}</th>
-                <th>{t("coachq.field.due")}</th>
+                <th>{t("discoveryq.field.session")}</th>
+                <th>{t("discoveryq.field.action")}</th>
+                <th>{t("discoveryq.field.assignee")}</th>
+                <th>{t("discoveryq.field.due")}</th>
                 <th>{t("common.status")}</th>
                 <th />
               </tr>

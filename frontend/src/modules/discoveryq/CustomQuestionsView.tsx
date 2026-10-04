@@ -7,8 +7,8 @@ import { Empty, ErrorText, Field } from "../../components/ui";
 import { useCanWrite } from "../../app/hooks";
 import { useWorkspace } from "../../app/store";
 import {
-  coachKeys,
-  coachPath,
+  discoveryKeys,
+  discoveryPath,
   splitTags,
   useCustomQuestions,
   useQuestionBank,
@@ -46,16 +46,16 @@ function QuestionEditor({
       };
       return question
         ? api<CustomQuestion>(
-            coachPath(tenantId, `/custom-questions/${question.id}`),
+            discoveryPath(tenantId, `/custom-questions/${question.id}`),
             { method: "PATCH", body },
           )
-        : api<CustomQuestion>(coachPath(tenantId, "/custom-questions"), {
+        : api<CustomQuestion>(discoveryPath(tenantId, "/custom-questions"), {
             method: "POST",
             body: { ...body, engagement_id: engagementId },
           });
     },
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: coachKeys(tenantId).all });
+      void qc.invalidateQueries({ queryKey: discoveryKeys(tenantId).all });
       setForm({ text: "", category: "", tags: "", follow_ups: "" });
       onDone();
     },
@@ -68,10 +68,12 @@ function QuestionEditor({
     <form
       className="card grid grid-cols-1 gap-3 md:grid-cols-4"
       onSubmit={submit}
-      aria-label={question ? t("coachq.custom.edit") : t("coachq.custom.new")}
+      aria-label={
+        question ? t("discoveryq.custom.edit") : t("discoveryq.custom.new")
+      }
     >
       <div className="md:col-span-2">
-        <Field label={t("coachq.field.question")}>
+        <Field label={t("discoveryq.field.question")}>
           <textarea
             className="input"
             required
@@ -81,7 +83,7 @@ function QuestionEditor({
           />
         </Field>
       </div>
-      <Field label={t("coachq.field.category")}>
+      <Field label={t("discoveryq.field.category")}>
         <select
           className="input"
           value={form.category}
@@ -95,7 +97,7 @@ function QuestionEditor({
           ))}
         </select>
       </Field>
-      <Field label={t("coachq.field.tags")}>
+      <Field label={t("discoveryq.field.tags")}>
         <input
           className="input"
           value={form.tags}
@@ -103,7 +105,7 @@ function QuestionEditor({
         />
       </Field>
       <div className="md:col-span-4">
-        <Field label={t("coachq.followUps")}>
+        <Field label={t("discoveryq.followUps")}>
           <textarea
             className="input"
             rows={2}
@@ -138,9 +140,11 @@ export function CustomQuestionsView({ tenantId }: { tenantId: string }) {
   const [editing, setEditing] = useState<CustomQuestion | null>(null);
   const remove = useMutation({
     mutationFn: (id: string) =>
-      api(coachPath(tenantId, `/custom-questions/${id}`), { method: "DELETE" }),
+      api(discoveryPath(tenantId, `/custom-questions/${id}`), {
+        method: "DELETE",
+      }),
     onSuccess: () =>
-      void qc.invalidateQueries({ queryKey: coachKeys(tenantId).all }),
+      void qc.invalidateQueries({ queryKey: discoveryKeys(tenantId).all }),
   });
   return (
     <div className="space-y-3">
@@ -159,10 +163,10 @@ export function CustomQuestionsView({ tenantId }: { tenantId: string }) {
           <table className="table" data-testid="custom-question-table">
             <thead>
               <tr>
-                <th>{t("coachq.field.question")}</th>
-                <th>{t("coachq.field.category")}</th>
-                <th>{t("coachq.field.tags")}</th>
-                <th>{t("coachq.custom.source")}</th>
+                <th>{t("discoveryq.field.question")}</th>
+                <th>{t("discoveryq.field.category")}</th>
+                <th>{t("discoveryq.field.tags")}</th>
+                <th>{t("discoveryq.custom.source")}</th>
                 <th />
               </tr>
             </thead>
@@ -175,7 +179,7 @@ export function CustomQuestionsView({ tenantId }: { tenantId: string }) {
                   </td>
                   <td>{q.tags.map((x) => `#${x}`).join(" ")}</td>
                   <td className="font-mono text-xs">
-                    {q.source_ref?.question_id ?? t("coachq.custom.own")}
+                    {q.source_ref?.question_id ?? t("discoveryq.custom.own")}
                   </td>
                   <td className="space-x-1 text-right whitespace-nowrap">
                     {canWrite && (

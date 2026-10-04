@@ -31,12 +31,12 @@ test("FDE registers terms from an interview, confirms them and exports the gloss
     await request.post(`${base}/engagements`, { data: { name: "용어 진단" } })
   ).json()) as { id: string };
   const subject = (await (
-    await request.post(`${base}/coachq/subjects`, {
+    await request.post(`${base}/discoveryq/subjects`, {
       data: { engagement_id: eng.id, name: "박생산", department: "생산팀" },
     })
   ).json()) as { id: string };
   const session = (await (
-    await request.post(`${base}/coachq/sessions`, {
+    await request.post(`${base}/discoveryq/sessions`, {
       data: {
         engagement_id: eng.id,
         subject_id: subject.id,
@@ -44,7 +44,7 @@ test("FDE registers terms from an interview, confirms them and exports the gloss
       },
     })
   ).json()) as { id: string };
-  await request.post(`${base}/coachq/sessions/${session.id}/questions`, {
+  await request.post(`${base}/discoveryq/sessions/${session.id}/questions`, {
     data: { custom_text: "작업 지시는 어떻게 받나요?" },
   });
 
@@ -52,8 +52,8 @@ test("FDE registers terms from an interview, confirms them and exports the gloss
   await page.getByLabel("이메일").fill(`fde-${RUN}@e2e.local`);
   await page.getByLabel("비밀번호").fill(PASSWORD);
   await page.getByRole("button", { name: "로그인" }).click();
-  await page.getByRole("link", { name: "CoachQ" }).click();
-  await page.goto(`/coachq?tab=sessions&session=${session.id}`);
+  await page.getByRole("link", { name: "DiscoveryQ" }).click();
+  await page.goto(`/discoveryq?tab=sessions&session=${session.id}`);
 
   const card = page.getByTestId("worksheet-question");
   const answer = card.getByLabel("답변");

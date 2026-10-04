@@ -71,7 +71,7 @@ fde-toolbox/
 │   │   │   ├── transfer/          # 가져오기·내보내기
 │   │   │   └── promote/           # 승격 (Phase 3)
 │   │   ├── modules/
-│   │   │   ├── coachq/
+│   │   │   ├── discoveryq/
 │   │   │   ├── flowdesk/
 │   │   │   ├── interfaces/        # I/F 관리
 │   │   │   ├── exmigrate/
@@ -164,7 +164,7 @@ fde-toolbox/
 (T) = TenantScopedMixin, (A) = AssetMixin
 
 ### 4.2 모듈 (요약)
-- CoachQ: `coach_subjects`(T), `coach_sessions`(T: engagement_id, type(interview/coaching), subject_id, date), `coach_session_questions`(T: question_ref(자산 ID+버전) 또는 custom_text, answer), `coach_insights`(T), `coach_action_items`(T), `coach_custom_questions`(T)
+- DiscoveryQ: `discovery_subjects`(T), `discovery_sessions`(T: engagement_id, type(interview/coaching), subject_id, date), `discovery_session_questions`(T: question_ref(자산 ID+버전) 또는 custom_text, answer), `discovery_insights`(T), `discovery_action_items`(T), `discovery_custom_questions`(T)
 - FlowDesk: `flows`(T: engagement_id, kind(as_is/to_be), pair_id, perspective, title), `flow_snapshots`(T: flow_id, graph(JSON), note)
   - 그래프 JSON: `{ schema_version, nodes:[{id,type,label,lane,system_id?,position,data}], edges:[{id,source,target,label}], lanes:[...] }`
 - I/F 관리: `interfaces`(T: if_code, name, source_system_id, target_system_id, link_type, schedule, description, owner, status, notes), `interface_uploads`(T: file_id, result(JSON))
@@ -233,7 +233,7 @@ class Adapter(Protocol):
 ---
 
 ## 7. OntoMap 구현 규칙
-- 후보 추출기는 모듈별 소스(ExMigrate ERD, I/F, FlowDesk, CoachQ)를 읽는 **순수 함수**로 구현하고, 결과는 항상 `onto_candidates`에 쌓는다. 추출기가 확정 데이터를 직접 만들지 않는다.
+- 후보 추출기는 모듈별 소스(ExMigrate ERD, I/F, FlowDesk, DiscoveryQ)를 읽는 **순수 함수**로 구현하고, 결과는 항상 `onto_candidates`에 쌓는다. 추출기가 확정 데이터를 직접 만들지 않는다.
 - LLM 결과(용어 추출, 관계 제안, 정의 초안)도 같은 후보 형식으로 변환해 후보 목록에 넣는다. 프롬프트 빌더·결과 파서는 6.3절의 규칙을 따른다.
 - 같은 소스를 다시 추출하면 이미 처리된 후보는 다시 만들지 않는다(source_type + source_id + name 기준 멱등성).
 - 병합 후보 탐지: 정규화(공백·특수문자·대소문자 제거) 후 rapidfuzz 유사도 기준값 이상인 기존 항목을 제시. 기준값은 설정으로.
@@ -258,7 +258,7 @@ class Adapter(Protocol):
 
 - LUDA 관리자 초기화 명령: `python -m app.cli init-admin`
 - 자산:
-  - CoachQ 질문 뱅크: 8개 카테고리 × 카테고리당 최소 8문항 (한국어)
+  - DiscoveryQ 질문 뱅크: 8개 카테고리 × 카테고리당 최소 8문항 (한국어)
   - 흐름 템플릿 2종: "도료 제조 수주→생산→출하", "품질 검사 및 부적합 처리"
   - I/F 엑셀 템플릿: "인터페이스 리스트", "시스템 연동정보" 두 시트
   - Spec 템플릿, Devin 템플릿 각 1종 (이 문서들의 구조를 기반으로)
@@ -294,12 +294,12 @@ class Adapter(Protocol):
 - 에이전트 템플릿 v1·v2 등록, v2로 A에 인스턴스 기록, B 사용자에게 보이지 않음을 E2E로 확인
 - `docker compose up` 한 번으로 실행되고 `init-admin`, `seed-demo`가 동작
 
-### Phase 1 — I/F 관리, CoachQ, OntoMap 용어 사전, MSSQL
+### Phase 1 — I/F 관리, DiscoveryQ, OntoMap 용어 사전, MSSQL
 1. I/F 엑셀 템플릿 다운로드·업로드·검증 결과 화면·미등록 시스템 처리
 2. I/F 목록 CRUD, 대시보드, 연결 그래프
-3. CoachQ 질문 뱅크 탐색, 대상자, 세션 워크시트, 인사이트, 액션 아이템, 고객사 전용 질문
+3. DiscoveryQ 질문 뱅크 탐색, 대상자, 세션 워크시트, 인사이트, 액션 아이템, 고객사 전용 질문
 4. 세션 Markdown 내보내기, 액션 아이템 CSV
-5. OntoMap 용어 사전: 용어 CRUD, 부서별 호칭, 엑셀 템플릿 가져오기·내보내기, CoachQ 세션 워크시트에서 텍스트 선택 → "용어로 등록"(후보 생성)
+5. OntoMap 용어 사전: 용어 CRUD, 부서별 호칭, 엑셀 템플릿 가져오기·내보내기, DiscoveryQ 세션 워크시트에서 텍스트 선택 → "용어로 등록"(후보 생성)
 6. MSSQL 지원 및 CI(가능하면 컨테이너로, 불가하면 수동 검증 절차 문서화)
 
 **완료 기준**: 샘플 엑셀 업로드 → 그래프 확인, 인터뷰 세션 기록 → 세션에서 용어 3건 등록 → 용어 사전에서 확정 → 엑셀 내보내기가 E2E로 통과
@@ -311,7 +311,7 @@ class Adapter(Protocol):
 4. FlowDesk 생성: 프롬프트 빌더와 결과 파서, 관점별 프롬프트
 5. ExMigrate 구조 분석, 1·2단계 수식 분석, ERD 초안·확정, DDL·적재 스크립트 생성
 6. SpecForge 템플릿 매핑, 규칙팩 삽입, 용어 사전 섹션 삽입, 편집기·버전·diff, 보강(LLM/복사 모드)
-7. 모듈 간 보내기: CoachQ→FlowDesk, 각 모듈→SpecForge, SpecForge→DevTracker, AgentHub 운영→DevTracker 이슈
+7. 모듈 간 보내기: DiscoveryQ→FlowDesk, 각 모듈→SpecForge, SpecForge→DevTracker, AgentHub 운영→DevTracker 이슈
 
 **완료 기준**: 데모 과제에서 인사이트 → 흐름도 → Spec/Devin.md → DevTracker 프로젝트까지 E2E 통과. LLM 어댑터 **비활성** 경로는 CI에서, 활성 경로는 실제 키로 수동 검증 후 증거 첨부
 
@@ -376,7 +376,7 @@ class Adapter(Protocol):
 
 ## 14. 참고 — 기존 기획과의 관계
 
-이 툴박스는 기존에 개별 앱으로 기획한 CoachQ, BusinessFlowDesk, 인터페이스 관리, ExMigrate, DevTracker를 통합한다. 기존 문서와 이 문서가 충돌하면 **이 문서가 우선**한다. 주요 변경점은 다음과 같다.
+이 툴박스는 기존에 개별 앱으로 기획한 CoachQ(현 DiscoveryQ), BusinessFlowDesk, 인터페이스 관리, ExMigrate, DevTracker를 통합한다. 기존 문서와 이 문서가 충돌하면 **이 문서가 우선**한다. 주요 변경점은 다음과 같다.
 - 백엔드를 FastAPI로 통일 (DevTracker·CoachQ의 Express 계획 폐기)
 - 인터페이스 관리의 시스템 정보를 공통 코어의 시스템 레지스트리로 승격
 - BusinessFlowDesk는 FlowDesk로 이름을 줄이고, LLM 호출을 선택형 어댑터로 전환

@@ -1,10 +1,13 @@
 import json
+from io import BytesIO
 from pathlib import Path
 from typing import Any
 
+import docx
+
 from tests.conftest import World
 
-SEED = Path(__file__).resolve().parents[2] / "seeds" / "assets" / "coachq-question-bank.json"
+SEED = Path(__file__).resolve().parents[2] / "seeds" / "assets" / "discoveryq-question-bank.json"
 
 
 def _seed_bank(world: World) -> dict[str, Any]:
@@ -15,7 +18,7 @@ def _seed_bank(world: World) -> dict[str, Any]:
 
 
 def _base(world: World) -> str:
-    return f"/api/v1/t/{world.a.tenant_id}/coachq"
+    return f"/api/v1/t/{world.a.tenant_id}/discoveryq"
 
 
 def test_question_bank_browse(world: World) -> None:
@@ -133,7 +136,7 @@ def test_worksheet_flow(world: World) -> None:
         a["action"]
         for a in world.a.fde.get(f"/api/v1/t/{world.a.tenant_id}/audit-logs", params={"limit": 200}).json()["items"]
     ]
-    assert "coachq.session_export" in actions and "coachq.action_items_export" in actions
+    assert "discoveryq.session_export" in actions and "discoveryq.action_items_export" in actions
 
     assert fde.delete(f"{base}/session-questions/{q1['id']}").status_code == 204
     ws = fde.get(f"{base}/sessions/{sid}").json()
@@ -171,3 +174,89 @@ def test_custom_questions(world: World) -> None:
     assert kept["custom_question_id"] is None and kept["text"] == "도료 배합 목표는?"
     assert world.a.client_user.get(f"{base}/custom-questions").status_code == 200
     assert world.a.client_user.post(f"{base}/custom-questions", json={"text": "x"}).status_code == 403
+
+
+DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+
+def _docx_text(content: bytes) -> str:
+    doc = docx.Document(BytesIO(content))
+    parts = [p.text for p in doc.paragraphs]
+    parts += [cell.text for table in doc.tables for row in table.rows for cell in row.cells]
+    return "\n".join(parts)
+
+
+def test_docx_reports(world: World) -> None:
+    base = _base(world)
+    fde = world.a.fde
+    ids = world.a.ids
+    tid = world.a.tenant_id
+    answer = "배합비는 엑셀\x0b로 관리\n2줄"
+    fde.patch(f"{base}/session-questions/{ids['session_question_id']}", json={"answer": answer})
+    onto = f"/api/v1/t/{tid}/ontomap"
+    cand = fde.post(
+        f"{onto}/candidates",
+        json={
+            "name": "배합지시서",
+            "source_type": "discovery_session",
+            "source_id": ids["session_id"],
+            "session_question_id": ids["session_question_id"],
+        },
+    ).json()
+    accepted = fde.post(
+        f"{onto}/candidates/{cand['id']}/accept",
+        json={"definition": "배합 작업 지시 문서", "aliases": [{"alias": "배합표", "department": "생산팀"}]},
+    )
+    assert accepted.status_code == 200, accepted.text
+    ignored = fde.post(
+        f"{onto}/candidates",
+        json={"name": "무시됨", "source_type": "discovery_session", "source_id": ids["session_id"]},
+    ).json()
+    assert fde.post(f"{onto}/candidates/{ignored['id']}/ignore").status_code == 200
+    second = fde.post(
+        f"{base}/sessions",
+        json={"engagement_id": ids["engagement_id"], "title": "Coaching follow-up", "type": "coaching"},
+    ).json()
+    fde.post(f"{base}/sessions/{second['id']}/insights", json={"text": "Loose insight", "tags": ["품질"]})
+
+    r = fde.get(f"{base}/sessions/{ids['session_id']}/report.docx")
+    assert r.status_code == 200 and r.headers["content-type"] == DOCX
+    assert f"discoveryq-session-{ids['session_id']}.docx" in r.headers["content-disposition"]
+    text = _docx_text(r.content)
+    for expected in (
+        f"Interview {world.a.code}",
+        f"Custom question {world.a.code}",
+        "배합비는 엑셀로 관리\n2줄",
+        f"Insight {world.a.code}",
+        f"Action {world.a.code}",
+        "배합지시서",
+        "배합 작업 지시 문서",
+        "생산팀: 배합표",
+        "확정",
+        f"Cand {world.a.code}",
+        "후보",
+    ):
+        assert expected in text, expected
+    assert "무시됨" not in text and "Coaching follow-up" not in text
+
+    eng = fde.get(f"{base}/engagements/{ids['engagement_id']}/report.docx", params={"lang": "en"})
+    assert eng.status_code == 200 and eng.headers["content-type"] == DOCX
+    text = _docx_text(eng.content)
+    for expected in (
+        "DiscoveryQ discovery report",
+        f"Interview {world.a.code}",
+        "Coaching follow-up",
+        "Loose insight #품질",
+        "#품질 (1)",
+        f"Action {world.a.code}",
+        "생산팀: 배합표",
+        "Confirmed",
+    ):
+        assert expected in text, expected
+    assert f"Interview {world.b.code}" not in text
+
+    assert world.a.client_user.get(f"{base}/sessions/{ids['session_id']}/report.docx").status_code == 403
+    assert world.a.client_user.get(f"{base}/engagements/{ids['engagement_id']}/report.docx").status_code == 403
+    assert fde.get(f"{base}/engagements/{world.b.ids['engagement_id']}/report.docx").status_code == 404
+    actions = {e["action"] for e in fde.get(f"/api/v1/t/{tid}/audit-logs", params={"limit": 200}).json()["items"]}
+    assert {"discoveryq.session_report", "discoveryq.engagement_report"} <= actions

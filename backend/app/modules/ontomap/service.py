@@ -259,11 +259,11 @@ def _create_candidate(ctx: TenantContext, db: Session, body: CandidateIn) -> Ont
 
 def register_candidate(ctx: TenantContext, db: Session, body: CandidateIn) -> tuple[OntoCandidate, bool]:
     """Idempotent per (kind, source, name): re-registering returns the existing candidate."""
-    if body.source_type == "coach_session":
+    if body.source_type == "discovery_session":
         if body.source_id is None:
             raise AppError(422, "invalid_reference", detail={"field": "source_id"})
-        ensure_tenant_ref(db, ctx, "coach_sessions", body.source_id, "source_id")
-        ensure_tenant_ref(db, ctx, "coach_session_questions", body.session_question_id, "session_question_id")
+        ensure_tenant_ref(db, ctx, "discovery_sessions", body.source_id, "source_id")
+        ensure_tenant_ref(db, ctx, "discovery_session_questions", body.session_question_id, "session_question_id")
     elif body.source_id is not None or body.session_question_id is not None:
         raise AppError(422, "invalid_reference", detail={"field": "source_id"})
     repo = TenantScopedRepository(db, ctx, OntoCandidate)

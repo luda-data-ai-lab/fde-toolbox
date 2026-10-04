@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { api, tenantPath } from "../../api/client";
 import type {
-  CoachSubject,
+  DiscoverySubject,
   CustomQuestion,
   Engagement,
   Page,
@@ -17,24 +17,24 @@ export const ACTION_STATUSES = [
   "cancelled",
 ] as const;
 
-export function coachPath(tenantId: string | null, path: string): string {
-  return tenantPath(tenantId, `/coachq${path}`);
+export function discoveryPath(tenantId: string | null, path: string): string {
+  return tenantPath(tenantId, `/discoveryq${path}`);
 }
 
-export function coachKeys(tenantId: string | null) {
+export function discoveryKeys(tenantId: string | null) {
   return {
-    all: ["coachq", tenantId] as const,
-    bank: ["coachq", tenantId, "bank"] as const,
+    all: ["discoveryq", tenantId] as const,
+    bank: ["discoveryq", tenantId, "bank"] as const,
     subjects: (engagementId: string | null) =>
-      ["coachq", tenantId, "subjects", engagementId] as const,
+      ["discoveryq", tenantId, "subjects", engagementId] as const,
     custom: (engagementId: string | null) =>
-      ["coachq", tenantId, "custom", engagementId] as const,
+      ["discoveryq", tenantId, "custom", engagementId] as const,
     sessions: (filters: object) =>
-      ["coachq", tenantId, "sessions", filters] as const,
+      ["discoveryq", tenantId, "sessions", filters] as const,
     worksheet: (sessionId: string) =>
-      ["coachq", tenantId, "worksheet", sessionId] as const,
+      ["discoveryq", tenantId, "worksheet", sessionId] as const,
     actions: (filters: object) =>
-      ["coachq", tenantId, "actions", filters] as const,
+      ["discoveryq", tenantId, "actions", filters] as const,
   };
 }
 
@@ -51,9 +51,9 @@ export function useEngagements(tenantId: string | null) {
 
 export function useQuestionBank(tenantId: string | null) {
   return useQuery({
-    queryKey: coachKeys(tenantId).bank,
+    queryKey: discoveryKeys(tenantId).bank,
     queryFn: () =>
-      api<QuestionBankResponse>(coachPath(tenantId, "/question-bank")),
+      api<QuestionBankResponse>(discoveryPath(tenantId, "/question-bank")),
     enabled: !!tenantId,
   });
 }
@@ -63,9 +63,9 @@ export function useSubjects(
   engagementId: string | null,
 ) {
   return useQuery({
-    queryKey: coachKeys(tenantId).subjects(engagementId),
+    queryKey: discoveryKeys(tenantId).subjects(engagementId),
     queryFn: () =>
-      api<Page<CoachSubject>>(coachPath(tenantId, "/subjects"), {
+      api<Page<DiscoverySubject>>(discoveryPath(tenantId, "/subjects"), {
         query: { limit: 200, engagement_id: engagementId },
       }),
     enabled: !!tenantId,
@@ -77,9 +77,9 @@ export function useCustomQuestions(
   engagementId: string | null,
 ) {
   return useQuery({
-    queryKey: coachKeys(tenantId).custom(engagementId),
+    queryKey: discoveryKeys(tenantId).custom(engagementId),
     queryFn: () =>
-      api<Page<CustomQuestion>>(coachPath(tenantId, "/custom-questions"), {
+      api<Page<CustomQuestion>>(discoveryPath(tenantId, "/custom-questions"), {
         query: { limit: 500, engagement_id: engagementId },
       }),
     enabled: !!tenantId,

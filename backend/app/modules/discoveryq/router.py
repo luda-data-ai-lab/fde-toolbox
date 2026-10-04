@@ -6,16 +6,17 @@ from app.core.auth.deps import DB
 from app.core.exports import attachment
 from app.core.pagination import Page
 from app.core.tenancy.deps import Ctx, ExportCtx, WriteCtx, path_entity, repo
-from app.modules.coachq import service
-from app.modules.coachq.models import (
-    CoachActionItem,
-    CoachCustomQuestion,
-    CoachInsight,
-    CoachSession,
-    CoachSessionQuestion,
-    CoachSubject,
+from app.core.tenants.models import Engagement
+from app.modules.discoveryq import report, service
+from app.modules.discoveryq.models import (
+    DiscoveryActionItem,
+    DiscoveryCustomQuestion,
+    DiscoveryInsight,
+    DiscoverySession,
+    DiscoverySessionQuestion,
+    DiscoverySubject,
 )
-from app.modules.coachq.schemas import (
+from app.modules.discoveryq.schemas import (
     ActionItemIn,
     ActionItemOut,
     ActionItemPatch,
@@ -39,16 +40,20 @@ from app.modules.coachq.schemas import (
     SubjectPatch,
     Worksheet,
 )
-from app.modules.coachq.service import Lang
+from app.modules.discoveryq.service import Lang
 
-router = APIRouter(prefix="/t/{tenant_id}/coachq", tags=["coachq"])
+router = APIRouter(prefix="/t/{tenant_id}/discoveryq", tags=["discoveryq"])
 
-SubjectDep = Annotated[CoachSubject, Depends(path_entity(CoachSubject, "subject_id"))]
-CustomQuestionDep = Annotated[CoachCustomQuestion, Depends(path_entity(CoachCustomQuestion, "custom_question_id"))]
-SessionDep = Annotated[CoachSession, Depends(path_entity(CoachSession, "session_id"))]
-QuestionDep = Annotated[CoachSessionQuestion, Depends(path_entity(CoachSessionQuestion, "session_question_id"))]
-InsightDep = Annotated[CoachInsight, Depends(path_entity(CoachInsight, "insight_id"))]
-ActionItemDep = Annotated[CoachActionItem, Depends(path_entity(CoachActionItem, "action_item_id"))]
+DOCX = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+SubjectDep = Annotated[DiscoverySubject, Depends(path_entity(DiscoverySubject, "subject_id"))]
+CustomQuestionDep = Annotated[
+    DiscoveryCustomQuestion, Depends(path_entity(DiscoveryCustomQuestion, "custom_question_id"))
+]
+SessionDep = Annotated[DiscoverySession, Depends(path_entity(DiscoverySession, "session_id"))]
+QuestionDep = Annotated[DiscoverySessionQuestion, Depends(path_entity(DiscoverySessionQuestion, "session_question_id"))]
+InsightDep = Annotated[DiscoveryInsight, Depends(path_entity(DiscoveryInsight, "insight_id"))]
+EngagementDep = Annotated[Engagement, Depends(path_entity(Engagement, "engagement_id"))]
+ActionItemDep = Annotated[DiscoveryActionItem, Depends(path_entity(DiscoveryActionItem, "action_item_id"))]
 
 
 def _no_content() -> Response:
@@ -67,10 +72,10 @@ def question_bank(ctx: Ctx, db: DB, asset_id: str | None = None, version: int | 
 def list_subjects(
     ctx: Ctx, db: DB, limit: int = 200, cursor: str | None = None, engagement_id: str | None = None
 ) -> Page[SubjectOut]:
-    r = repo(db, ctx, CoachSubject)
+    r = repo(db, ctx, DiscoverySubject)
     stmt = r.query()
     if engagement_id:
-        stmt = stmt.where(CoachSubject.engagement_id == engagement_id)
+        stmt = stmt.where(DiscoverySubject.engagement_id == engagement_id)
     rows, nxt = r.page(limit=limit, cursor=cursor, stmt=stmt)
     return Page(items=[SubjectOut.model_validate(x) for x in rows], next_cursor=nxt)
 
@@ -103,11 +108,11 @@ def delete_subject(obj: SubjectDep, ctx: WriteCtx, db: DB) -> Response:
 def list_custom_questions(
     ctx: Ctx, db: DB, limit: int = 500, cursor: str | None = None, engagement_id: str | None = None
 ) -> Page[CustomQuestionOut]:
-    r = repo(db, ctx, CoachCustomQuestion)
+    r = repo(db, ctx, DiscoveryCustomQuestion)
     stmt = r.query()
     if engagement_id:
         stmt = stmt.where(
-            (CoachCustomQuestion.engagement_id == engagement_id) | CoachCustomQuestion.engagement_id.is_(None)
+            (DiscoveryCustomQuestion.engagement_id == engagement_id) | DiscoveryCustomQuestion.engagement_id.is_(None)
         )
     rows, nxt = r.page(limit=limit, cursor=cursor, stmt=stmt)
     return Page(items=[CustomQuestionOut.model_validate(x) for x in rows], next_cursor=nxt)
@@ -151,7 +156,7 @@ def list_sessions(
     q: str | None = None,
 ) -> Page[SessionOut]:
     stmt = service.session_filter(ctx, db, engagement_id=engagement_id, type=type, subject_id=subject_id, q=q)
-    rows, nxt = repo(db, ctx, CoachSession).page(limit=limit, cursor=cursor, stmt=stmt)
+    rows, nxt = repo(db, ctx, DiscoverySession).page(limit=limit, cursor=cursor, stmt=stmt)
     return Page(items=[SessionOut.model_validate(x) for x in rows], next_cursor=nxt)
 
 
@@ -179,8 +184,18 @@ def delete_session(obj: SessionDep, ctx: WriteCtx, db: DB) -> Response:
 @router.get("/sessions/{session_id}/export.md")
 def export_session(obj: SessionDep, ctx: ExportCtx, db: DB, lang: Lang = "ko") -> Response:
     return attachment(
-        service.export_markdown(ctx, db, obj, lang), "text/markdown; charset=utf-8", f"coachq-session-{obj.id}.md"
+        service.export_markdown(ctx, db, obj, lang), "text/markdown; charset=utf-8", f"discoveryq-session-{obj.id}.md"
     )
+
+
+@router.get("/sessions/{session_id}/report.docx")
+def session_report(obj: SessionDep, ctx: ExportCtx, db: DB, lang: Lang = "ko") -> Response:
+    return attachment(report.session_report(ctx, db, obj, lang), DOCX, f"discoveryq-session-{obj.id}.docx")
+
+
+@router.get("/engagements/{engagement_id}/report.docx")
+def engagement_report(obj: EngagementDep, ctx: ExportCtx, db: DB, lang: Lang = "ko") -> Response:
+    return attachment(report.engagement_report(ctx, db, obj, lang), DOCX, f"discoveryq-engagement-{obj.id}.docx")
 
 
 @router.post("/sessions/{session_id}/questions", response_model=SessionQuestionOut, status_code=201)
@@ -234,7 +249,7 @@ def list_action_items(
     status: ActionStatus | None = None,
 ) -> Page[ActionItemOut]:
     stmt = service.action_item_filter(ctx, db, engagement_id=engagement_id, session_id=session_id, status=status)
-    rows, nxt = repo(db, ctx, CoachActionItem).page(limit=limit, cursor=cursor, stmt=stmt)
+    rows, nxt = repo(db, ctx, DiscoveryActionItem).page(limit=limit, cursor=cursor, stmt=stmt)
     return Page(items=[ActionItemOut.model_validate(x) for x in rows], next_cursor=nxt)
 
 
@@ -250,7 +265,7 @@ def export_action_items(
     text = service.export_action_items_csv(
         ctx, db, engagement_id=engagement_id, session_id=session_id, status=status, lang=lang
     )
-    return attachment(text, "text/csv; charset=utf-8", "coachq-action-items.csv")
+    return attachment(text, "text/csv; charset=utf-8", "discoveryq-action-items.csv")
 
 
 @router.get("/action-items/{action_item_id}", response_model=ActionItemOut)

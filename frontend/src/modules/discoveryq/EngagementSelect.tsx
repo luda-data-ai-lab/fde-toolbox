@@ -25,7 +25,9 @@ export function EngagementSelect({
         value={value || engagementId || ""}
         onChange={(e) => onChange(e.target.value)}
       >
-        <option value="">{optional ? t("coachq.allEngagements") : "—"}</option>
+        <option value="">
+          {optional ? t("discoveryq.allEngagements") : "—"}
+        </option>
         {engagements.map((e) => (
           <option key={e.id} value={e.id}>
             {e.name}

@@ -4,7 +4,7 @@
 
 ## 합의되는 사실
 - 모든 테넌트 테이블은 `tenant_id → tenants.id ON DELETE CASCADE`를 가지며, 고객사 삭제(`delete_tenant`)와 과제·세션 삭제가 DB 연쇄 삭제에 기대고 있다.
-- SQL Server는 한 테이블로 가는 연쇄 경로가 둘 이상이면 FK 생성을 거부한다(오류 1785). 예: `tenants → coach_sessions → coach_session_questions`와 `tenants → coach_session_questions`.
+- SQL Server는 한 테이블로 가는 연쇄 경로가 둘 이상이면 FK 생성을 거부한다(오류 1785). 예: `tenants → discovery_sessions → discovery_session_questions`와 `tenants → discovery_session_questions`.
 
 ## 갈리는 지점
 1. **SQL Server용 별도 스키마** — 연쇄 경로를 하나만 남기도록 FK를 다르게 선언. 마이그레이션이 DB별로 갈라진다.

@@ -7,10 +7,12 @@ import os
 import secrets
 import sys
 from collections.abc import Sequence
+from io import BytesIO
 from pathlib import Path
 
 from alembic import command
 from alembic.config import Config
+from fastapi import UploadFile
 from sqlalchemy import create_engine, make_url, select, text
 from sqlalchemy.orm import Session
 
@@ -34,9 +36,15 @@ from app.modules.agenthub.schemas import InstanceIn
 from app.modules.agenthub.service import create_instance
 from app.modules.devtracker.schemas import ProjectIn, TaskIn
 from app.modules.devtracker.service import create_project, create_task
+from app.modules.interfaces.schemas import ApplyIn
+from app.modules.interfaces.service import apply_upload, upload_workbook
+from app.modules.ontomap.schemas import TermIn
+from app.modules.ontomap.service import create_term
 
 BACKEND = Path(__file__).resolve().parents[1]
 SEED_ASSETS = BACKEND / "seeds" / "assets"
+DEMO_INTERFACES = BACKEND / "seeds" / "samples" / "interfaces-sample.xlsx"
+DEMO_GLOSSARY = BACKEND / "seeds" / "samples" / "demo-glossary.json"
 DEMO_CODE = "DEMO"
 DEMO_AGENT_TEMPLATE = "daily-production-report"
 
@@ -187,6 +195,12 @@ def seed_demo(db: Session, password: str | None) -> dict[str, str]:
                 SystemIn(name="그룹웨어", short_name="GW", type="GROUPWARE", owner_dept="정보전략팀", hosting="cloud"),
             )
         ]
+        upload = upload_workbook(
+            ctx, db, UploadFile(BytesIO(DEMO_INTERFACES.read_bytes()), filename=DEMO_INTERFACES.name)
+        )
+        apply_upload(ctx, db, upload, ApplyIn())
+        for term in json.loads(DEMO_GLOSSARY.read_text(encoding="utf-8")):
+            create_term(ctx, db, TermIn.model_validate(term))
         project = create_project(
             ctx, db, ProjectIn(engagement_id=eng.id, name="생산 일보 자동화", status="active", stack="Python, FastAPI")
         )

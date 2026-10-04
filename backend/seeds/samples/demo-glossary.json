@@ -1,0 +1,22 @@
+[
+  {"term": "배합비", "definition": "제품 1배치에 투입하는 원료별 중량 비율", "aliases": [{"alias": "배합률", "department": "생산팀"}, {"alias": "처방비", "department": "연구소"}]},
+  {"term": "배합지시서", "definition": "배합비와 투입 순서를 담아 생산 현장에 내리는 지시 문서", "aliases": [{"alias": "작업지시서", "department": "생산팀"}, {"alias": "레시피 시트", "department": "연구소"}]},
+  {"term": "칭량", "definition": "배합지시서에 따라 원료를 저울로 달아 준비하는 작업", "aliases": [{"alias": "계량", "department": "생산팀"}]},
+  {"term": "로트", "definition": "같은 조건에서 생산·입고된 단위 묶음", "abbreviation": "LOT", "aliases": [{"alias": "LOT 번호", "department": "생산팀"}, {"alias": "배치번호", "department": "물류팀"}]},
+  {"term": "점도", "definition": "도료의 흐름에 대한 저항 정도", "aliases": [{"alias": "비스코", "department": "품질팀"}, {"alias": "점성", "department": "생산팀"}]},
+  {"term": "점도 규격", "definition": "제품별로 허용되는 점도 상·하한 값", "aliases": [{"alias": "점도 스펙", "department": "품질팀"}]},
+  {"term": "도막 검사", "definition": "건조된 도막의 두께·광택·부착성 등을 확인하는 품질 검사", "aliases": [{"alias": "도막 테스트", "department": "품질팀"}, {"alias": "판넬 검사", "department": "생산팀"}]},
+  {"term": "고형분", "definition": "용제가 증발한 뒤 남는 비휘발 성분의 비율", "abbreviation": "NV", "aliases": [{"alias": "불휘발분", "department": "품질팀"}]},
+  {"term": "색차", "definition": "표준 색상과 측정 색상의 차이", "abbreviation": "ΔE", "aliases": [{"alias": "델타E", "department": "품질팀"}, {"alias": "조색 차이", "department": "생산팀"}]},
+  {"term": "원료", "definition": "제품 생산에 투입되는 수지·안료·용제·첨가제", "aliases": [{"alias": "원자재", "department": "구매팀"}, {"alias": "원재료", "department": "생산팀"}]},
+  {"term": "반제품", "definition": "분산·배합까지 마쳐 조색·충진 전 단계에 있는 중간 제품", "aliases": [{"alias": "베이스", "department": "생산팀"}, {"alias": "중간재", "department": "물류팀"}]},
+  {"term": "완제품", "definition": "충진·포장을 마쳐 출하 가능한 제품", "aliases": [{"alias": "제품", "department": "영업팀"}]},
+  {"term": "작업지시", "definition": "ERP에서 MES로 내려가는 생산 명령 단위", "aliases": [{"alias": "오더", "department": "생산팀"}, {"alias": "생산오더", "department": "경영지원팀"}]},
+  {"term": "생산실적", "definition": "작업지시별 실제 생산 수량·투입 원료·작업 시간 기록", "aliases": [{"alias": "실적", "department": "생산팀"}]},
+  {"term": "입고검사", "definition": "원료 입고 시 성적서와 시료로 품질을 확인하는 검사", "abbreviation": "IQC", "aliases": [{"alias": "수입검사", "department": "품질팀"}]},
+  {"term": "출하검사", "definition": "완제품 출하 전 규격 충족 여부를 확인하는 검사", "abbreviation": "OQC", "aliases": [{"alias": "출하 판정", "department": "품질팀"}]},
+  {"term": "시험성적서", "definition": "LOT별 검사 결과를 고객에게 제출하는 문서", "abbreviation": "COA", "aliases": [{"alias": "성적서", "department": "영업팀"}]},
+  {"term": "부적합", "definition": "규격을 벗어나 별도 처리가 필요한 원료·제품 상태", "aliases": [{"alias": "불량", "department": "생산팀"}, {"alias": "NCR", "department": "품질팀"}]},
+  {"term": "안전재고", "definition": "수요 변동에 대비해 유지하는 최소 재고 수량", "aliases": [{"alias": "최소재고", "department": "물류팀"}]},
+  {"term": "설비 가동률", "definition": "계획 시간 대비 설비가 실제로 가동한 시간 비율", "abbreviation": "OEE", "aliases": [{"alias": "가동률", "department": "설비팀"}]}
+]

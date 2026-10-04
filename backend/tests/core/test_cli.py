@@ -9,6 +9,8 @@ from app.core.tenants.models import Tenant
 from app.core.users.models import User
 from app.db.session import guard_bypass
 from app.modules.agenthub.models import AgentEvalCase, AgentInstance
+from app.modules.interfaces.models import Interface, InterfaceUpload
+from app.modules.ontomap.models import OntoTerm, OntoTermAlias
 
 
 def test_init_admin_and_seeds(db: Session, capsys: pytest.CaptureFixture[str]) -> None:
@@ -46,6 +48,16 @@ def test_init_admin_and_seeds(db: Session, capsys: pytest.CaptureFixture[str]) -
     with guard_bypass(db):
         assert db.scalars(select(System).where(System.tenant_id == tenant.id)).all().__len__() == 6
         assert db.scalars(select(AgentInstance)).one().tenant_id == tenant.id
+        interfaces = db.scalars(select(Interface).where(Interface.tenant_id == tenant.id)).all()
+        assert len(interfaces) == 15
+        assert db.scalars(select(InterfaceUpload)).one().status == "applied"
+        terms = db.scalars(select(OntoTerm).where(OntoTerm.tenant_id == tenant.id)).all()
+        assert len(terms) == 20
+        assert {"배합비", "점도 규격", "도막 검사"} <= {t.term for t in terms}
+        assert all(t.status == "confirmed" for t in terms)
+        aliases = db.scalars(select(OntoTermAlias).where(OntoTermAlias.tenant_id == tenant.id)).all()
+        assert all(a.department for a in aliases)
+        assert len({a.department for a in aliases}) >= 5
     with pytest.raises(SystemExit):
         cli.main(["seed-demo"])
 

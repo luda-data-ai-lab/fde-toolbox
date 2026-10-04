@@ -86,7 +86,7 @@ CI(`.github/workflows/ci.yml`)는 위 검사를 SQLite·PostgreSQL·SQL Server�
 | `python -m app.cli create-db` | SQL Server에서 `DATABASE_URL`의 DB가 없으면 생성(다른 DB는 변화 없음) |
 | `python -m app.cli init-admin --email ... [--name ...] [--password ...]` | 최초 LUDA 관리자 생성(이미 있으면 거부). 비밀번호는 `FDE_ADMIN_PASSWORD` 또는 프롬프트로도 입력 |
 | `python -m app.cli seed-assets` | 기본 자산 패키지(`backend/seeds/assets`) 가져오기, 재실행해도 중복 생성 없음 |
-| `python -m app.cli seed-demo [--password ...]` | "데모 제조사" 고객사, FDE·고객사 관리자, 과제, 시스템 6개, DevTracker 프로젝트, AgentHub 인스턴스 생성 |
+| `python -m app.cli seed-demo [--password ...]` | "데모 제조사" 고객사, FDE·고객사 관리자, 과제, 시스템 6개, I/F 15건, 부서별 호칭이 있는 용어 20개, DevTracker 프로젝트, AgentHub 인스턴스 생성 |
 
 ## 환경 변수
 

@@ -7,7 +7,7 @@ export interface NavGroup {
 }
 
 /** Sidebar groups by engagement stage (diagnose → operate) plus common; empty groups are omitted. */
-export function navGroups(role: Role | undefined): NavGroup[] {
+export function navGroups(role: Role | undefined, adaptersAllowed = false): NavGroup[] {
   const common: [string, string][] = [
     ["/engagements", "nav.engagements"],
     ["/systems", "nav.systems"],
@@ -15,6 +15,7 @@ export function navGroups(role: Role | undefined): NavGroup[] {
     ["/assets", "nav.assets"],
   ];
   if (role && AUDIT_ROLES.includes(role)) common.push(["/audit", "nav.audit"]);
+  if (adaptersAllowed && role && AUDIT_ROLES.includes(role)) common.push(["/adapters", "nav.adapters"]);
   if (role === "luda_admin")
     common.push(
       ["/admin/tenants", "nav.tenants"],

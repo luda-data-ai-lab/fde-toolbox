@@ -230,6 +230,17 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
             },
         )
     )["id"]
+    settings = get_settings()
+    allowed, settings.adapters_allowed = settings.adapters_allowed, True
+    try:
+        ids["activation_id"] = _ok(
+            fde.post(
+                f"{base}/adapters/activations",
+                json={"adapter_key": "llm", "config": {"model": "test-model"}, "credentials": {"api_key": f"k-{code}"}},
+            )
+        )["id"]
+    finally:
+        settings.adapters_allowed = allowed
     return TenantWorld(
         tenant_id=tid,
         code=code,

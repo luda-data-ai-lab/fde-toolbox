@@ -5,6 +5,7 @@ import { Loading } from "../components/ui";
 import type { ReactNode } from "react";
 import type { Role } from "../api/types";
 import { AUDIT_ROLES, useMe, useRole } from "./hooks";
+import { AdaptersPage } from "../core/AdaptersPage";
 import { AssetDetailPage, AssetsPage } from "../core/AssetsPage";
 import { AuditPage } from "../core/AuditPage";
 import { EngagementsPage } from "../core/EngagementsPage";
@@ -61,6 +62,14 @@ export function App() {
           element={
             <RequireRole roles={AUDIT_ROLES}>
               <AuditPage />
+            </RequireRole>
+          }
+        />
+        <Route
+          path="adapters"
+          element={
+            <RequireRole roles={AUDIT_ROLES}>
+              <AdaptersPage />
             </RequireRole>
           }
         />

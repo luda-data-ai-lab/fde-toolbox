@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "홈", "diagnose": "진단", "analyze": "분석", "design": "설계", "build": "구축", "operate": "운영", "common": "공통" },
     "home": "홈", "engagements": "프로젝트(인게이지먼트)", "systems": "시스템 레지스트리", "files": "첨부파일",
-    "interfaces": "I/F 관리", "ontomap": "OntoMap 용어 사전", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "자산 라이브러리", "audit": "감사 로그",
+    "interfaces": "I/F 관리", "ontomap": "OntoMap 용어 사전", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "외부 연동(어댑터)", "assets": "자산 라이브러리", "audit": "감사 로그",
     "tenants": "고객사 관리", "users": "사용자 관리"
   },
   "layout": {
@@ -123,6 +123,21 @@
   },
   "termStatus": { "candidate": "후보", "confirmed": "확정", "deprecated": "폐기" },
   "candidateStatus": { "open": "검토 대기", "accepted": "확정됨", "merged": "병합됨", "ignored": "무시됨" },
+  "adapters": {
+    "intro": "외부로 데이터를 보내는 기능은 어댑터를 통해서만 동작합니다. FDE가 활성화를 요청하고, 반출 범위를 확인한 고객사 관리자가 승인해야 켜집니다. 고객사 관리자가 없는 단독 설치에서는 LUDA 관리자가 사유를 남기고 승인합니다.",
+    "notImplemented": "연동 규격과 설정만 준비된 어댑터입니다. 아직 활성화할 수 없습니다.",
+    "egress": "데이터 반출 범위", "destination": "전송 대상", "dataKinds": "반출 데이터", "features": "사용 기능",
+    "request": "활성화 요청", "note": "요청 메모", "approve": "승인", "reject": "반려", "deactivate": "비활성화",
+    "acknowledge": "위 반출 범위(전송 대상·데이터·기능)를 확인했고 고객사로서 승인합니다.",
+    "reason": "사유(선택)", "reasonRequired": "승인 사유(필수, 고객사 관리자 부재)",
+    "healthCheck": "연결 확인", "healthOk": "연결 정상 ({{ms}}ms)", "healthFail": "연결 실패: {{reason}}",
+    "requestedAt": "요청 일시", "approvedAt": "승인 일시", "approvalReason": "승인 사유", "deactivatedAt": "비활성화 일시",
+    "credentialsMissing": "인증 정보가 없어(가져온 고객사 데이터 등) 사용할 수 없습니다. 다시 활성화를 요청하세요.",
+    "field": { "model": "모델", "max_tokens": "최대 토큰", "timeout_seconds": "타임아웃(초)", "api_key": "API 키", "endpoint": "엔드포인트", "token": "토큰", "remote_url": "원격 저장소 URL" },
+    "data": { "prompt_text": "프롬프트 본문", "source_excerpts": "인터뷰·문서 발췌", "glossary_terms": "용어 사전 항목", "agent_task": "에이전트 작업 요청", "agent_context": "에이전트 실행 맥락", "generated_documents": "생성 문서", "generated_code": "생성 코드" },
+    "feature": { "flowdesk_generate": "FlowDesk 흐름도 생성", "exmigrate_formula": "ExMigrate 수식 분석", "specforge_enrich": "SpecForge 문서 보강", "ontomap_suggest": "OntoMap 용어 제안", "agenthub_run": "AgentHub 실행", "specforge_push": "SpecForge 문서 푸시", "devtracker_repo": "DevTracker 저장소 연동" }
+  },
+  "adapterStatus": { "not_configured": "미설정", "requested": "승인 대기", "active": "활성", "disabled": "비활성" },
   "errors": {
     "unknown": "요청을 처리하지 못했습니다.", "invalid_json": "JSON 형식이 올바르지 않습니다.",
     "not_found": "대상을 찾을 수 없습니다.", "forbidden": "권한이 없습니다.", "unauthorized": "로그인이 필요합니다.",
@@ -136,6 +151,12 @@
     "invalid_workbook": "엑셀 파일 형식이 템플릿과 맞지 않습니다.", "too_many_rows": "행 수가 너무 많습니다.",
     "if_code_taken": "이미 사용 중인 I/F ID입니다.", "upload_already_applied": "이미 반영된 업로드입니다.",
     "conflict": "다른 데이터에서 참조 중이라 처리할 수 없습니다.",
-    "term_taken": "이미 등록된 용어입니다. 기존 용어에 병합하세요.", "candidate_resolved": "이미 처리된 후보입니다."
+    "term_taken": "이미 등록된 용어입니다. 기존 용어에 병합하세요.", "candidate_resolved": "이미 처리된 후보입니다.",
+    "adapters_not_allowed": "이 설치에서는 외부 연동이 허용되지 않습니다.", "adapter_not_implemented": "아직 활성화할 수 없는 어댑터입니다.",
+    "adapter_already_active": "이미 활성화된 어댑터입니다. 먼저 비활성화하세요.", "activation_not_pending": "승인 대기 중인 요청이 아닙니다.",
+    "activation_not_active": "이미 비활성 상태입니다.", "approval_reason_required": "승인 사유를 입력하세요.",
+    "client_admin_approval_required": "고객사 관리자가 승인해야 합니다.", "adapter_disabled": "어댑터가 활성화되어 있지 않습니다. 프롬프트 복사 모드를 사용하세요.",
+    "adapter_call_failed": "외부 연동 호출에 실패했습니다.", "llm_invalid_response": "LLM 응답이 형식에 맞지 않습니다.",
+    "invalid_adapter_config": "어댑터 설정값을 확인하세요."
   }
 }

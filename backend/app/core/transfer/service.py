@@ -39,7 +39,8 @@ def export_tenant(ctx: TenantContext, db: Session) -> bytes:
     tables: dict[str, list[dict[str, Any]]] = {}
     for table in tenant_tables():
         rows = db.execute(select(table).where(table.c.tenant_id == ctx.tenant_id)).mappings().all()
-        tables[table.name] = [row_to_json(table, dict(r)) for r in rows]
+        secret = [c.name for c in table.columns if c.info.get("secret")]
+        tables[table.name] = [row_to_json(table, {**dict(r), **dict.fromkeys(secret)}) for r in rows]
     manifest = {
         "schema_version": SCHEMA_VERSION,
         "kind": KIND,

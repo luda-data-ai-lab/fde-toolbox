@@ -432,3 +432,47 @@ export interface GlossaryImportResult {
   };
   rows: GlossaryImportRow[];
 }
+export type JsonScalar = string | number | boolean | null;
+export interface EgressNotice {
+  destination: string;
+  data_kinds: string[];
+  features: string[];
+}
+export interface AdapterConfigField {
+  name: string;
+  kind: "text" | "int" | "secret";
+  required: boolean;
+  default: JsonScalar;
+}
+export interface AdapterActivation {
+  id: string;
+  tenant_id: string;
+  adapter_key: string;
+  status: "requested" | "active" | "disabled";
+  config: Record<string, JsonScalar>;
+  has_credentials: boolean;
+  egress_notice: EgressNotice | null;
+  request_note: string | null;
+  requested_by: string | null;
+  requested_at: string | null;
+  approved_by: string | null;
+  approved_at: string | null;
+  approval_reason: string | null;
+  deactivated_by: string | null;
+  deactivated_at: string | null;
+  created_at: string;
+  updated_at: string;
+}
+export interface AdapterInfo {
+  key: string;
+  display_name: string;
+  implemented: boolean;
+  egress_notice: EgressNotice;
+  config_fields: AdapterConfigField[];
+  activation: AdapterActivation | null;
+}
+export interface AdapterHealth {
+  ok: boolean;
+  message: string | null;
+  latency_ms: number;
+}

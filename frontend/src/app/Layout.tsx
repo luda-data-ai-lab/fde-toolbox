@@ -92,7 +92,7 @@ export function Layout() {
       <aside className="w-52 shrink-0 border-r border-slate-200 bg-white">
         <div className="px-4 py-4 text-lg font-bold text-blue-900">{t("app.title")}</div>
         <nav className="flex flex-col gap-2">
-          {navGroups(role).map((group) => (
+          {navGroups(role, me?.adapters_allowed).map((group) => (
             <div key={group.key} className="flex flex-col">
               {group.key !== "home" && (
                 <div className="px-4 pb-1 pt-2 text-xs font-semibold uppercase tracking-wide text-slate-400">

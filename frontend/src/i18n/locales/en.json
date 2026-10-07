@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "Home", "diagnose": "Diagnose", "analyze": "Analyze", "design": "Design", "build": "Build", "operate": "Operate", "common": "Common" },
     "home": "Home", "engagements": "Engagements", "systems": "System registry", "files": "Attachments",
-    "interfaces": "Interfaces", "ontomap": "OntoMap glossary", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "assets": "Asset library", "audit": "Audit log",
+    "interfaces": "Interfaces", "ontomap": "OntoMap glossary", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "Adapters", "assets": "Asset library", "audit": "Audit log",
     "tenants": "Customers", "users": "Users"
   },
   "layout": {
@@ -123,6 +123,21 @@
   },
   "termStatus": { "candidate": "Candidate", "confirmed": "Confirmed", "deprecated": "Deprecated" },
   "candidateStatus": { "open": "Pending review", "accepted": "Confirmed", "merged": "Merged", "ignored": "Ignored" },
+  "adapters": {
+    "intro": "Features that send data outside run only through adapters. An FDE requests activation, and it turns on once a customer admin reviews the data-egress scope and approves. In standalone installs without a customer admin, a LUDA admin approves with a reason.",
+    "notImplemented": "Only the interface and settings exist for this adapter. It cannot be activated yet.",
+    "egress": "Data egress scope", "destination": "Destination", "dataKinds": "Data sent", "features": "Used by",
+    "request": "Request activation", "note": "Request note", "approve": "Approve", "reject": "Reject", "deactivate": "Deactivate",
+    "acknowledge": "I have reviewed the egress scope above (destination, data, features) and approve it for the customer.",
+    "reason": "Reason (optional)", "reasonRequired": "Approval reason (required, no customer admin)",
+    "healthCheck": "Check connection", "healthOk": "Connected ({{ms}} ms)", "healthFail": "Connection failed: {{reason}}",
+    "requestedAt": "Requested at", "approvedAt": "Approved at", "approvalReason": "Approval reason", "deactivatedAt": "Deactivated at",
+    "credentialsMissing": "No credentials are stored (for example, imported customer data), so it cannot be used. Request activation again.",
+    "field": { "model": "Model", "max_tokens": "Max tokens", "timeout_seconds": "Timeout (s)", "api_key": "API key", "endpoint": "Endpoint", "token": "Token", "remote_url": "Remote URL" },
+    "data": { "prompt_text": "Prompt text", "source_excerpts": "Interview and document excerpts", "glossary_terms": "Glossary entries", "agent_task": "Agent task requests", "agent_context": "Agent run context", "generated_documents": "Generated documents", "generated_code": "Generated code" },
+    "feature": { "flowdesk_generate": "FlowDesk flow generation", "exmigrate_formula": "ExMigrate formula analysis", "specforge_enrich": "SpecForge enrichment", "ontomap_suggest": "OntoMap term suggestions", "agenthub_run": "AgentHub runs", "specforge_push": "SpecForge document push", "devtracker_repo": "DevTracker repository link" }
+  },
+  "adapterStatus": { "not_configured": "Not configured", "requested": "Awaiting approval", "active": "Active", "disabled": "Disabled" },
   "errors": {
     "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
     "not_found": "Not found.", "forbidden": "Permission denied.", "unauthorized": "Please sign in.",
@@ -136,6 +151,12 @@
     "invalid_workbook": "The workbook does not match the template.", "too_many_rows": "Too many rows.",
     "if_code_taken": "That interface ID is already in use.", "upload_already_applied": "This upload was already applied.",
     "conflict": "It is still referenced by other data.",
-    "term_taken": "That term already exists. Merge into it instead.", "candidate_resolved": "This candidate was already resolved."
+    "term_taken": "That term already exists. Merge into it instead.", "candidate_resolved": "This candidate was already resolved.",
+    "adapters_not_allowed": "External integrations are not allowed in this installation.", "adapter_not_implemented": "This adapter cannot be activated yet.",
+    "adapter_already_active": "This adapter is already active. Deactivate it first.", "activation_not_pending": "This request is not awaiting approval.",
+    "activation_not_active": "Already disabled.", "approval_reason_required": "Enter an approval reason.",
+    "client_admin_approval_required": "A customer admin must approve.", "adapter_disabled": "The adapter is not active. Use prompt copy mode.",
+    "adapter_call_failed": "The external call failed.", "llm_invalid_response": "The LLM response did not match the expected format.",
+    "invalid_adapter_config": "Check the adapter settings."
   }
 }

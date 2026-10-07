@@ -15,6 +15,15 @@ describe("navGroups", () => {
     expect(paths("client_user")).not.toContain("/audit");
   });
 
+  it("shows adapter settings only when adapters are allowed, to manager roles", () => {
+    const withAdapters = (role: Parameters<typeof navGroups>[0]) =>
+      navGroups(role, true).flatMap((g) => g.links.map(([to]) => to));
+    expect(paths("fde")).not.toContain("/adapters");
+    expect(withAdapters("fde")).toContain("/adapters");
+    expect(withAdapters("client_admin")).toContain("/adapters");
+    expect(withAdapters("client_user")).not.toContain("/adapters");
+  });
+
   it("lists the analyze-stage modules", () => {
     expect(navGroups("client_user").find((g) => g.key === "analyze")?.links.map(([to]) => to)).toEqual([
       "/interfaces",

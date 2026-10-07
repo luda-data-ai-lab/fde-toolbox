@@ -7,6 +7,11 @@
 ### Changed
 - CoachQ를 DiscoveryQ로 이름 변경: 화면·문서, API 경로 `/coachq` → `/discoveryq`, 모듈, 테이블 `coach_*` → `discovery_*`(마이그레이션 0005, 데이터 이전·되돌리기 지원), OntoMap 후보 출처 `coach_session` → `discovery_session`, 질문 뱅크 자산 키 `discoveryq-question-bank`. 이전 경로 별칭은 두지 않으며, 이름 변경 전에 만든 고객사 ZIP은 다시 가져올 수 없다.
 
+### Added — Phase 2
+- 어댑터 프레임워크(`app/adapters/`): `Adapter` 프로토콜·레지스트리, `ADAPTERS_ALLOWED=false`이면 목록이 비고 `get_adapter`가 `AdapterDisabled`(오프라인 경로 사용)를 던짐. 고객사별 활성화 `adapter_activations`(마이그레이션 0006): FDE 요청 → 반출 범위(전송 대상·데이터·기능) 확인 후 고객사 관리자 승인(고객사 관리자가 없으면 LUDA 관리자가 사유와 함께 승인) → 활성, 반려·비활성화 시 인증 정보 삭제. 인증 정보는 `ENCRYPTION_KEY`로 Fernet 암호화하며 API 응답·감사 로그·고객사 ZIP에 포함하지 않음(가져온 활성화는 비활성으로 표시). 요청·승인·반려·비활성화·외부 호출(`adapter.call`: 기능, 요청/응답 바이트, 결과, 소요 시간, 본문 미저장)을 감사 로그에 기록.
+- LLM 어댑터(Anthropic SDK, 모델·최대 토큰·타임아웃 설정): `generate_markdown`, 스키마 검증 `generate_json`(실패 시 1회 재요청 후 `llm_invalid_response`), 연결 확인. 프롬프트 빌더·결과 파서(`app/core/prompting.py`)는 전송과 분리되어 프롬프트 복사 모드에서도 같은 파서를 쓴다. Agent Runtime·Git 어댑터는 규격과 설정 항목만 둠.
+- 어댑터 설정 화면(공통 › 외부 연동, `ADAPTERS_ALLOWED=true`일 때만 표시): 반출 범위 고지, 활성화 요청, 승인·반려·비활성화, 연결 확인.
+
 ### Added — Phase 1
 - DiscoveryQ Word 보고서(`python-docx`, 오프라인 생성): 세션 보고서 `GET /discoveryq/sessions/{id}/report.docx`, 인게이지먼트 진단 보고서 `GET /discoveryq/engagements/{id}/report.docx`(ko/en, 내보내기 권한, 감사 로그 기록).
 - I/F 관리: `interfaces`·`interface_uploads` 모델(마이그레이션 0002), I/F 엑셀 템플릿(`인터페이스 리스트`/`시스템 연동정보`) 다운로드·업로드·행 단위 검증·미등록 시스템 선택 등록 후 반영, 목록 CRUD·필터, 대시보드, 연결 그래프, 엑셀/CSV 내보내기(수식 주입 방지), 15건 샘플 워크북.

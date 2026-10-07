@@ -5,6 +5,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
+from app.core.adapters.router import router as adapters_router
 from app.core.assets.router import router as assets_router
 from app.core.audit.router import admin_router as audit_admin_router
 from app.core.audit.router import router as audit_router
@@ -47,6 +48,7 @@ def api_router() -> APIRouter:
         audit_admin_router,
         transfer_router,
         assets_router,
+        adapters_router,
         agenthub_asset_router,
         home_router,
         devtracker_router,

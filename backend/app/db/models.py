@@ -1,5 +1,6 @@
 """Import every model module so that Base.metadata is complete."""
 
+from app.core.adapters import models as _adapters  # noqa: F401
 from app.core.assets import models as _assets  # noqa: F401
 from app.core.audit import models as _audit  # noqa: F401
 from app.core.files import models as _files  # noqa: F401

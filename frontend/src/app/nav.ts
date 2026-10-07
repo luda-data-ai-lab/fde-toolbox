@@ -15,11 +15,21 @@ export function navGroups(role: Role | undefined): NavGroup[] {
     ["/assets", "nav.assets"],
   ];
   if (role && AUDIT_ROLES.includes(role)) common.push(["/audit", "nav.audit"]);
-  if (role === "luda_admin") common.push(["/admin/tenants", "nav.tenants"], ["/admin/users", "nav.users"]);
+  if (role === "luda_admin")
+    common.push(
+      ["/admin/tenants", "nav.tenants"],
+      ["/admin/users", "nav.users"],
+    );
   const groups: NavGroup[] = [
     { key: "home", links: [["/", "nav.home"]] },
-    { key: "diagnose", links: [["/coachq", "nav.coachq"]] },
-    { key: "analyze", links: [["/interfaces", "nav.interfaces"], ["/ontomap", "nav.ontomap"]] },
+    { key: "diagnose", links: [["/discoveryq", "nav.discoveryq"]] },
+    {
+      key: "analyze",
+      links: [
+        ["/interfaces", "nav.interfaces"],
+        ["/ontomap", "nav.ontomap"],
+      ],
+    },
     { key: "design", links: [] },
     { key: "build", links: [["/devtracker", "nav.devtracker"]] },
     { key: "operate", links: [["/agenthub", "nav.agenthub"]] },

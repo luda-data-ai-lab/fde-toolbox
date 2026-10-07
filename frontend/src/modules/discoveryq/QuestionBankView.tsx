@@ -6,7 +6,7 @@ import type { CustomQuestion } from "../../api/types";
 import { Empty, ErrorText, Field, Loading } from "../../components/ui";
 import { useCanWrite } from "../../app/hooks";
 import { useWorkspace } from "../../app/store";
-import { coachKeys, coachPath, useQuestionBank } from "./shared";
+import { discoveryKeys, discoveryPath, useQuestionBank } from "./shared";
 
 export function QuestionBankView({ tenantId }: { tenantId: string }) {
   const { t } = useTranslation();
@@ -22,7 +22,7 @@ export function QuestionBankView({ tenantId }: { tenantId: string }) {
   const bank = data?.bank ?? null;
   const copy = useMutation({
     mutationFn: (questionId: string) =>
-      api<CustomQuestion>(coachPath(tenantId, "/custom-questions"), {
+      api<CustomQuestion>(discoveryPath(tenantId, "/custom-questions"), {
         method: "POST",
         body: {
           engagement_id: engagementId,
@@ -35,7 +35,7 @@ export function QuestionBankView({ tenantId }: { tenantId: string }) {
       }),
     onSuccess: (_, questionId) => {
       setCopied((prev) => new Set(prev).add(questionId));
-      void qc.invalidateQueries({ queryKey: coachKeys(tenantId).all });
+      void qc.invalidateQueries({ queryKey: discoveryKeys(tenantId).all });
     },
   });
   const categories = useMemo(() => {
@@ -61,7 +61,9 @@ export function QuestionBankView({ tenantId }: { tenantId: string }) {
   if (isLoading) return <Loading />;
   if (!bank)
     return (
-      <p className="card text-sm text-slate-600">{t("coachq.bank.missing")}</p>
+      <p className="card text-sm text-slate-600">
+        {t("discoveryq.bank.missing")}
+      </p>
     );
   return (
     <div className="space-y-3">
@@ -69,7 +71,7 @@ export function QuestionBankView({ tenantId }: { tenantId: string }) {
         {bank.title} · v{bank.version}
       </p>
       <div className="card grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Field label={t("coachq.field.type")}>
+        <Field label={t("discoveryq.field.type")}>
           <select
             className="input"
             value={sessionType}
@@ -83,7 +85,7 @@ export function QuestionBankView({ tenantId }: { tenantId: string }) {
             ))}
           </select>
         </Field>
-        <Field label={t("coachq.field.category")}>
+        <Field label={t("discoveryq.field.category")}>
           <select
             className="input"
             value={category}
@@ -97,7 +99,7 @@ export function QuestionBankView({ tenantId }: { tenantId: string }) {
             ))}
           </select>
         </Field>
-        <Field label={t("coachq.field.audience")}>
+        <Field label={t("discoveryq.field.audience")}>
           <select
             className="input"
             value={audience}
@@ -144,7 +146,7 @@ export function QuestionBankView({ tenantId }: { tenantId: string }) {
                   </p>
                   {x.follow_ups.length > 0 && (
                     <p className="mt-1 text-xs text-slate-500">
-                      {t("coachq.followUps")}: {x.follow_ups.join(" / ")}
+                      {t("discoveryq.followUps")}: {x.follow_ups.join(" / ")}
                     </p>
                   )}
                 </div>
@@ -155,8 +157,8 @@ export function QuestionBankView({ tenantId }: { tenantId: string }) {
                     onClick={() => copy.mutate(x.id)}
                   >
                     {copied.has(x.id)
-                      ? t("coachq.bank.copied")
-                      : t("coachq.bank.copy")}
+                      ? t("discoveryq.bank.copied")
+                      : t("discoveryq.bank.copy")}
                   </button>
                 )}
               </li>

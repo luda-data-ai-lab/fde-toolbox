@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../api/client";
-import type { CoachSession, Page } from "../../api/types";
+import type { DiscoverySession, Page } from "../../api/types";
 import {
   Empty,
   ErrorText,
@@ -10,10 +10,15 @@ import {
   Select,
   StatusBadge,
 } from "../../components/ui";
-import { useCanWrite } from "../../app/hooks";
+import { AUDIT_ROLES, useCanWrite, useRole } from "../../app/hooks";
 import { useWorkspace } from "../../app/store";
 import { EngagementSelect } from "./EngagementSelect";
-import { SESSION_TYPES, coachKeys, coachPath, useSubjects } from "./shared";
+import {
+  SESSION_TYPES,
+  discoveryKeys,
+  discoveryPath,
+  useSubjects,
+} from "./shared";
 
 const EMPTY = {
   engagement_id: "",
@@ -30,8 +35,10 @@ export function SessionsView({
   tenantId: string;
   onOpen: (id: string) => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const canWrite = useCanWrite();
+  const role = useRole();
+  const lang = i18n.language.startsWith("en") ? "en" : "ko";
   const engagementId = useWorkspace((s) => s.engagementId);
   const qc = useQueryClient();
   const [filters, setFilters] = useState({ type: "", q: "" });
@@ -41,15 +48,15 @@ export function SessionsView({
   const allSubjects = useSubjects(tenantId, engagementId).data?.items ?? [];
   const subjectName = new Map(allSubjects.map((s) => [s.id, s.name]));
   const { data } = useQuery({
-    queryKey: coachKeys(tenantId).sessions({ ...filters, engagementId }),
+    queryKey: discoveryKeys(tenantId).sessions({ ...filters, engagementId }),
     queryFn: () =>
-      api<Page<CoachSession>>(coachPath(tenantId, "/sessions"), {
+      api<Page<DiscoverySession>>(discoveryPath(tenantId, "/sessions"), {
         query: { limit: 200, engagement_id: engagementId, ...filters },
       }),
   });
   const create = useMutation({
     mutationFn: () =>
-      api<CoachSession>(coachPath(tenantId, "/sessions"), {
+      api<DiscoverySession>(discoveryPath(tenantId, "/sessions"), {
         method: "POST",
         body: {
           ...form,
@@ -60,7 +67,7 @@ export function SessionsView({
       }),
     onSuccess: (s) => {
       setForm(EMPTY);
-      void qc.invalidateQueries({ queryKey: coachKeys(tenantId).all });
+      void qc.invalidateQueries({ queryKey: discoveryKeys(tenantId).all });
       onOpen(s.id);
     },
   });
@@ -74,7 +81,7 @@ export function SessionsView({
         <form
           className="card grid grid-cols-2 gap-3 md:grid-cols-5"
           onSubmit={submit}
-          aria-label={t("coachq.session.new")}
+          aria-label={t("discoveryq.session.new")}
         >
           <EngagementSelect
             tenantId={tenantId}
@@ -83,7 +90,7 @@ export function SessionsView({
               setForm({ ...form, engagement_id: v, subject_id: "" })
             }
           />
-          <Field label={t("coachq.field.type")}>
+          <Field label={t("discoveryq.field.type")}>
             <Select
               value={form.type}
               onChange={(v) => setForm({ ...form, type: v })}
@@ -94,8 +101,8 @@ export function SessionsView({
           <Field
             label={
               form.type === "coaching"
-                ? t("coachq.field.mentee")
-                : t("coachq.field.subject")
+                ? t("discoveryq.field.mentee")
+                : t("discoveryq.field.subject")
             }
           >
             <select
@@ -119,7 +126,7 @@ export function SessionsView({
               onChange={(e) => setForm({ ...form, title: e.target.value })}
             />
           </Field>
-          <Field label={t("coachq.field.date")}>
+          <Field label={t("discoveryq.field.date")}>
             <input
               className="input"
               type="date"
@@ -138,7 +145,7 @@ export function SessionsView({
         </form>
       )}
       <div className="card grid grid-cols-2 gap-3 md:grid-cols-4">
-        <Field label={t("coachq.field.type")}>
+        <Field label={t("discoveryq.field.type")}>
           <Select
             value={filters.type}
             onChange={(v) => setFilters({ ...filters, type: v })}
@@ -154,6 +161,16 @@ export function SessionsView({
             onChange={(e) => setFilters({ ...filters, q: e.target.value })}
           />
         </Field>
+        {engagementId && role && AUDIT_ROLES.includes(role) && (
+          <div className="col-span-full flex justify-end md:col-span-2 md:items-end">
+            <a
+              className="btn"
+              href={`/api/v1/t/${tenantId}/discoveryq/engagements/${engagementId}/report.docx?lang=${lang}`}
+            >
+              {t("discoveryq.engagementReport")}
+            </a>
+          </div>
+        )}
       </div>
       <div className="card">
         {!data?.items.length ? (
@@ -163,9 +180,9 @@ export function SessionsView({
             <thead>
               <tr>
                 <th>{t("common.title")}</th>
-                <th>{t("coachq.field.type")}</th>
-                <th>{t("coachq.field.subject")}</th>
-                <th>{t("coachq.field.date")}</th>
+                <th>{t("discoveryq.field.type")}</th>
+                <th>{t("discoveryq.field.subject")}</th>
+                <th>{t("discoveryq.field.date")}</th>
                 <th>{t("common.status")}</th>
                 <th />
               </tr>
@@ -180,11 +197,14 @@ export function SessionsView({
                   <td>{s.subject_id ? subjectName.get(s.subject_id) : ""}</td>
                   <td>{s.session_date}</td>
                   <td>
-                    <StatusBadge group="coachSessionStatus" value={s.status} />
+                    <StatusBadge
+                      group="discoverySessionStatus"
+                      value={s.status}
+                    />
                   </td>
                   <td className="text-right">
                     <button className="btn" onClick={() => onOpen(s.id)}>
-                      {t("coachq.session.open")}
+                      {t("discoveryq.session.open")}
                     </button>
                   </td>
                 </tr>

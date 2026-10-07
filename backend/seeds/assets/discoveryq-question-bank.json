@@ -7,8 +7,8 @@
       "asset_id": "b22e547e-c6b8-5c6e-a0f3-95d73853fede",
       "version": 1,
       "asset_type": "question_bank",
-      "asset_key": "coachq-question-bank",
-      "title": "CoachQ 기본 질문 뱅크",
+      "asset_key": "discoveryq-question-bank",
+      "title": "DiscoveryQ 기본 질문 뱅크",
       "payload": {
         "session_types": {
           "interview": [

@@ -6,7 +6,7 @@ from app.core.schemas import ORMModel
 
 TermStatus = Literal["candidate", "confirmed", "deprecated"]
 CandidateStatus = Literal["open", "accepted", "merged", "ignored"]
-CandidateSource = Literal["coach_session", "manual"]
+CandidateSource = Literal["discovery_session", "manual"]
 
 
 def _clean(value: str) -> str:

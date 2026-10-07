@@ -44,10 +44,10 @@ function CandidateRow({ tenantId, c }: { tenantId: string; c: OntoCandidate }) {
           {c.payload.department && (
             <span className="badge">{c.payload.department}</span>
           )}
-          {c.source_type === "coach_session" && c.source_id && (
+          {c.source_type === "discovery_session" && c.source_id && (
             <Link
               className="ml-2 text-xs text-blue-700 underline"
-              to={`/coachq?tab=sessions&session=${c.source_id}`}
+              to={`/discoveryq?tab=sessions&session=${c.source_id}`}
             >
               {t("ontomap.candidate.fromSession")}
             </Link>

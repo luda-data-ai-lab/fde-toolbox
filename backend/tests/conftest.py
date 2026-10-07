@@ -163,36 +163,37 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
     )["id"]
     workbook = build_workbook([[f"IF-{code}-002", "실적", f"ERP {code}", f"MES {code}"]], [])
     ids["upload_id"] = _ok(fde.post(f"{base}/interfaces/uploads", files={"file": ("if.xlsx", workbook, XLSX)}))["id"]
-    coach = f"{base}/coachq"
+    discovery = f"{base}/discoveryq"
     ids["subject_id"] = _ok(
         fde.post(
-            f"{coach}/subjects",
+            f"{discovery}/subjects",
             json={"engagement_id": ids["engagement_id"], "name": f"Kim {code}", "system_ids": [ids["system_id"]]},
         )
     )["id"]
     ids["custom_question_id"] = _ok(
-        fde.post(f"{coach}/custom-questions", json={"text": f"Custom question {code}", "category": "status"})
+        fde.post(f"{discovery}/custom-questions", json={"text": f"Custom question {code}", "category": "status"})
     )["id"]
     ids["session_id"] = _ok(
         fde.post(
-            f"{coach}/sessions",
+            f"{discovery}/sessions",
             json={"engagement_id": ids["engagement_id"], "subject_id": ids["subject_id"], "title": f"Interview {code}"},
         )
     )["id"]
     ids["session_question_id"] = _ok(
         fde.post(
-            f"{coach}/sessions/{ids['session_id']}/questions", json={"custom_question_id": ids["custom_question_id"]}
+            f"{discovery}/sessions/{ids['session_id']}/questions",
+            json={"custom_question_id": ids["custom_question_id"]},
         )
     )["id"]
     ids["insight_id"] = _ok(
         fde.post(
-            f"{coach}/sessions/{ids['session_id']}/insights",
+            f"{discovery}/sessions/{ids['session_id']}/insights",
             json={"text": f"Insight {code}", "session_question_id": ids["session_question_id"]},
         )
     )["id"]
     ids["action_item_id"] = _ok(
         fde.post(
-            f"{coach}/sessions/{ids['session_id']}/action-items",
+            f"{discovery}/sessions/{ids['session_id']}/action-items",
             json={"title": f"Action {code}", "insight_id": ids["insight_id"]},
         )
     )["id"]
@@ -203,7 +204,7 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
     ids["candidate_id"] = _ok(
         fde.post(
             f"{onto}/candidates",
-            json={"name": f"Cand {code}", "source_type": "coach_session", "source_id": ids["session_id"]},
+            json={"name": f"Cand {code}", "source_type": "discovery_session", "source_id": ids["session_id"]},
         )
     )["id"]
     ref = {"asset_id": template["asset_id"], "version": 2}

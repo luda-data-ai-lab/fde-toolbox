@@ -230,6 +230,24 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
             },
         )
     )["id"]
+    flows = f"{base}/flowdesk/flows"
+    ids["flow_id"] = _ok(
+        fde.post(
+            flows,
+            json={
+                "engagement_id": ids["engagement_id"],
+                "title": f"Flow {code}",
+                "graph": {
+                    "lanes": ["Sales"],
+                    "nodes": [
+                        {"id": "a", "type": "system", "label": "ERP", "lane": "Sales", "system_id": ids["system_id"]}
+                    ],
+                },
+            },
+        )
+    )["id"]
+    _ok(fde.post(f"{flows}/{ids['flow_id']}/pair", json={}))
+    ids["snapshot_id"] = _ok(fde.post(f"{flows}/{ids['flow_id']}/snapshots", json={"note": f"v1 {code}"}))["id"]
     settings = get_settings()
     allowed, settings.adapters_allowed = settings.adapters_allowed, True
     try:

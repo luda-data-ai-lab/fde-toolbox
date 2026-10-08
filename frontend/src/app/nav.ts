@@ -31,7 +31,7 @@ export function navGroups(role: Role | undefined, adaptersAllowed = false): NavG
         ["/ontomap", "nav.ontomap"],
       ],
     },
-    { key: "design", links: [] },
+    { key: "design", links: [["/flowdesk", "nav.flowdesk"]] },
     { key: "build", links: [["/devtracker", "nav.devtracker"]] },
     { key: "operate", links: [["/agenthub", "nav.agenthub"]] },
     { key: "common", links: common },

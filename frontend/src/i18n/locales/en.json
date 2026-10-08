@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "Home", "diagnose": "Diagnose", "analyze": "Analyze", "design": "Design", "build": "Build", "operate": "Operate", "common": "Common" },
     "home": "Home", "engagements": "Engagements", "systems": "System registry", "files": "Attachments",
-    "interfaces": "Interfaces", "ontomap": "OntoMap glossary", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "Adapters", "assets": "Asset library", "audit": "Audit log",
+    "interfaces": "Interfaces", "ontomap": "OntoMap glossary", "flowdesk": "FlowDesk", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "Adapters", "assets": "Asset library", "audit": "Audit log",
     "tenants": "Customers", "users": "Users"
   },
   "layout": {
@@ -107,6 +107,18 @@
   "sessionType": { "interview": "Field interview", "coaching": "Coaching" },
   "discoverySessionStatus": { "planned": "Planned", "in_progress": "In progress", "done": "Done" },
   "actionStatus": { "open": "Open", "in_progress": "In progress", "done": "Done", "cancelled": "Cancelled" },
+  "flowdesk": {
+    "new": "New flow", "blank": "Blank canvas", "needEngagement": "Select an engagement first.", "importJson": "Import JSON", "paired": "Paired",
+    "back": "Back to list", "saved": "Saved", "add": "Add", "addNode": "Add node", "node": "Node", "edge": "Connection", "lanes": "Swimlanes", "laneName": "Lane name",
+    "hint": "Drag from a node's right dot to another node to connect them. Move a node onto a lane to place it there. Select and press Delete to remove.",
+    "createToBe": "Create To-Be", "createAsIs": "Create As-Is", "openToBe": "Open To-Be", "openAsIs": "Open As-Is",
+    "snapshots": "Snapshots", "snapshotNote": "Snapshot note", "takeSnapshot": "Save snapshot", "saveFirst": "Save your changes first.", "restore": "Restore",
+    "confirmRestore": "Restore the canvas to this snapshot? Unsaved changes will be lost.", "confirmDelete": "Delete this flow and its snapshots?",
+    "field": { "title": "Title", "kind": "Kind", "perspective": "Perspective", "template": "Template", "pair": "Paired flow", "nodes": "Nodes", "nodeType": "Node type", "label": "Label", "system": "System", "lane": "Lane", "condition": "Condition" }
+  },
+  "flowKind": { "as_is": "As-Is", "to_be": "To-Be" },
+  "perspective": { "business": "Business", "pm": "PM", "developer": "Developer", "executive": "Executive", "consultant": "Consultant" },
+  "flowNodeType": { "start": "Start", "end": "End", "task": "Task", "decision": "Decision", "system": "System", "document": "Document", "role": "Role", "note": "Note" },
   "ontomap": {
     "aliasHint": "Production: Recipe sheet; BOM", "noDefinition": "No definition",
     "tab": { "glossary": "Glossary", "candidates": "Candidates", "import": "Excel import" },
@@ -157,6 +169,7 @@
     "activation_not_active": "Already disabled.", "approval_reason_required": "Enter an approval reason.",
     "client_admin_approval_required": "A customer admin must approve.", "adapter_disabled": "The adapter is not active. Use prompt copy mode.",
     "adapter_call_failed": "The external call failed.", "llm_invalid_response": "The LLM response did not match the expected format.",
-    "invalid_adapter_config": "Check the adapter settings."
+    "invalid_adapter_config": "Check the adapter settings.",
+    "flow_already_paired": "This flow is already paired.", "invalid_pair": "These flows cannot be paired.", "invalid_flow_template": "The flow template is malformed."
   }
 }

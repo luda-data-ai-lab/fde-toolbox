@@ -8,8 +8,9 @@
   },
   "layout": {
     "tenant": "Customer", "engagement": "Engagement", "allEngagements": "All engagements",
-    "noTenant": "No accessible customer", "locale": "한국어"
+    "noTenant": "No accessible customer", "locale": "한국어", "manual": "Manual"
   },
+  "manual": { "title": "User manual", "contents": "Contents" },
   "auth": { "email": "Email", "password": "Password", "login": "Sign in", "logout": "Sign out" },
   "common": {
     "create": "Create", "save": "Save", "delete": "Delete", "name": "Name", "title": "Title", "status": "Status",

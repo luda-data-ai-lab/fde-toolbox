@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "홈", "diagnose": "진단", "analyze": "분석", "design": "설계", "build": "구축", "operate": "운영", "common": "공통" },
     "home": "홈", "engagements": "프로젝트(인게이지먼트)", "systems": "시스템 레지스트리", "files": "첨부파일",
-    "interfaces": "I/F 관리", "ontomap": "OntoMap 용어 사전", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "외부 연동(어댑터)", "assets": "자산 라이브러리", "audit": "감사 로그",
+    "interfaces": "I/F 관리", "ontomap": "OntoMap 용어 사전", "flowdesk": "FlowDesk", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "외부 연동(어댑터)", "assets": "자산 라이브러리", "audit": "감사 로그",
     "tenants": "고객사 관리", "users": "사용자 관리"
   },
   "layout": {
@@ -107,6 +107,18 @@
   "sessionType": { "interview": "현장 인터뷰", "coaching": "코칭" },
   "discoverySessionStatus": { "planned": "예정", "in_progress": "진행 중", "done": "완료" },
   "actionStatus": { "open": "미착수", "in_progress": "진행 중", "done": "완료", "cancelled": "취소" },
+  "flowdesk": {
+    "new": "새 흐름", "blank": "빈 캔버스", "needEngagement": "먼저 인게이지먼트를 선택하세요.", "importJson": "JSON 가져오기", "paired": "짝 있음",
+    "back": "목록으로", "saved": "저장됨", "add": "추가", "addNode": "노드 추가", "node": "노드", "edge": "연결선", "lanes": "스윔레인", "laneName": "레인 이름",
+    "hint": "노드 오른쪽 점을 끌어 다른 노드에 연결합니다. 노드를 레인 위로 옮기면 해당 레인에 배치됩니다. 선택 후 Delete 키로 삭제합니다.",
+    "createToBe": "To-Be 만들기", "createAsIs": "As-Is 만들기", "openToBe": "To-Be 열기", "openAsIs": "As-Is 열기",
+    "snapshots": "스냅샷", "snapshotNote": "스냅샷 메모", "takeSnapshot": "스냅샷 저장", "saveFirst": "변경 사항을 먼저 저장하세요.", "restore": "복원",
+    "confirmRestore": "이 스냅샷으로 캔버스를 되돌릴까요? 저장하지 않은 변경은 사라집니다.", "confirmDelete": "이 흐름과 스냅샷을 삭제할까요?",
+    "field": { "title": "제목", "kind": "구분", "perspective": "관점", "template": "템플릿", "pair": "짝 흐름", "nodes": "노드 수", "nodeType": "노드 유형", "label": "이름", "system": "시스템", "lane": "레인", "condition": "조건" }
+  },
+  "flowKind": { "as_is": "As-Is", "to_be": "To-Be" },
+  "perspective": { "business": "현업", "pm": "PM", "developer": "개발자", "executive": "경영진", "consultant": "컨설턴트" },
+  "flowNodeType": { "start": "시작", "end": "종료", "task": "업무", "decision": "분기", "system": "시스템", "document": "문서", "role": "역할", "note": "메모" },
   "ontomap": {
     "aliasHint": "생산팀: 배합표; BOM", "noDefinition": "정의 없음",
     "tab": { "glossary": "용어 사전", "candidates": "후보", "import": "엑셀 가져오기" },
@@ -157,6 +169,7 @@
     "activation_not_active": "이미 비활성 상태입니다.", "approval_reason_required": "승인 사유를 입력하세요.",
     "client_admin_approval_required": "고객사 관리자가 승인해야 합니다.", "adapter_disabled": "어댑터가 활성화되어 있지 않습니다. 프롬프트 복사 모드를 사용하세요.",
     "adapter_call_failed": "외부 연동 호출에 실패했습니다.", "llm_invalid_response": "LLM 응답이 형식에 맞지 않습니다.",
-    "invalid_adapter_config": "어댑터 설정값을 확인하세요."
+    "invalid_adapter_config": "어댑터 설정값을 확인하세요.",
+    "flow_already_paired": "이미 짝이 있는 흐름입니다.", "invalid_pair": "짝으로 연결할 수 없는 흐름입니다.", "invalid_flow_template": "흐름 템플릿 형식이 올바르지 않습니다."
   }
 }

@@ -476,3 +476,51 @@ export interface AdapterHealth {
   message: string | null;
   latency_ms: number;
 }
+export type FlowKind = "as_is" | "to_be";
+export type FlowNodeType = "start" | "end" | "task" | "decision" | "system" | "document" | "role" | "note";
+export interface FlowNode {
+  id: string;
+  type: FlowNodeType;
+  label: string;
+  lane: string | null;
+  system_id?: string | null;
+  position: { x: number; y: number };
+  data?: Record<string, unknown>;
+}
+export interface FlowEdge {
+  id: string;
+  source: string;
+  target: string;
+  label?: string | null;
+}
+export interface FlowGraph {
+  schema_version: 1;
+  lanes: string[];
+  nodes: FlowNode[];
+  edges: FlowEdge[];
+}
+export interface FlowSummary extends Base {
+  tenant_id: string;
+  engagement_id: string;
+  kind: FlowKind;
+  pair_id: string | null;
+  perspective: string;
+  title: string;
+  description: string | null;
+  template_ref: AssetRef | null;
+  node_count: number;
+}
+export interface Flow extends FlowSummary {
+  graph: FlowGraph;
+}
+export interface FlowSnapshot extends Base {
+  flow_id: string;
+  version: number;
+  note: string | null;
+  node_count: number;
+}
+export interface FlowTemplate extends AssetRef {
+  asset_key: string;
+  title: string;
+  graph: FlowGraph;
+}

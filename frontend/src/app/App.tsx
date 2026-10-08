@@ -19,6 +19,7 @@ import { AgentHubPage, TemplatePage } from "../modules/agenthub/AgentHubPage";
 import { DiscoveryQPage } from "../modules/discoveryq/DiscoveryQPage";
 import { InterfacesPage } from "../modules/interfaces/InterfacesPage";
 import { OntoMapPage } from "../modules/ontomap/OntoMapPage";
+import { FlowDeskPage } from "../modules/flowdesk/FlowDeskPage";
 import { ProjectPage } from "../modules/devtracker/ProjectPage";
 import { ProjectsPage } from "../modules/devtracker/ProjectsPage";
 
@@ -84,6 +85,7 @@ export function App() {
         <Route path="discoveryq" element={<DiscoveryQPage />} />
         <Route path="interfaces" element={<InterfacesPage />} />
         <Route path="ontomap" element={<OntoMapPage />} />
+        <Route path="flowdesk" element={<FlowDeskPage />} />
         <Route path="agenthub/templates/:assetId" element={<TemplatePage />} />
         <Route
           path="admin/tenants"

@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "홈", "diagnose": "진단", "analyze": "분석", "design": "설계", "build": "구축", "operate": "운영", "common": "공통" },
     "home": "홈", "engagements": "프로젝트(인게이지먼트)", "systems": "시스템 레지스트리", "files": "첨부파일",
-    "interfaces": "I/F 관리", "ontomap": "OntoMap 용어 사전", "flowdesk": "FlowDesk", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "외부 연동(어댑터)", "assets": "자산 라이브러리", "audit": "감사 로그",
+    "interfaces": "I/F 관리", "ontomap": "OntoMap 용어 사전", "flowdesk": "FlowDesk", "specforge": "SpecForge", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "외부 연동(어댑터)", "assets": "자산 라이브러리", "audit": "감사 로그",
     "tenants": "고객사 관리", "users": "사용자 관리"
   },
   "layout": {
@@ -117,6 +117,21 @@
     "confirmRestore": "이 스냅샷으로 캔버스를 되돌릴까요? 저장하지 않은 변경은 사라집니다.", "confirmDelete": "이 흐름과 스냅샷을 삭제할까요?",
     "field": { "title": "제목", "kind": "구분", "perspective": "관점", "template": "템플릿", "pair": "짝 흐름", "nodes": "노드 수", "nodeType": "노드 유형", "label": "이름", "system": "시스템", "lane": "레인", "condition": "조건" }
   },
+  "specforge": {
+    "new": "새 문서 조립", "needEngagement": "먼저 인게이지먼트를 선택하세요.", "assemble": "초안 조립", "back": "목록으로", "exportZip": "ZIP 내보내기",
+    "exportMd": "{{name}} 내려받기", "reassemble": "다시 조립", "confirmReassemble": "선택한 입력으로 초안을 다시 조립할까요? 편집한 내용은 사라집니다(먼저 버전을 저장하세요).",
+    "confirm": "확정", "reopen": "초안으로 되돌리기", "confirmDelete": "이 문서와 버전을 삭제할까요?", "unsaved": "저장하지 않은 변경이 있습니다.",
+    "editor": "Markdown 편집", "preview": "미리보기", "rulePackHint": "규칙팩은 Devin.md 템플릿의 '작업 규칙' 섹션에 들어갑니다.",
+    "enrich": "보강", "enrichHint": "LLM 어댑터가 활성화되어 있으면 바로 다듬고, 꺼져 있으면 프롬프트를 복사해 외부 도구에서 실행한 뒤 결과를 붙여넣습니다. 결과는 편집기에 저장하지 않은 변경으로 들어갑니다.",
+    "saveBeforeEnrich": "보강 전에 변경 사항을 저장하세요.", "instructions": "추가 지시(선택)", "makePrompt": "프롬프트 만들기", "enrichLlm": "LLM으로 보강",
+    "prompt": "프롬프트", "copy": "복사", "copied": "복사됨", "pasteResult": "결과 붙여넣기", "apply": "편집기에 적용",
+    "versions": "버전", "versionNote": "버전 메모", "saveVersion": "버전 저장", "saveFirst": "변경 사항을 먼저 저장하세요.", "restore": "복원",
+    "confirmRestore": "이 버전으로 편집기 내용을 되돌릴까요?", "diffFrom": "비교 기준", "diffTo": "비교 대상", "working": "현재 편집본", "noDiff": "차이가 없습니다.",
+    "source": { "interfaces": "I/F 목록", "glossary": "OntoMap 용어 사전(확정 용어)" },
+    "field": { "title": "제목", "docType": "문서 종류", "template": "템플릿", "rulePacks": "규칙팩", "sources": "입력 선택", "requirements": "자유 입력 요구사항", "versions": "버전 수", "updated": "수정일시", "version": "버전" }
+  },
+  "specDocType": { "spec": "Spec.md", "devin": "Devin.md" },
+  "specStatus": { "draft": "초안", "confirmed": "확정" },
   "flowKind": { "as_is": "As-Is", "to_be": "To-Be" },
   "perspective": { "business": "현업", "pm": "PM", "developer": "개발자", "executive": "경영진", "consultant": "컨설턴트" },
   "flowNodeType": { "start": "시작", "end": "종료", "task": "업무", "decision": "분기", "system": "시스템", "document": "문서", "role": "역할", "note": "메모" },
@@ -157,7 +172,7 @@
     "invalid_credentials": "이메일 또는 비밀번호가 올바르지 않습니다.", "validation_error": "입력값을 확인하세요.",
     "email_taken": "이미 사용 중인 이메일입니다.", "tenant_code_taken": "이미 사용 중인 고객사 코드입니다.",
     "home_tenant_required": "고객사 사용자는 소속 고객사가 필요합니다.", "file_too_large": "파일 크기가 제한을 초과했습니다.",
-    "file_type_not_allowed": "허용되지 않는 파일 형식입니다.", "invalid_reference": "참조 대상이 올바르지 않습니다.",
+    "file_type_not_allowed": "허용되지 않는 파일 형식입니다.", "invalid_reference": "참조 대상이 올바르지 않습니다.", "spec_template_missing": "게시된 문서 템플릿이 없습니다. 자산 라이브러리에서 템플릿을 등록하세요.", "invalid_spec_template": "문서 템플릿 형식이 올바르지 않습니다.",
     "invalid_cursor": "페이지 정보가 올바르지 않습니다.", "invalid_bundle": "내보내기 파일이 올바르지 않습니다.",
     "invalid_package": "자산 패키지가 올바르지 않습니다.", "unsupported_schema_version": "지원하지 않는 스키마 버전입니다.",
     "asset_version_frozen": "배포된 자산 버전은 수정할 수 없습니다.",

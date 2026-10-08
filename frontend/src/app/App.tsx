@@ -20,6 +20,7 @@ import { DiscoveryQPage } from "../modules/discoveryq/DiscoveryQPage";
 import { InterfacesPage } from "../modules/interfaces/InterfacesPage";
 import { OntoMapPage } from "../modules/ontomap/OntoMapPage";
 import { FlowDeskPage } from "../modules/flowdesk/FlowDeskPage";
+import { SpecForgePage } from "../modules/specforge/SpecForgePage";
 import { ManualPage } from "../manual/ManualPage";
 import { ProjectPage } from "../modules/devtracker/ProjectPage";
 import { ProjectsPage } from "../modules/devtracker/ProjectsPage";
@@ -87,6 +88,7 @@ export function App() {
         <Route path="interfaces" element={<InterfacesPage />} />
         <Route path="ontomap" element={<OntoMapPage />} />
         <Route path="flowdesk" element={<FlowDeskPage />} />
+        <Route path="specforge" element={<SpecForgePage />} />
         <Route path="manual" element={<ManualPage />} />
         <Route path="manual/:topic" element={<ManualPage />} />
         <Route path="agenthub/templates/:assetId" element={<TemplatePage />} />

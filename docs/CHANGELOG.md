@@ -13,6 +13,7 @@
 - LLM 어댑터(Anthropic SDK, 모델·최대 토큰·타임아웃 설정): `generate_markdown`, 스키마 검증 `generate_json`(실패 시 1회 재요청 후 `llm_invalid_response`), 연결 확인. 프롬프트 빌더·결과 파서(`app/core/prompting.py`)는 전송과 분리되어 프롬프트 복사 모드에서도 같은 파서를 쓴다. Agent Runtime·Git 어댑터는 규격과 설정 항목만 둠.
 - 어댑터 설정 화면(공통 › 외부 연동, `ADAPTERS_ALLOWED=true`일 때만 표시): 반출 범위 고지, 활성화 요청, 승인·반려·비활성화, 연결 확인.
 - FlowDesk 캔버스(설계 › FlowDesk, `@xyflow/react`): `flows`·`flow_snapshots`(마이그레이션 0007), 그래프 JSON `schema_version: 1` 검증(노드·연결선·스윔레인, 시스템 레지스트리 참조는 같은 고객사만), 게시된 `flow_template` 자산으로 시작(레인·열 자동 배치), As-Is/To-Be 짝(기존 흐름 연결 또는 그래프 복사로 짝 생성, 삭제·해제 시 짝 정리), 스냅샷 저장·복원(버전 번호), 내보내기 JSON·Mermaid(서버, 감사 로그 기록)·SVG·PNG(브라우저, 외부 리소스 없음), JSON 가져오기. E2E `e2e/flowdesk.spec.ts`.
+- SpecForge(설계 › SpecForge): `spec_documents`·`spec_versions`(마이그레이션 0009). 게시된 `spec_template`(Spec.md/Devin.md) 섹션에 선택한 입력을 규칙 기반으로 채움(LLM 없음): DiscoveryQ 세션 요약·인사이트·액션 아이템, FlowDesk 흐름(레인·단계·시스템), I/F 목록, OntoMap 확정 용어·부서별 호칭(Devin.md 데이터 모델에 용어 준수 지시), `rule_pack` 규칙(Devin.md 작업 규칙), 자유 입력 요구사항. 입력은 같은 고객사·인게이지먼트만 허용, 채울 입력이 없는 섹션은 `> TODO:`로 남김. Markdown 편집·미리보기, 다시 조립, 버전 저장·복원, unified diff(버전↔버전/현재 편집본), 초안/확정 상태, 보강(어댑터 꺼짐: 프롬프트 복사·결과 붙여넣기 / 활성: `llm` 어댑터 `generate_markdown`, 결과는 저장하지 않고 편집기에 반영), `Spec.md`/`Devin.md` 내려받기와 ZIP 내보내기(감사 로그 기록). 한/영 매뉴얼, E2E `e2e/specforge.spec.ts`.
 
 ### Added — Phase 1
 - DiscoveryQ Word 보고서(`python-docx`, 오프라인 생성): 세션 보고서 `GET /discoveryq/sessions/{id}/report.docx`, 인게이지먼트 진단 보고서 `GET /discoveryq/engagements/{id}/report.docx`(ko/en, 내보내기 권한, 감사 로그 기록).

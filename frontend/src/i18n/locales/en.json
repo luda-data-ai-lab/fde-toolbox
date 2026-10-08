@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "Home", "diagnose": "Diagnose", "analyze": "Analyze", "design": "Design", "build": "Build", "operate": "Operate", "common": "Common" },
     "home": "Home", "engagements": "Engagements", "systems": "System registry", "files": "Attachments",
-    "interfaces": "Interfaces", "ontomap": "OntoMap glossary", "flowdesk": "FlowDesk", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "Adapters", "assets": "Asset library", "audit": "Audit log",
+    "interfaces": "Interfaces", "ontomap": "OntoMap glossary", "flowdesk": "FlowDesk", "specforge": "SpecForge", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "Adapters", "assets": "Asset library", "audit": "Audit log",
     "tenants": "Customers", "users": "Users"
   },
   "layout": {
@@ -117,6 +117,21 @@
     "confirmRestore": "Restore the canvas to this snapshot? Unsaved changes will be lost.", "confirmDelete": "Delete this flow and its snapshots?",
     "field": { "title": "Title", "kind": "Kind", "perspective": "Perspective", "template": "Template", "pair": "Paired flow", "nodes": "Nodes", "nodeType": "Node type", "label": "Label", "system": "System", "lane": "Lane", "condition": "Condition" }
   },
+  "specforge": {
+    "new": "Assemble a new document", "needEngagement": "Select an engagement first.", "assemble": "Assemble draft", "back": "Back to list", "exportZip": "Export ZIP",
+    "exportMd": "Download {{name}}", "reassemble": "Re-assemble", "confirmReassemble": "Re-assemble the draft from the selected inputs? Your edits will be replaced (save a version first).",
+    "confirm": "Confirm", "reopen": "Back to draft", "confirmDelete": "Delete this document and its versions?", "unsaved": "You have unsaved changes.",
+    "editor": "Markdown editor", "preview": "Preview", "rulePackHint": "Rule packs go into the 'Work rules' section of the Devin.md template.",
+    "enrich": "Enrich", "enrichHint": "With an active LLM adapter the draft is refined directly; otherwise copy the prompt, run it in an external tool and paste the result. The result lands in the editor as an unsaved change.",
+    "saveBeforeEnrich": "Save your changes before enriching.", "instructions": "Extra instructions (optional)", "makePrompt": "Build prompt", "enrichLlm": "Enrich with LLM",
+    "prompt": "Prompt", "copy": "Copy", "copied": "Copied", "pasteResult": "Paste result", "apply": "Apply to editor",
+    "versions": "Versions", "versionNote": "Version note", "saveVersion": "Save version", "saveFirst": "Save your changes first.", "restore": "Restore",
+    "confirmRestore": "Restore the editor content to this version?", "diffFrom": "Compare from", "diffTo": "Compare to", "working": "Current working copy", "noDiff": "No differences.",
+    "source": { "interfaces": "I/F list", "glossary": "OntoMap glossary (confirmed terms)" },
+    "field": { "title": "Title", "docType": "Document type", "template": "Template", "rulePacks": "Rule packs", "sources": "Inputs", "requirements": "Free-form requirements", "versions": "Versions", "updated": "Updated", "version": "Version" }
+  },
+  "specDocType": { "spec": "Spec.md", "devin": "Devin.md" },
+  "specStatus": { "draft": "Draft", "confirmed": "Confirmed" },
   "flowKind": { "as_is": "As-Is", "to_be": "To-Be" },
   "perspective": { "business": "Business", "pm": "PM", "developer": "Developer", "executive": "Executive", "consultant": "Consultant" },
   "flowNodeType": { "start": "Start", "end": "End", "task": "Task", "decision": "Decision", "system": "System", "document": "Document", "role": "Role", "note": "Note" },
@@ -157,7 +172,7 @@
     "invalid_credentials": "Invalid email or password.", "validation_error": "Please check the input.",
     "email_taken": "Email already in use.", "tenant_code_taken": "Customer code already in use.",
     "home_tenant_required": "Customer users need a home customer.", "file_too_large": "File exceeds the size limit.",
-    "file_type_not_allowed": "File type not allowed.", "invalid_reference": "Invalid reference.",
+    "file_type_not_allowed": "File type not allowed.", "invalid_reference": "Invalid reference.", "spec_template_missing": "No published document template. Register one in the asset library.", "invalid_spec_template": "The document template is malformed.",
     "invalid_cursor": "Invalid page cursor.", "invalid_bundle": "Invalid export bundle.",
     "invalid_package": "Invalid asset package.", "unsupported_schema_version": "Unsupported schema version.",
     "asset_version_frozen": "Published asset versions cannot be modified.",

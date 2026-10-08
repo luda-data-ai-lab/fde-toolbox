@@ -14,6 +14,7 @@ describe("manual topics", () => {
 
   it("maps app routes to their topic", () => {
     expect(topicForPath("/flowdesk")).toBe("flowdesk");
+    expect(topicForPath("/specforge")).toBe("specforge");
     expect(topicForPath("/devtracker/projects/1")).toBe("devtracker");
     expect(topicForPath("/systems")).toBe("workspace");
     expect(topicForPath("/admin/users")).toBe("admin");

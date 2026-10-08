@@ -9,6 +9,7 @@ import { useWorkspace } from "../../app/store";
 import { Empty, ErrorText, Field, Loading, NeedTenant, PageHeader, Select, StatusBadge } from "../../components/ui";
 import { EngagementSelect } from "../discoveryq/EngagementSelect";
 import { FlowEditor } from "./FlowEditor";
+import { GenerateFlow } from "./GenerateFlow";
 import { FLOW_KINDS, PERSPECTIVES, flowKeys, flowPath } from "./shared";
 
 export function FlowDeskPage() {
@@ -46,6 +47,10 @@ function FlowList({ tenantId, onOpen }: { tenantId: string; onOpen: (id: string)
   });
   const items = data?.items ?? [];
   const titles = new Map(items.map((f) => [f.id, f.title]));
+  const created = (f: Flow) => {
+    void qc.invalidateQueries({ queryKey: keys.all });
+    onOpen(f.id);
+  };
   return (
     <div className="space-y-4">
       <div className="card flex flex-wrap items-end gap-3">
@@ -54,16 +59,8 @@ function FlowList({ tenantId, onOpen }: { tenantId: string; onOpen: (id: string)
           <Select value={kind} onChange={setKind} options={FLOW_KINDS} group="flowKind" allowEmpty />
         </Field>
       </div>
-      {canWrite && (
-        <CreateFlow
-          tenantId={tenantId}
-          engagementId={engagement}
-          onCreated={(f) => {
-            void qc.invalidateQueries({ queryKey: keys.all });
-            onOpen(f.id);
-          }}
-        />
-      )}
+      {canWrite && <CreateFlow tenantId={tenantId} engagementId={engagement} onCreated={created} />}
+      {canWrite && engagement && <GenerateFlow tenantId={tenantId} engagementId={engagement} onCreated={created} />}
       <div className="card">
         {isLoading ? (
           <Loading />

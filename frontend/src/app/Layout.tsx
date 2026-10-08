@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { api, tenantPath } from "../api/client";
 import type { Engagement, Page } from "../api/types";
 import { useMe, useTenantId } from "./hooks";
 import { navGroups, tenantListPath } from "./nav";
 import { useWorkspace } from "./store";
+import { topicForPath } from "../manual/topics";
 
 function TenantSelector() {
   const { t } = useTranslation();
@@ -73,6 +74,7 @@ export function Layout() {
   const { data: me } = useMe();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   const logout = useMutation({
     mutationFn: () => api<unknown>("/auth/logout", { method: "POST" }),
     onSettled: () => {
@@ -120,6 +122,9 @@ export function Layout() {
           <TenantSelector />
           <EngagementSelector />
           <div className="ml-auto flex items-center gap-3 text-sm">
+            <Link className="btn" to={`/manual/${topicForPath(pathname)}`}>
+              {t("layout.manual")}
+            </Link>
             <button className="btn" onClick={toggleLocale}>
               {t("layout.locale")}
             </button>

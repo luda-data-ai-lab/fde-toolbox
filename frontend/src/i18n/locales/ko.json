@@ -8,8 +8,9 @@
   },
   "layout": {
     "tenant": "고객사", "engagement": "인게이지먼트", "allEngagements": "전체 인게이지먼트",
-    "noTenant": "접근 가능한 고객사 없음", "locale": "English"
+    "noTenant": "접근 가능한 고객사 없음", "locale": "English", "manual": "매뉴얼"
   },
+  "manual": { "title": "사용자 매뉴얼", "contents": "목차" },
   "auth": { "email": "이메일", "password": "비밀번호", "login": "로그인", "logout": "로그아웃" },
   "common": {
     "create": "등록", "save": "저장", "delete": "삭제", "name": "이름", "title": "제목", "status": "상태",

@@ -3,6 +3,7 @@
 고객사 현장의 FDE(Forward Deployed Engineer)가 **진단 → 분석 → 설계 → 구축 → 운영** 단계를 하나의 과제(engagement) 안에서 이어서 다루는 오프라인 우선·멀티 테넌트 툴박스.
 
 - 기획 명세: [docs/Spec.md](docs/Spec.md) · 개발 지시서: [docs/Devin.md](docs/Devin.md) · 변경 이력: [docs/CHANGELOG.md](docs/CHANGELOG.md)
+- 사용자 매뉴얼(한/영): 앱 위쪽 **매뉴얼** 버튼, 원문 [frontend/src/manual/](frontend/src/manual/)
 - 가져오기·내보내기 형식: [docs/schemas/](docs/schemas/) · 설계 결정: [docs/adr/](docs/adr/)
 
 세 가지 원칙이 기능보다 우선한다.

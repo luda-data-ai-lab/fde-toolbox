@@ -179,7 +179,9 @@ def test_llm_generate_json_retries_once_and_audits_calls(
     assert result.steps == ["a", "b"]
     assert fake.keys == ["k-TA", "k-TA"]
     assert "JSON Schema" in fake.prompts[0] and "rejected" in fake.prompts[1]
-    calls = db.scalars(select(AuditLog).where(AuditLog.action == "adapter.call", AuditLog.target_id == aid)).all()
+    calls = db.scalars(
+        select(AuditLog).where(AuditLog.action == "adapter.call", AuditLog.target_id == aid).order_by(AuditLog.at)
+    ).all()
     assert len(calls) == 2
     assert calls[0].detail["feature"] == "flowdesk_generate"
     assert calls[0].detail["request_bytes"] == len(fake.prompts[0].encode())

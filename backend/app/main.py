@@ -23,6 +23,7 @@ from app.modules.agenthub.router import asset_router as agenthub_asset_router
 from app.modules.agenthub.router import router as agenthub_router
 from app.modules.devtracker.router import router as devtracker_router
 from app.modules.discoveryq.router import router as discoveryq_router
+from app.modules.exmigrate.router import router as exmigrate_router
 from app.modules.flowdesk.router import router as flowdesk_router
 from app.modules.interfaces.router import router as interfaces_router
 from app.modules.ontomap.router import router as ontomap_router
@@ -58,6 +59,7 @@ def api_router() -> APIRouter:
         discoveryq_router,
         ontomap_router,
         flowdesk_router,
+        exmigrate_router,
     ):
         api.include_router(r)
     return api

@@ -29,6 +29,7 @@ export function navGroups(role: Role | undefined, adaptersAllowed = false): NavG
       links: [
         ["/interfaces", "nav.interfaces"],
         ["/ontomap", "nav.ontomap"],
+        ["/exmigrate", "nav.exmigrate"],
       ],
     },
     { key: "design", links: [["/flowdesk", "nav.flowdesk"]] },

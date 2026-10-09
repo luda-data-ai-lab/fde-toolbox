@@ -524,3 +524,14 @@ export interface FlowTemplate extends AssetRef {
   title: string;
   graph: FlowGraph;
 }
+export interface FlowInsightOption {
+  id: string;
+  text: string;
+  tags: string[];
+  session_id: string;
+  session_title: string;
+}
+export interface FlowGeneratePrompt {
+  prompt: string;
+  llm_available: boolean;
+}

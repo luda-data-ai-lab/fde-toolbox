@@ -13,6 +13,7 @@
 - LLM 어댑터(Anthropic SDK, 모델·최대 토큰·타임아웃 설정): `generate_markdown`, 스키마 검증 `generate_json`(실패 시 1회 재요청 후 `llm_invalid_response`), 연결 확인. 프롬프트 빌더·결과 파서(`app/core/prompting.py`)는 전송과 분리되어 프롬프트 복사 모드에서도 같은 파서를 쓴다. Agent Runtime·Git 어댑터는 규격과 설정 항목만 둠.
 - 어댑터 설정 화면(공통 › 외부 연동, `ADAPTERS_ALLOWED=true`일 때만 표시): 반출 범위 고지, 활성화 요청, 승인·반려·비활성화, 연결 확인.
 - FlowDesk 캔버스(설계 › FlowDesk, `@xyflow/react`): `flows`·`flow_snapshots`(마이그레이션 0007), 그래프 JSON `schema_version: 1` 검증(노드·연결선·스윔레인, 시스템 레지스트리 참조는 같은 고객사만), 게시된 `flow_template` 자산으로 시작(레인·열 자동 배치), As-Is/To-Be 짝(기존 흐름 연결 또는 그래프 복사로 짝 생성, 삭제·해제 시 짝 정리), 스냅샷 저장·복원(버전 번호), 내보내기 JSON·Mermaid(서버, 감사 로그 기록)·SVG·PNG(브라우저, 외부 리소스 없음), JSON 가져오기. E2E `e2e/flowdesk.spec.ts`.
+- FlowDesk 흐름 생성: 관점별(현업·PM·개발자·경영진·컨설턴트) 프롬프트 빌더(업무 설명, 선택한 DiscoveryQ 인사이트, 시스템 레지스트리 이름, 결과 JSON 스키마), 결과 파서·정규화(알 수 없는 노드 유형→업무, 중복 노드·끊긴 연결선 제거, 시스템 이름/약칭→레지스트리 연결, 연결 순서 기반 자동 배치). `GET /flowdesk/insights`, `POST /flowdesk/generate/prompt`, `POST /flowdesk/generate`(`answer`가 있으면 프롬프트 복사 모드, 없으면 LLM 어댑터; 비활성 시 `adapter_disabled`, 형식 오류 시 `flow_result_invalid`). 감사 로그 `flowdesk.flow_generate`(방식·관점·인사이트 수·노드 수). E2E `e2e/flowdesk-generate.spec.ts`.
 
 ### Added — Phase 1
 - DiscoveryQ Word 보고서(`python-docx`, 오프라인 생성): 세션 보고서 `GET /discoveryq/sessions/{id}/report.docx`, 인게이지먼트 진단 보고서 `GET /discoveryq/engagements/{id}/report.docx`(ko/en, 내보내기 권한, 감사 로그 기록).

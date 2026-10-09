@@ -16,5 +16,6 @@ from app.modules.exmigrate import models as _exmigrate  # noqa: F401
 from app.modules.flowdesk import models as _flowdesk  # noqa: F401
 from app.modules.interfaces import models as _interfaces  # noqa: F401
 from app.modules.ontomap import models as _ontomap  # noqa: F401
+from app.modules.specforge import models as _specforge  # noqa: F401
 
 metadata = Base.metadata

@@ -21,6 +21,7 @@ import { InterfacesPage } from "../modules/interfaces/InterfacesPage";
 import { OntoMapPage } from "../modules/ontomap/OntoMapPage";
 import { FlowDeskPage } from "../modules/flowdesk/FlowDeskPage";
 import { ExMigratePage } from "../modules/exmigrate/ExMigratePage";
+import { SpecForgePage } from "../modules/specforge/SpecForgePage";
 import { ManualPage } from "../manual/ManualPage";
 import { ProjectPage } from "../modules/devtracker/ProjectPage";
 import { ProjectsPage } from "../modules/devtracker/ProjectsPage";
@@ -89,6 +90,7 @@ export function App() {
         <Route path="ontomap" element={<OntoMapPage />} />
         <Route path="flowdesk" element={<FlowDeskPage />} />
         <Route path="exmigrate" element={<ExMigratePage />} />
+        <Route path="specforge" element={<SpecForgePage />} />
         <Route path="manual" element={<ManualPage />} />
         <Route path="manual/:topic" element={<ManualPage />} />
         <Route path="agenthub/templates/:assetId" element={<TemplatePage />} />

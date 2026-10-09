@@ -50,4 +50,4 @@ def test_home_dashboard(world: World) -> None:
     assert home["tenants"][0]["devtracker"]["open_tasks"] == 1
     assert home["tenants"][0]["agenthub"]["instances_by_status"] == {"ready": 1}
     admin_home = world.admin.get("/api/v1/home").json()
-    assert admin_home["totals"]["tenants"] == 2 and admin_home["totals"]["assets"] == 1
+    assert admin_home["totals"]["tenants"] == 2 and admin_home["totals"]["assets"] == 4

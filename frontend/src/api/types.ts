@@ -524,6 +524,52 @@ export interface FlowTemplate extends AssetRef {
   title: string;
   graph: FlowGraph;
 }
+export type SpecDocType = "spec" | "devin";
+export type SpecDocStatus = "draft" | "confirmed";
+export interface SpecSources {
+  discovery_session_ids: string[];
+  flow_ids: string[];
+  interfaces: boolean;
+  glossary: boolean;
+  requirements: string | null;
+}
+export interface SpecDocumentSummary extends Base {
+  engagement_id: string;
+  doc_type: SpecDocType;
+  title: string;
+  status: SpecDocStatus;
+  template_ref: AssetRef | null;
+  rule_pack_refs: AssetRef[];
+  source_refs: SpecSources;
+  version_count: number;
+}
+export interface SpecDocument extends SpecDocumentSummary {
+  content_md: string;
+}
+export interface SpecVersion extends Base {
+  document_id: string;
+  version: number;
+  note: string | null;
+}
+export interface SpecVersionDetail extends SpecVersion {
+  content_md: string;
+}
+export interface SpecTemplate extends AssetRef {
+  asset_key: string;
+  title: string;
+  doc: SpecDocType;
+  sections: { key: string; title: string; rule: string | null }[];
+}
+export interface SpecRulePack extends AssetRef {
+  asset_key: string;
+  title: string;
+  rules: string[];
+}
+export interface SpecDiff {
+  from_label: string;
+  to_label: string;
+  diff: string;
+}
 
 export type XlColumnType = "integer" | "decimal" | "boolean" | "date" | "datetime" | "text";
 

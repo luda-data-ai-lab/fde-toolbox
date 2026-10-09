@@ -1,4 +1,5 @@
 import io
+import json
 import os
 import tempfile
 from collections.abc import Iterator
@@ -250,6 +251,23 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
     )["id"]
     _ok(fde.post(f"{flows}/{ids['flow_id']}/pair", json={}))
     ids["snapshot_id"] = _ok(fde.post(f"{flows}/{ids['flow_id']}/snapshots", json={"note": f"v1 {code}"}))["id"]
+    docs = f"{base}/specforge/documents"
+    ids["document_id"] = _ok(
+        fde.post(
+            docs,
+            json={
+                "engagement_id": ids["engagement_id"],
+                "doc_type": "spec",
+                "title": f"Spec {code}",
+                "sources": {
+                    "discovery_session_ids": [ids["session_id"]],
+                    "flow_ids": [ids["flow_id"]],
+                    "glossary": True,
+                },
+            },
+        )
+    )["id"]
+    ids["version_id"] = _ok(fde.post(f"{docs}/{ids['document_id']}/versions", json={"note": f"v1 {code}"}))["id"]
     wb = Workbook()
     ws = wb.active
     assert ws is not None
@@ -286,6 +304,10 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
         fde_id=fde_id,
         ids=ids,
     )
+
+
+SEED_DIR = Path(__file__).resolve().parents[1] / "seeds" / "assets"
+SPEC_SEEDS = ("doc-templates.json", "rule-pack-default.json")
 
 
 def build_template(admin: TestClient) -> dict[str, Any]:
@@ -327,6 +349,8 @@ def build_template(admin: TestClient) -> dict[str, Any]:
 @pytest.fixture
 def world(admin: TestClient, db: Session) -> World:
     template = build_template(admin)
+    for name in SPEC_SEEDS:
+        _ok(admin.post("/api/v1/assets/import", json=json.loads((SEED_DIR / name).read_text(encoding="utf-8"))), 200)
     return World(
         admin=admin,
         a=build_tenant(admin, db, "TA", template),

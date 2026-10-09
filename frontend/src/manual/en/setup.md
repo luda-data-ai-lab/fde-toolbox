@@ -25,7 +25,7 @@ python -m app.cli init-admin --email admin@example.com --password "Admin1234!"
 python -m app.cli seed-assets
 ```
 
-In `notepad .env`, paste the two printed values into `SECRET_KEY` and `ENCRYPTION_KEY`. For demo data, run `python -m app.cli seed-demo --password "Demo1234!"`.
+In `notepad .env`, paste the two printed values into `SECRET_KEY` and `ENCRYPTION_KEY`. For demo data, run `python -m app.cli seed-demo --password "Demo1234!"`. For a fictional MES company with data in every module (Hanbit Precision, CNC-machined auto parts), run `python -m app.cli seed-sample --password "Sample1234!"` and sign in as `fde@hanbit.local`.
 
 > If `Activate.ps1` is blocked, run `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass` first.
 

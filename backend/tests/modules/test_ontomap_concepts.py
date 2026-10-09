@@ -60,7 +60,7 @@ def test_concept_crud_inheritance_and_relations(world: World) -> None:
     assert lot_d["name"] == "생산 로트" and lot_d["ancestors"][0]["kind"] == "upper"
     assert lot_d["ancestors"][0]["id"] == "lot" and "로트번호" in [p["name"] for p in lot_d["inherited_properties"]]
     assert any(r["name"] == "inspected_by" and r["target"] == "품질검사" for r in lot_d["inherited_relations"])
-    assert lot_d["warnings"] == []
+    assert [w["code"] for w in lot_d["warnings"]] == ["unmapped_concept"]
 
     attr = fde.post(
         f"{base}/concepts/{lot_d['id']}/attributes", json={"name": "LOT 번호", "data_type": "code", "required": True}

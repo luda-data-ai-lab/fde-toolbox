@@ -20,6 +20,7 @@ export const DATA_TYPES = [
   "code",
 ] as const;
 export const CARDINALITIES = ["1:1", "1:N", "N:M"] as const;
+export const MAPPING_ORIGINS = ["manual", "exmigrate", "interface"] as const;
 
 export function ontoPath(tenantId: string | null, path: string): string {
   return tenantPath(tenantId, `/ontomap${path}`);
@@ -36,6 +37,8 @@ export function ontoKeys(tenantId: string | null) {
     concept: (id: string) => ["ontomap", tenantId, "concepts", id] as const,
     upper: ["ontomap", tenantId, "upper"] as const,
     validation: ["ontomap", tenantId, "validation"] as const,
+    sources: ["ontomap", tenantId, "mapping-sources"] as const,
+    coverage: ["ontomap", tenantId, "coverage"] as const,
   };
 }
 

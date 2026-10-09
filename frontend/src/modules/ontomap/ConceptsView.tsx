@@ -24,6 +24,7 @@ import {
   ontoKeys,
   ontoPath,
 } from "./shared";
+import { MappingsSection } from "./MappingsSection";
 
 type ParentBody = {
   parent_ref: UpperRef | null;
@@ -573,6 +574,8 @@ function ConceptDetailPanel({
           </form>
         )}
       </section>
+
+      <MappingsSection tenantId={tenantId} concept={c} />
 
       {c.terms.length > 0 && (
         <section>

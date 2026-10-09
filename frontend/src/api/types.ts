@@ -145,7 +145,11 @@ export interface Issue extends Base {
   status: string;
   priority: string;
   description: string | null;
-  source: { module: "agenthub"; instance_id: string; note: string | null } | null;
+  source: {
+    module: "agenthub";
+    instance_id: string;
+    note: string | null;
+  } | null;
 }
 export interface ProjectDashboard {
   project: Project;
@@ -487,7 +491,15 @@ export interface AdapterHealth {
   latency_ms: number;
 }
 export type FlowKind = "as_is" | "to_be";
-export type FlowNodeType = "start" | "end" | "task" | "decision" | "system" | "document" | "role" | "note";
+export type FlowNodeType =
+  | "start"
+  | "end"
+  | "task"
+  | "decision"
+  | "system"
+  | "document"
+  | "role"
+  | "note";
 export interface FlowNode {
   id: string;
   type: FlowNodeType;
@@ -582,7 +594,8 @@ export interface SpecDiff {
   diff: string;
 }
 
-export type XlColumnType = "integer" | "decimal" | "boolean" | "date" | "datetime" | "text";
+export type XlColumnType =
+  "integer" | "decimal" | "boolean" | "date" | "datetime" | "text";
 
 export interface XlColumnReport {
   letter: string;
@@ -732,20 +745,74 @@ export interface UpperOntology {
   asset_key: string;
   title: string;
   namespace: string | null;
-  concepts: { key: string; name: string; definition: string | null; parent_key: string | null; properties: string[] }[];
+  concepts: {
+    key: string;
+    name: string;
+    definition: string | null;
+    parent_key: string | null;
+    properties: string[];
+  }[];
   relations: { source: string; name: string; target: string }[];
 }
 export interface ValidationIssue {
-  code: "orphan_concept" | "duplicate_concept" | "term_without_definition" | "dangling_upper_ref";
+  code:
+    | "orphan_concept"
+    | "duplicate_concept"
+    | "term_without_definition"
+    | "dangling_upper_ref"
+    | "unmapped_concept";
   target_type: "onto_concept" | "onto_term";
   target_id: string;
   name: string;
 }
+export type MappingKind = "concept" | "attribute" | "relation";
+export type MappingOrigin = "manual" | "exmigrate" | "interface";
+export interface OntoMapping extends Base {
+  target_kind: MappingKind;
+  target_id: string;
+  concept_id: string;
+  system_id: string | null;
+  table_name: string | null;
+  column_name: string | null;
+  interface_id: string | null;
+  origin: MappingOrigin;
+  notes: string | null;
+}
+export interface MappingSources {
+  systems: { id: string; name: string }[];
+  interfaces: { id: string; if_code: string; name: string }[];
+  erd_tables: {
+    analysis_id: string;
+    filename: string;
+    table: string;
+    label: string;
+    columns: string[];
+  }[];
+}
+export interface CoverageRow {
+  concept_id: string;
+  name: string;
+  status: ConceptStatus;
+  mapping_count: number;
+  systems: string[];
+  attributes_total: number;
+  unmapped_attributes: string[];
+}
 export interface OntoConceptDetail extends OntoConcept {
   attributes: OntoAttribute[];
   relations: OntoRelation[];
-  ancestors: { kind: "concept" | "upper"; id: string; name: string; ontology: string | null }[];
-  inherited_properties: { name: string; data_type: string | null; origin: string }[];
+  mappings: OntoMapping[];
+  ancestors: {
+    kind: "concept" | "upper";
+    id: string;
+    name: string;
+    ontology: string | null;
+  }[];
+  inherited_properties: {
+    name: string;
+    data_type: string | null;
+    origin: string;
+  }[];
   inherited_relations: { name: string; target: string; origin: string }[];
   terms: OntoTerm[];
   warnings: ValidationIssue[];

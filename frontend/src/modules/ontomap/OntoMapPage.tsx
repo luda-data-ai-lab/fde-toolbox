@@ -13,11 +13,13 @@ import { ConceptsView } from "./ConceptsView";
 import { GlossaryView } from "./GlossaryView";
 import { ImportPanel } from "./ImportPanel";
 import { ValidationView } from "./ValidationView";
+import { CoverageView } from "./CoverageView";
 
 const TABS = [
   "glossary",
   "concepts",
   "candidates",
+  "coverage",
   "validation",
   "import",
 ] as const;
@@ -41,7 +43,11 @@ export function OntoMapPage() {
         actions={
           <>
             {canWrite && (
-              <Link className="btn" data-testid="send-specforge" to={handoffUrl("/specforge", { glossary: true })}>
+              <Link
+                className="btn"
+                data-testid="send-specforge"
+                to={handoffUrl("/specforge", { glossary: true })}
+              >
                 {t("handoff.toSpecForge")}
               </Link>
             )}
@@ -77,6 +83,7 @@ export function OntoMapPage() {
       {tab === "glossary" && <GlossaryView tenantId={tenantId} />}
       {tab === "concepts" && <ConceptsView tenantId={tenantId} />}
       {tab === "candidates" && <CandidatesView tenantId={tenantId} />}
+      {tab === "coverage" && <CoverageView tenantId={tenantId} />}
       {tab === "validation" && <ValidationView tenantId={tenantId} />}
       {tab === "import" && canWrite && <ImportPanel tenantId={tenantId} />}
     </div>

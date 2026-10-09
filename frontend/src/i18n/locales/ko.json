@@ -160,7 +160,7 @@
   "flowNodeType": { "start": "시작", "end": "종료", "task": "업무", "decision": "분기", "system": "시스템", "document": "문서", "role": "역할", "note": "메모" },
   "ontomap": {
     "aliasHint": "생산팀: 배합표; BOM", "noDefinition": "정의 없음",
-    "tab": { "glossary": "용어 사전", "concepts": "개념 모델", "candidates": "후보", "validation": "검증", "import": "엑셀 가져오기" },
+    "tab": { "glossary": "용어 사전", "concepts": "개념 모델", "candidates": "후보", "coverage": "매핑 커버리지", "validation": "검증", "import": "엑셀 가져오기" },
     "concept": {
       "new": "개념 등록", "name": "개념 이름", "parent": "상위 개념", "changeParent": "상위 개념 변경", "changeStatus": "상태 변경", "ownerDept": "담당 부서",
       "tenantConcepts": "고객사 개념", "attributes": "속성", "attributeName": "속성 이름", "addAttribute": "속성 추가", "dataType": "데이터 형식", "unit": "단위", "required": "필수",
@@ -171,7 +171,16 @@
       "hint": "검증 결과는 경고일 뿐 저장을 막지 않습니다. 순환 상속만 저장할 때 거부됩니다.", "target": "대상", "issue": "경고",
       "orphan_concept": "상위 개념이 없습니다(상위 온톨로지나 다른 개념을 상속하세요).", "duplicate_concept": "이름이 같은 개념이 있습니다.",
       "term_without_definition": "확정된 용어에 정의가 없습니다.", "dangling_upper_ref": "상속한 상위 온톨로지 개념을 찾을 수 없습니다.",
+      "unmapped_concept": "확정된 개념에 데이터 매핑이 없습니다.",
       "type": { "onto_concept": "개념", "onto_term": "용어" }
+    },
+    "mapping": {
+      "title": "데이터 매핑", "hint": "개념은 시스템(+테이블), 속성은 컬럼, 관계는 외래키 컬럼이나 I/F에 매핑합니다.", "target": "매핑 대상", "system": "시스템", "table": "테이블", "column": "컬럼",
+      "interface": "I/F", "origin": "매핑 출처", "notes": "메모", "add": "매핑 추가", "kind": { "concept": "개념", "attribute": "속성", "relation": "관계" },
+      "originValue": { "manual": "수동", "exmigrate": "ExMigrate", "interface": "I/F" }, "erdHint": "ExMigrate에서 확정한 ERD 테이블·컬럼을 목록에서 고를 수 있습니다."
+    },
+    "coverage": {
+      "hint": "개념별로 매핑된 시스템 수와 아직 매핑되지 않은 속성을 보여줍니다.", "concept": "개념", "mappings": "매핑 수", "systems": "매핑된 시스템", "attributes": "속성 매핑", "unmapped": "미매핑 속성"
     },
     "term": { "new": "용어 등록", "edit": "용어 수정" },
     "field": { "term": "표준 용어", "definition": "정의", "abbreviation": "약어", "aliases": "부서별 호칭", "department": "부서", "status": "상태", "notes": "비고" },
@@ -207,7 +216,7 @@
   "errors": {
     "workbook_invalid": "엑셀 파일을 읽을 수 없습니다.", "erd_invalid": "ERD에 고칠 점이 있어 확정할 수 없습니다.", "erd_not_confirmed": "먼저 ERD를 확정하세요.",
     "flow_result_invalid": "LLM 결과를 흐름으로 바꾸지 못했습니다. JSON 형식과 노드·연결선을 확인하세요.",
-    "inheritance_cycle": "순환 상속이 됩니다. 다른 상위 개념을 고르세요.", "unknown": "요청을 처리하지 못했습니다.", "invalid_json": "JSON 형식이 올바르지 않습니다.",
+    "inheritance_cycle": "순환 상속이 됩니다. 다른 상위 개념을 고르세요.", "mapping_incomplete": "매핑 위치가 부족합니다. 개념은 시스템, 속성은 컬럼, 관계는 I/F나 컬럼이 필요합니다.", "unknown": "요청을 처리하지 못했습니다.", "invalid_json": "JSON 형식이 올바르지 않습니다.",
     "not_found": "대상을 찾을 수 없습니다.", "forbidden": "권한이 없습니다.", "unauthorized": "로그인이 필요합니다.",
     "invalid_credentials": "이메일 또는 비밀번호가 올바르지 않습니다.", "validation_error": "입력값을 확인하세요.",
     "email_taken": "이미 사용 중인 이메일입니다.", "tenant_code_taken": "이미 사용 중인 고객사 코드입니다.",

@@ -16,7 +16,7 @@ from app.core.refs import ensure_tenant_ref
 from app.core.schemas import dump_patch
 from app.core.tenancy.context import TenantContext
 from app.core.tenancy.repository import TenantScopedRepository
-from app.modules.ontomap.models import OntoAttribute, OntoConcept, OntoRelation, OntoTerm
+from app.modules.ontomap.models import OntoAttribute, OntoConcept, OntoMapping, OntoRelation, OntoTerm
 from app.modules.ontomap.schemas import (
     Ancestor,
     AttributeIn,
@@ -28,6 +28,7 @@ from app.modules.ontomap.schemas import (
     ConceptPatch,
     InheritedProperty,
     InheritedRelation,
+    MappingOut,
     RelationIn,
     RelationOut,
     RelationPatch,
@@ -52,6 +53,15 @@ def _attributes(db: Session, ctx: TenantContext) -> TenantScopedRepository[OntoA
 
 def _relations(db: Session, ctx: TenantContext) -> TenantScopedRepository[OntoRelation]:
     return TenantScopedRepository(db, ctx, OntoRelation)
+
+
+def _drop_mappings(db: Session, ctx: TenantContext, target_ids: list[str]) -> None:
+    """Mappings point at their target by id only, so they are removed through the ORM before the target."""
+    if not target_ids:
+        return
+    repo = TenantScopedRepository(db, ctx, OntoMapping)
+    for m in repo.all(repo.query().where(OntoMapping.target_id.in_(target_ids))):
+        repo.delete(m)
 
 
 # --- upper ontology (read-only assets) ----------------------------------------
@@ -193,6 +203,9 @@ def delete_concept(ctx: TenantContext, db: Session, concept: OntoConcept) -> str
         .where(OntoTerm.tenant_id == ctx.tenant_id, OntoTerm.concept_id == concept_id)
         .values(concept_id=None)
     )
+    rels = _relations(db, ctx)
+    incoming = rels.all(rels.query().where(OntoRelation.target_concept_id == concept_id))
+    _drop_mappings(db, ctx, [r.id for r in incoming])
     _concepts(db, ctx).delete(concept)
     return concept_id
 
@@ -220,6 +233,7 @@ def delete_attribute(ctx: TenantContext, db: Session, attr: OntoAttribute) -> st
         .where(OntoConcept.tenant_id == ctx.tenant_id, OntoConcept.id_attribute_id == attr_id)
         .values(id_attribute_id=None)
     )
+    _drop_mappings(db, ctx, [attr_id])
     _attributes(db, ctx).delete(attr)
     return attr_id
 
@@ -255,6 +269,7 @@ def update_relation(ctx: TenantContext, db: Session, rel: OntoRelation, body: Re
 @audited("ontomap.relation_delete", "onto_relation")
 def delete_relation(ctx: TenantContext, db: Session, rel: OntoRelation) -> str:
     rel_id = rel.id
+    _drop_mappings(db, ctx, [rel_id])
     _relations(db, ctx).delete(rel)
     return rel_id
 
@@ -322,12 +337,17 @@ def concept_detail(db: Session, ctx: TenantContext, concept: OntoConcept) -> Con
                 key = uc.parent_key
 
     terms = _terms_for(db, ctx, concept.id)
+    maps = TenantScopedRepository(db, ctx, OntoMapping)
+    mappings = maps.all(
+        maps.query().where(OntoMapping.concept_id == concept.id).order_by(OntoMapping.created_at, OntoMapping.id)
+    )
     return ConceptDetail(
         **concept_out(concept).model_dump(),
         attributes=[AttributeOut.model_validate(a) for a in attrs[concept.id]],
         relations=[
             RelationOut.model_validate(r) for r in all_rels if concept.id in (r.source_concept_id, r.target_concept_id)
         ],
+        mappings=[MappingOut.model_validate(m) for m in mappings],
         ancestors=ancestors,
         inherited_properties=props,
         inherited_relations=inherited_rels,
@@ -351,8 +371,13 @@ def validate(db: Session, ctx: TenantContext) -> list[ValidationIssue]:
     issues: list[ValidationIssue] = []
     by_name: dict[str, list[OntoConcept]] = defaultdict(list)
     uppers: dict[tuple[str, int], UpperOntologyOut | None] = {}
+    mapped = set(db.scalars(select(OntoMapping.concept_id).where(OntoMapping.tenant_id == ctx.tenant_id)).all())
     for c in concepts:
         by_name[normalize(c.name)].append(c)
+        if c.status == "confirmed" and c.id not in mapped:
+            issues.append(
+                ValidationIssue(code="unmapped_concept", target_type="onto_concept", target_id=c.id, name=c.name)
+            )
         ref = _ref(c)
         if ref is None and c.parent_concept_id is None:
             issues.append(

@@ -144,3 +144,40 @@ class FlowDocument(BaseModel):
 class ImportIn(BaseModel):
     engagement_id: str
     document: FlowDocument
+
+
+class GenerateIn(BaseModel):
+    """Inputs for a generated flow: free description and/or DiscoveryQ insights of the engagement."""
+
+    engagement_id: str
+    title: str = Field(min_length=1, max_length=200)
+    kind: FlowKind = "as_is"
+    perspective: Perspective = "business"
+    description: str = Field(default="", max_length=8000)
+    insight_ids: list[str] = Field(default_factory=list, max_length=50)
+    lang: Literal["ko", "en"] = "ko"
+
+    @model_validator(mode="after")
+    def _has_input(self) -> Self:
+        if not self.description.strip() and not self.insight_ids:
+            raise ValueError("description or insight_ids is required")
+        return self
+
+
+class GenerateRun(GenerateIn):
+    """`answer` is the pasted LLM result (prompt-copy mode); without it the LLM adapter is called."""
+
+    answer: str | None = Field(default=None, max_length=200_000)
+
+
+class GeneratePrompt(BaseModel):
+    prompt: str
+    llm_available: bool
+
+
+class InsightOption(BaseModel):
+    id: str
+    text: str
+    tags: list[str]
+    session_id: str
+    session_title: str

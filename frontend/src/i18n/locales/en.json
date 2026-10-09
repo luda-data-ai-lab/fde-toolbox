@@ -115,6 +115,7 @@
     "createToBe": "Create To-Be", "createAsIs": "Create As-Is", "openToBe": "Open To-Be", "openAsIs": "Open As-Is",
     "snapshots": "Snapshots", "snapshotNote": "Snapshot note", "takeSnapshot": "Save snapshot", "saveFirst": "Save your changes first.", "restore": "Restore",
     "confirmRestore": "Restore the canvas to this snapshot? Unsaved changes will be lost.", "confirmDelete": "Delete this flow and its snapshots?",
+    "gen": {"title": "Generate a flow (prompt / LLM)", "intro": "Build a flow from a process description or DiscoveryQ insights. With external integrations off, copy the prompt into an external LLM and paste the JSON it returns below.", "description": "Process description", "descriptionHint": "e.g. Sales takes the order, production checks stock…", "insights": "DiscoveryQ insights", "noInsights": "This engagement has no insights.", "makePrompt": "Build prompt", "runLlm": "Generate with LLM", "running": "Generating…", "prompt": "Prompt", "copy": "Copy prompt", "copied": "Copied", "answer": "Paste LLM result", "answerHint": "Paste the JSON returned by the LLM as is.", "fromAnswer": "Create flow from result"},
     "field": { "title": "Title", "kind": "Kind", "perspective": "Perspective", "template": "Template", "pair": "Paired flow", "nodes": "Nodes", "nodeType": "Node type", "label": "Label", "system": "System", "lane": "Lane", "condition": "Condition" }
   },
   "specforge": {
@@ -167,6 +168,7 @@
   },
   "adapterStatus": { "not_configured": "Not configured", "requested": "Awaiting approval", "active": "Active", "disabled": "Disabled" },
   "errors": {
+    "flow_result_invalid": "Couldn't turn the LLM result into a flow. Check the JSON format, nodes and connections.",
     "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
     "not_found": "Not found.", "forbidden": "Permission denied.", "unauthorized": "Please sign in.",
     "invalid_credentials": "Invalid email or password.", "validation_error": "Please check the input.",

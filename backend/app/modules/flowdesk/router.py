@@ -6,7 +6,7 @@ from app.core.auth.deps import DB
 from app.core.exports import attachment
 from app.core.pagination import Page
 from app.core.tenancy.deps import Ctx, ExportCtx, WriteCtx, path_entity, repo
-from app.modules.flowdesk import service
+from app.modules.flowdesk import generation, service
 from app.modules.flowdesk.models import Flow
 from app.modules.flowdesk.schemas import (
     FlowIn,
@@ -14,7 +14,11 @@ from app.modules.flowdesk.schemas import (
     FlowOut,
     FlowPatch,
     FlowSummary,
+    GenerateIn,
+    GeneratePrompt,
+    GenerateRun,
     ImportIn,
+    InsightOption,
     PairIn,
     SnapshotIn,
     SnapshotOut,
@@ -54,6 +58,21 @@ def list_flows(
 @router.post("/flows", response_model=FlowOut, status_code=201)
 def create_flow(body: FlowIn, ctx: WriteCtx, db: DB) -> FlowOut:
     return service.flow_out(service.create_flow(ctx, db, body))
+
+
+@router.get("/insights", response_model=list[InsightOption])
+def insights(ctx: Ctx, db: DB, engagement_id: str | None = None) -> list[InsightOption]:
+    return generation.list_insights(db, ctx, engagement_id)
+
+
+@router.post("/generate/prompt", response_model=GeneratePrompt)
+def generate_prompt(body: GenerateIn, ctx: WriteCtx, db: DB) -> GeneratePrompt:
+    return service.generate_prompt(ctx, db, body)
+
+
+@router.post("/generate", response_model=FlowOut, status_code=201)
+def generate_flow(body: GenerateRun, ctx: WriteCtx, db: DB) -> FlowOut:
+    return service.flow_out(service.generate_flow(ctx, db, body))
 
 
 @router.post("/flows/import", response_model=FlowOut, status_code=201)

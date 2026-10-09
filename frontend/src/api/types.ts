@@ -570,3 +570,15 @@ export interface SpecDiff {
   to_label: string;
   diff: string;
 }
+
+export interface FlowInsightOption {
+  id: string;
+  text: string;
+  tags: string[];
+  session_id: string;
+  session_title: string;
+}
+export interface FlowGeneratePrompt {
+  prompt: string;
+  llm_available: boolean;
+}

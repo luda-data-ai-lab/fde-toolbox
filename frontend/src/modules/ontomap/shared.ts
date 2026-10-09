@@ -9,6 +9,18 @@ export const CANDIDATE_STATUSES = [
   "ignored",
 ] as const;
 
+export const CONCEPT_STATUSES = ["draft", "confirmed", "deprecated"] as const;
+export const DATA_TYPES = [
+  "string",
+  "integer",
+  "decimal",
+  "boolean",
+  "date",
+  "datetime",
+  "code",
+] as const;
+export const CARDINALITIES = ["1:1", "1:N", "N:M"] as const;
+
 export function ontoPath(tenantId: string | null, path: string): string {
   return tenantPath(tenantId, `/ontomap${path}`);
 }
@@ -20,6 +32,10 @@ export function ontoKeys(tenantId: string | null) {
       ["ontomap", tenantId, "terms", filters] as const,
     candidates: (filters: object) =>
       ["ontomap", tenantId, "candidates", filters] as const,
+    concepts: ["ontomap", tenantId, "concepts"] as const,
+    concept: (id: string) => ["ontomap", tenantId, "concepts", id] as const,
+    upper: ["ontomap", tenantId, "upper"] as const,
+    validation: ["ontomap", tenantId, "validation"] as const,
   };
 }
 

@@ -6,26 +6,42 @@ from app.core.auth.deps import DB
 from app.core.exports import attachment
 from app.core.pagination import Page
 from app.core.tenancy.deps import Ctx, ExportCtx, WriteCtx, path_entity, repo
-from app.modules.ontomap import service
-from app.modules.ontomap.models import OntoCandidate, OntoTerm
+from app.modules.ontomap import concepts, service
+from app.modules.ontomap.models import OntoAttribute, OntoCandidate, OntoConcept, OntoRelation, OntoTerm
 from app.modules.ontomap.schemas import (
     AcceptIn,
+    AttributeIn,
+    AttributeOut,
+    AttributePatch,
     CandidateIn,
     CandidateOut,
     CandidateSource,
     CandidateStatus,
+    ConceptDetail,
+    ConceptIn,
+    ConceptOut,
+    ConceptPatch,
+    ConceptStatus,
     ImportResult,
     MergeIn,
+    RelationIn,
+    RelationOut,
+    RelationPatch,
     TermIn,
     TermOut,
     TermPatch,
     TermStatus,
+    UpperOntologyOut,
+    ValidationReport,
 )
 
 router = APIRouter(prefix="/t/{tenant_id}/ontomap", tags=["ontomap"])
 
 TermDep = Annotated[OntoTerm, Depends(path_entity(OntoTerm, "term_id"))]
 CandidateDep = Annotated[OntoCandidate, Depends(path_entity(OntoCandidate, "candidate_id"))]
+ConceptDep = Annotated[OntoConcept, Depends(path_entity(OntoConcept, "concept_id"))]
+AttributeDep = Annotated[OntoAttribute, Depends(path_entity(OntoAttribute, "attribute_id"))]
+RelationDep = Annotated[OntoRelation, Depends(path_entity(OntoRelation, "relation_id"))]
 XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
@@ -139,3 +155,89 @@ def ignore_candidate(candidate: CandidateDep, ctx: WriteCtx, db: DB) -> Candidat
 @router.post("/candidates/{candidate_id}/reopen", response_model=CandidateOut)
 def reopen_candidate(candidate: CandidateDep, ctx: WriteCtx, db: DB) -> CandidateOut:
     return _candidate_out(db, ctx, service.reopen_candidate(ctx, db, candidate))
+
+
+@router.get("/upper-ontologies", response_model=list[UpperOntologyOut])
+def list_upper_ontologies(ctx: Ctx, db: DB) -> list[UpperOntologyOut]:
+    return concepts.list_upper(db)
+
+
+@router.get("/concepts", response_model=Page[ConceptOut])
+def list_concepts(
+    ctx: Ctx,
+    db: DB,
+    limit: int = 50,
+    cursor: str | None = None,
+    status: ConceptStatus | None = None,
+    q: str | None = None,
+) -> Page[ConceptOut]:
+    stmt = concepts.concept_filter(ctx, db, status=status, q=q)
+    rows, nxt = repo(db, ctx, OntoConcept).page(limit=limit, cursor=cursor, stmt=stmt)
+    return Page(items=[concepts.concept_out(c) for c in rows], next_cursor=nxt)
+
+
+@router.post("/concepts", response_model=ConceptDetail, status_code=201)
+def create_concept(body: ConceptIn, ctx: WriteCtx, db: DB) -> ConceptDetail:
+    return concepts.concept_detail(db, ctx, concepts.create_concept(ctx, db, body))
+
+
+@router.get("/concepts/{concept_id}", response_model=ConceptDetail)
+def get_concept(concept: ConceptDep, ctx: Ctx, db: DB) -> ConceptDetail:
+    return concepts.concept_detail(db, ctx, concept)
+
+
+@router.patch("/concepts/{concept_id}", response_model=ConceptDetail)
+def update_concept(concept: ConceptDep, body: ConceptPatch, ctx: WriteCtx, db: DB) -> ConceptDetail:
+    return concepts.concept_detail(db, ctx, concepts.update_concept(ctx, db, concept, body))
+
+
+@router.delete("/concepts/{concept_id}", status_code=204)
+def delete_concept(concept: ConceptDep, ctx: WriteCtx, db: DB) -> Response:
+    concepts.delete_concept(ctx, db, concept)
+    return Response(status_code=204)
+
+
+@router.post("/concepts/{concept_id}/attributes", response_model=AttributeOut, status_code=201)
+def create_attribute(concept: ConceptDep, body: AttributeIn, ctx: WriteCtx, db: DB) -> AttributeOut:
+    return AttributeOut.model_validate(concepts.create_attribute(ctx, db, concept, body))
+
+
+@router.patch("/attributes/{attribute_id}", response_model=AttributeOut)
+def update_attribute(attr: AttributeDep, body: AttributePatch, ctx: WriteCtx, db: DB) -> AttributeOut:
+    return AttributeOut.model_validate(concepts.update_attribute(ctx, db, attr, body))
+
+
+@router.delete("/attributes/{attribute_id}", status_code=204)
+def delete_attribute(attr: AttributeDep, ctx: WriteCtx, db: DB) -> Response:
+    concepts.delete_attribute(ctx, db, attr)
+    return Response(status_code=204)
+
+
+@router.get("/relations", response_model=Page[RelationOut])
+def list_relations(
+    ctx: Ctx, db: DB, limit: int = 50, cursor: str | None = None, concept_id: str | None = None
+) -> Page[RelationOut]:
+    stmt = concepts.relation_filter(ctx, db, concept_id=concept_id)
+    rows, nxt = repo(db, ctx, OntoRelation).page(limit=limit, cursor=cursor, stmt=stmt)
+    return Page(items=[RelationOut.model_validate(r) for r in rows], next_cursor=nxt)
+
+
+@router.post("/relations", response_model=RelationOut, status_code=201)
+def create_relation(body: RelationIn, ctx: WriteCtx, db: DB) -> RelationOut:
+    return RelationOut.model_validate(concepts.create_relation(ctx, db, body))
+
+
+@router.patch("/relations/{relation_id}", response_model=RelationOut)
+def update_relation(rel: RelationDep, body: RelationPatch, ctx: WriteCtx, db: DB) -> RelationOut:
+    return RelationOut.model_validate(concepts.update_relation(ctx, db, rel, body))
+
+
+@router.delete("/relations/{relation_id}", status_code=204)
+def delete_relation(rel: RelationDep, ctx: WriteCtx, db: DB) -> Response:
+    concepts.delete_relation(ctx, db, rel)
+    return Response(status_code=204)
+
+
+@router.get("/validation", response_model=ValidationReport)
+def validation(ctx: Ctx, db: DB) -> ValidationReport:
+    return ValidationReport(issues=concepts.validate(db, ctx))

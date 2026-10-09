@@ -12,6 +12,7 @@ from app.db.base import Base
 from app.modules.agenthub import models as _agenthub  # noqa: F401
 from app.modules.devtracker import models as _devtracker  # noqa: F401
 from app.modules.discoveryq import models as _discoveryq  # noqa: F401
+from app.modules.exmigrate import models as _exmigrate  # noqa: F401
 from app.modules.flowdesk import models as _flowdesk  # noqa: F401
 from app.modules.interfaces import models as _interfaces  # noqa: F401
 from app.modules.ontomap import models as _ontomap  # noqa: F401

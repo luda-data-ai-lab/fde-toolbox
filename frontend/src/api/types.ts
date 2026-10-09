@@ -571,6 +571,109 @@ export interface SpecDiff {
   diff: string;
 }
 
+export type XlColumnType = "integer" | "decimal" | "boolean" | "date" | "datetime" | "text";
+
+export interface XlColumnReport {
+  letter: string;
+  name: string;
+  inferred_type: XlColumnType | null;
+  null_ratio: number;
+  distinct: number;
+  samples: string[];
+  formula_cells: number;
+}
+
+export interface XlFunctionUse {
+  name: string;
+  count: number;
+  simple: boolean;
+}
+
+export interface XlSheetReport {
+  name: string;
+  dimension: string;
+  max_row: number;
+  max_column: number;
+  header_row: number | null;
+  data_rows: number;
+  columns: XlColumnReport[];
+  warnings: { code: string; where: string | null; detail: string | null }[];
+  formulas: {
+    count: number;
+    complex: number;
+    cells: { cell: string; formula: string }[];
+    functions: XlFunctionUse[];
+    references: { sheet: string; count: number }[];
+    lookups: {
+      column: string;
+      target_sheet: string;
+      target_column: string;
+      count: number;
+    }[];
+  };
+}
+
+export interface XlAnalysisSummary {
+  id: string;
+  engagement_id: string;
+  file_id: string;
+  filename: string;
+  status: string;
+  created_at: string;
+  sheets: number;
+  formula_count: number;
+  erd_confirmed: boolean;
+}
+
+export interface XlAnalysis extends XlAnalysisSummary {
+  report: {
+    sheets: XlSheetReport[];
+    has_macros: boolean;
+    formula_count: number;
+    complex_formulas: number;
+    functions: XlFunctionUse[];
+  };
+}
+
+export interface XlErdColumn {
+  name: string;
+  label: string;
+  type: XlColumnType;
+  nullable: boolean;
+  primary_key: boolean;
+  source_column: string | null;
+}
+
+export interface XlErdTable {
+  name: string;
+  label: string;
+  source_sheet: string | null;
+  header_row: number | null;
+  columns: XlErdColumn[];
+}
+
+export interface XlErdRelation {
+  from_table: string;
+  from_column: string;
+  to_table: string;
+  to_column: string;
+  origin: "formula" | "name" | "manual";
+}
+
+export interface XlErd {
+  tables: XlErdTable[];
+  relations: XlErdRelation[];
+}
+
+export interface XlErdDraft {
+  id: string;
+  analysis_id: string;
+  erd: XlErd;
+  confirmed: boolean;
+  confirmed_at: string | null;
+  issues: string[];
+}
+
 export interface FlowInsightOption {
   id: string;
   text: string;

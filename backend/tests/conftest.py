@@ -1,3 +1,4 @@
+import io
 import json
 import os
 import tempfile
@@ -17,6 +18,7 @@ import pytest  # noqa: E402
 from alembic import command  # noqa: E402
 from alembic.config import Config  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
+from openpyxl import Workbook  # noqa: E402
 from sqlalchemy import Engine  # noqa: E402
 from sqlalchemy.orm import Session  # noqa: E402
 
@@ -266,6 +268,22 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
         )
     )["id"]
     ids["version_id"] = _ok(fde.post(f"{docs}/{ids['document_id']}/versions", json={"note": f"v1 {code}"}))["id"]
+    wb = Workbook()
+    ws = wb.active
+    assert ws is not None
+    ws.title = f"Orders {code}"
+    ws.append(["order_id", f"Customer {code}"])
+    ws.append([1, f"Acme {code}"])
+    buf = io.BytesIO()
+    wb.save(buf)
+    ids["analysis_id"] = _ok(
+        fde.post(
+            f"{base}/exmigrate/analyses",
+            data={"engagement_id": ids["engagement_id"]},
+            files={"file": (f"xl-{code}.xlsx", buf.getvalue(), XLSX)},
+        )
+    )["id"]
+    _ok(fde.post(f"{base}/exmigrate/analyses/{ids['analysis_id']}/erd/confirm"), 200)
     settings = get_settings()
     allowed, settings.adapters_allowed = settings.adapters_allowed, True
     try:

@@ -28,6 +28,7 @@ describe("navGroups", () => {
     expect(navGroups("client_user").find((g) => g.key === "analyze")?.links.map(([to]) => to)).toEqual([
       "/interfaces",
       "/ontomap",
+      "/exmigrate",
     ]);
   });
 });

@@ -9,8 +9,13 @@ from app.core.tenants.models import Tenant
 from app.core.users.models import User
 from app.db.session import guard_bypass
 from app.modules.agenthub.models import AgentEvalCase, AgentInstance
+from app.modules.devtracker.models import DevIssue
+from app.modules.discoveryq.models import DiscoveryInsight
+from app.modules.exmigrate.models import XlErdDraft
+from app.modules.flowdesk.models import Flow
 from app.modules.interfaces.models import Interface, InterfaceUpload
-from app.modules.ontomap.models import OntoTerm, OntoTermAlias
+from app.modules.ontomap.models import OntoCandidate, OntoConcept, OntoMapping, OntoTerm, OntoTermAlias
+from app.modules.specforge.models import SpecDocument
 
 
 def test_init_admin_and_seeds(db: Session, capsys: pytest.CaptureFixture[str]) -> None:
@@ -67,3 +72,24 @@ def test_password_required_non_interactive(monkeypatch: pytest.MonkeyPatch) -> N
     monkeypatch.setattr("sys.stdin.isatty", lambda: False)
     with pytest.raises(SystemExit, match="password required"):
         cli.main(["init-admin", "--email", "a@b.c"])
+
+
+def test_seed_sample(db: Session) -> None:
+    cli.main(["init-admin", "--email", "root@luda.local", "--password", "root-pass-123"])
+    cli.main(["seed-sample", "--password", "sample-pass-123"])
+    tenant = db.scalars(select(Tenant).where(Tenant.code == "HANBIT")).one()
+    with guard_bypass(db):
+        assert len(db.scalars(select(System).where(System.tenant_id == tenant.id)).all()) == 6
+        assert len(db.scalars(select(Interface).where(Interface.tenant_id == tenant.id)).all()) == 12
+        assert len(db.scalars(select(OntoTerm).where(OntoTerm.tenant_id == tenant.id)).all()) == 15
+        assert db.scalars(select(XlErdDraft).where(XlErdDraft.tenant_id == tenant.id)).one().confirmed
+        assert {f.kind for f in db.scalars(select(Flow).where(Flow.tenant_id == tenant.id))} == {"as_is", "to_be"}
+        assert len(db.scalars(select(OntoConcept).where(OntoConcept.tenant_id == tenant.id)).all()) == 5
+        assert db.scalars(select(OntoMapping).where(OntoMapping.tenant_id == tenant.id)).all()
+        assert db.scalars(select(OntoCandidate).where(OntoCandidate.status == "open")).all()
+        assert db.scalars(select(DiscoveryInsight).where(DiscoveryInsight.tenant_id == tenant.id)).all()
+        docs = db.scalars(select(SpecDocument).where(SpecDocument.tenant_id == tenant.id)).all()
+        assert sorted(d.status for d in docs) == ["confirmed", "draft"]
+        assert db.scalars(select(DevIssue).where(DevIssue.tenant_id == tenant.id)).all()
+    with pytest.raises(SystemExit):
+        cli.main(["seed-sample"])

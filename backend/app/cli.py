@@ -40,6 +40,7 @@ from app.modules.interfaces.schemas import ApplyIn
 from app.modules.interfaces.service import apply_upload, upload_workbook
 from app.modules.ontomap.schemas import TermIn
 from app.modules.ontomap.service import create_term
+from app.sample_mes import CLIENT_EMAIL, FDE_EMAIL, seed_mes_sample
 
 BACKEND = Path(__file__).resolve().parents[1]
 SEED_ASSETS = BACKEND / "seeds" / "assets"
@@ -227,6 +228,12 @@ def seed_demo(db: Session, password: str | None) -> dict[str, str]:
     return {"tenant_id": tenant.id, "password": pw}
 
 
+def seed_sample(db: Session, password: str | None) -> dict[str, str]:
+    seed_assets(db)
+    pw = password or secrets.token_urlsafe(12)
+    return {"tenant_id": seed_mes_sample(db, _admin(db), pw), "password": pw}
+
+
 def _asset_id(db: Session, key: str) -> str:
     asset_id = db.scalars(select(AssetItem.asset_id).where(AssetItem.asset_key == key)).first()
     if asset_id is None:
@@ -246,6 +253,10 @@ def main(argv: Sequence[str] | None = None) -> None:
     sub.add_parser("seed-assets", help="import bundled LUDA assets (idempotent)")
     p = sub.add_parser("seed-demo", help="create the demo tenant, users and sample data")
     p.add_argument("--password", help="password for demo users (random if omitted)")
+    p = sub.add_parser(
+        "seed-sample", help="create the fictional MES sample tenant (한빛정밀) with data in every module"
+    )
+    p.add_argument("--password", help="password for sample users (random if omitted)")
     args = parser.parse_args(argv)
 
     if args.cmd == "create-db":
@@ -264,6 +275,11 @@ def main(argv: Sequence[str] | None = None) -> None:
             info = seed_demo(db, args.password)
         _out(f"demo tenant {info['tenant_id']} created")
         _out(f"users fde@demo.local / client@demo.local, password: {info['password']}")
+    elif args.cmd == "seed-sample":
+        with new_session() as db:
+            info = seed_sample(db, args.password)
+        _out(f"sample tenant {info['tenant_id']} created")
+        _out(f"users {FDE_EMAIL} / {CLIENT_EMAIL}, password: {info['password']}")
 
 
 if __name__ == "__main__":

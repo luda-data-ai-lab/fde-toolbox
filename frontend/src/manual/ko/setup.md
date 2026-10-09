@@ -25,7 +25,7 @@ python -m app.cli init-admin --email admin@example.com --password "Admin1234!"
 python -m app.cli seed-assets
 ```
 
-`notepad .env`에서 위 두 명령이 출력한 값을 각각 `SECRET_KEY`, `ENCRYPTION_KEY`에 넣습니다. 데모 데이터가 필요하면 `python -m app.cli seed-demo --password "Demo1234!"`를 실행합니다.
+`notepad .env`에서 위 두 명령이 출력한 값을 각각 `SECRET_KEY`, `ENCRYPTION_KEY`에 넣습니다. 데모 데이터가 필요하면 `python -m app.cli seed-demo --password "Demo1234!"`를 실행합니다. 모든 기능에 데이터가 채워진 가상 MES 업체(한빛정밀, 자동차 부품 CNC 가공)가 필요하면 `python -m app.cli seed-sample --password "Sample1234!"`를 실행하고 `fde@hanbit.local`로 로그인합니다.
 
 > `Activate.ps1` 실행이 막히면 `Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass`를 먼저 실행하세요.
 

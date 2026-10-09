@@ -6,7 +6,10 @@ from app.core.schemas import ORMModel
 
 TermStatus = Literal["candidate", "confirmed", "deprecated"]
 CandidateStatus = Literal["open", "accepted", "merged", "ignored"]
-CandidateSource = Literal["discovery_session", "manual"]
+CandidateSource = Literal["discovery_session", "manual", "exmigrate_erd", "interface", "flowdesk_flow", "llm"]
+CandidateKind = Literal["term", "concept", "attribute", "relation"]
+ExtractSource = Literal["exmigrate_erd", "interface", "flowdesk_flow"]
+SuggestTask = Literal["terms", "relations", "definitions"]
 
 
 def _clean(value: str) -> str:
@@ -97,7 +100,7 @@ class SimilarTerm(BaseModel):
 class CandidateIn(BaseModel):
     kind: Literal["term"] = "term"
     name: str = Field(min_length=1, max_length=200)
-    source_type: CandidateSource = "manual"
+    source_type: Literal["discovery_session", "manual"] = "manual"
     source_id: str | None = None
     session_question_id: str | None = None
     context: str | None = Field(default=None, max_length=2000)
@@ -115,7 +118,7 @@ class CandidateIn(BaseModel):
 
 class CandidateOut(ORMModel):
     tenant_id: str
-    kind: str
+    kind: CandidateKind
     name: str
     payload: dict[str, Any]
     source_type: str
@@ -126,14 +129,72 @@ class CandidateOut(ORMModel):
 
 
 class AcceptIn(TermFields):
+    """`term` overrides the name; concept/attribute/relation candidates use the `*_id` fields when their
+    owning concepts cannot be resolved from sibling candidates. `system_id` also maps an accepted concept."""
+
     term: str | None = Field(default=None, min_length=1, max_length=200)
     status: Literal["candidate", "confirmed"] = "confirmed"
     aliases: list[AliasIn] = Field(default_factory=list, max_length=100)
+    concept_id: str | None = None
+    source_concept_id: str | None = None
+    target_concept_id: str | None = None
+    system_id: str | None = None
 
 
 class MergeIn(BaseModel):
-    term_id: str
+    """`target_id` is the existing term/concept/attribute/relation; `term_id` is kept for term candidates."""
+
+    term_id: str | None = None
+    target_id: str | None = None
     department: str | None = Field(default=None, max_length=100)
+
+    @model_validator(mode="after")
+    def _target(self) -> Self:
+        if (self.target_id or self.term_id) is None:
+            raise ValueError("target_id is required")
+        return self
+
+    @property
+    def target(self) -> str:
+        return self.target_id or self.term_id or ""
+
+
+class ExtractIn(BaseModel):
+    """Without `source_id` every eligible record of the source type is read (confirmed ERDs only)."""
+
+    source_type: ExtractSource
+    source_id: str | None = None
+
+
+class ExtractResult(BaseModel):
+    created: int
+    existing: int
+    by_kind: dict[str, int] = Field(default_factory=dict)
+
+
+class SuggestIn(BaseModel):
+    """LLM suggestions: `terms` from a DiscoveryQ session, `relations` between concepts, `definitions` drafts."""
+
+    task: SuggestTask
+    session_id: str | None = None
+    lang: Literal["ko", "en"] = "ko"
+
+    @model_validator(mode="after")
+    def _session(self) -> Self:
+        if self.task == "terms" and not self.session_id:
+            raise ValueError("session_id is required for terms")
+        return self
+
+
+class SuggestRun(SuggestIn):
+    """`answer` is the pasted LLM result (prompt-copy mode); without it the LLM adapter is called."""
+
+    answer: str | None = Field(default=None, max_length=200_000)
+
+
+class SuggestPrompt(BaseModel):
+    prompt: str
+    llm_available: bool
 
 
 class ImportRowValues(BaseModel):

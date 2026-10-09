@@ -6,7 +6,7 @@ from app.core.auth.deps import DB
 from app.core.exports import attachment
 from app.core.pagination import Page
 from app.core.tenancy.deps import Ctx, ExportCtx, WriteCtx, path_entity, repo
-from app.modules.ontomap import concepts, mappings, service
+from app.modules.ontomap import candidates, concepts, mappings, service
 from app.modules.ontomap.models import OntoAttribute, OntoCandidate, OntoConcept, OntoMapping, OntoRelation, OntoTerm
 from app.modules.ontomap.schemas import (
     AcceptIn,
@@ -14,6 +14,7 @@ from app.modules.ontomap.schemas import (
     AttributeOut,
     AttributePatch,
     CandidateIn,
+    CandidateKind,
     CandidateOut,
     CandidateSource,
     CandidateStatus,
@@ -23,6 +24,8 @@ from app.modules.ontomap.schemas import (
     ConceptPatch,
     ConceptStatus,
     CoverageRow,
+    ExtractIn,
+    ExtractResult,
     ImportResult,
     MappingIn,
     MappingOut,
@@ -32,6 +35,9 @@ from app.modules.ontomap.schemas import (
     RelationIn,
     RelationOut,
     RelationPatch,
+    SuggestIn,
+    SuggestPrompt,
+    SuggestRun,
     TermIn,
     TermOut,
     TermPatch,
@@ -56,7 +62,7 @@ def _term_out(db: DB, ctx: Ctx, term: OntoTerm) -> TermOut:
 
 
 def _candidate_out(db: DB, ctx: Ctx, candidate: OntoCandidate) -> CandidateOut:
-    return service.candidates_out(db, ctx, [candidate])[0]
+    return candidates.candidates_out(db, ctx, [candidate])[0]
 
 
 @router.get("/terms", response_model=Page[TermOut])
@@ -124,10 +130,26 @@ def list_candidates(
     status: CandidateStatus | None = None,
     source_type: CandidateSource | None = None,
     source_id: str | None = None,
+    kind: CandidateKind | None = None,
 ) -> Page[CandidateOut]:
-    stmt = service.candidate_filter(ctx, db, status=status, source_type=source_type, source_id=source_id)
+    stmt = service.candidate_filter(ctx, db, status=status, source_type=source_type, source_id=source_id, kind=kind)
     rows, nxt = repo(db, ctx, OntoCandidate).page(limit=limit, cursor=cursor, stmt=stmt)
-    return Page(items=service.candidates_out(db, ctx, rows), next_cursor=nxt)
+    return Page(items=candidates.candidates_out(db, ctx, rows), next_cursor=nxt)
+
+
+@router.post("/candidates/extract", response_model=ExtractResult)
+def extract_candidates(body: ExtractIn, ctx: WriteCtx, db: DB) -> ExtractResult:
+    return candidates.run_extract(ctx, db, body)
+
+
+@router.post("/candidates/suggest/prompt", response_model=SuggestPrompt)
+def suggest_prompt(body: SuggestIn, ctx: WriteCtx, db: DB) -> SuggestPrompt:
+    return candidates.suggest_prompt(ctx, db, body)
+
+
+@router.post("/candidates/suggest", response_model=ExtractResult)
+def suggest_candidates(body: SuggestRun, ctx: WriteCtx, db: DB) -> ExtractResult:
+    return candidates.suggest(ctx, db, body)
 
 
 @router.post("/candidates", response_model=CandidateOut, status_code=201)
@@ -145,12 +167,12 @@ def get_candidate(candidate: CandidateDep, ctx: Ctx, db: DB) -> CandidateOut:
 
 @router.post("/candidates/{candidate_id}/accept", response_model=CandidateOut)
 def accept_candidate(candidate: CandidateDep, body: AcceptIn, ctx: WriteCtx, db: DB) -> CandidateOut:
-    return _candidate_out(db, ctx, service.accept_candidate(ctx, db, candidate, body))
+    return _candidate_out(db, ctx, candidates.accept(ctx, db, candidate, body))
 
 
 @router.post("/candidates/{candidate_id}/merge", response_model=CandidateOut)
 def merge_candidate(candidate: CandidateDep, body: MergeIn, ctx: WriteCtx, db: DB) -> CandidateOut:
-    return _candidate_out(db, ctx, service.merge_candidate(ctx, db, candidate, body))
+    return _candidate_out(db, ctx, candidates.merge(ctx, db, candidate, body))
 
 
 @router.post("/candidates/{candidate_id}/ignore", response_model=CandidateOut)

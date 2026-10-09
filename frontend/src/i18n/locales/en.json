@@ -184,7 +184,8 @@
     },
     "term": { "new": "New term", "edit": "Edit term" },
     "field": { "term": "Standard term", "definition": "Definition", "abbreviation": "Abbreviation", "aliases": "Department aliases", "department": "Department", "status": "Status", "notes": "Notes" },
-    "candidate": { "accept": "Confirm", "ignore": "Ignore", "reopen": "Reopen", "similar": "Similar terms", "mergeInto": "Merge into {{term}}", "fromSession": "DiscoveryQ session", "hint": "Confirming adds the candidate to the glossary; merging records it as an alias of an existing term." },
+    "candidate": { "accept": "Confirm", "ignore": "Ignore", "reopen": "Reopen", "similar": "Similar items", "mergeInto": "Merge into {{term}}", "fromSession": "DiscoveryQ session", "kind": "Kind", "source": "Source", "name": "Name to confirm", "system": "System to map", "concept": "Owning concept", "sourceConcept": "Source concept", "targetConcept": "Target concept", "auto": "(match by name)", "extractTitle": "Extract candidates", "extractHint": "Rule-based extraction from confirmed ExMigrate ERDs, registered I/Fs and FlowDesk document nodes. Re-running never recreates existing candidates.", "extractFrom": { "exmigrate_erd": "Extract from ExMigrate ERDs", "interface": "Extract from I/Fs", "flowdesk_flow": "Extract from FlowDesk" }, "extracted": "{{created}} new candidates, {{existing}} already listed", "hint": "Candidates reach the glossary and concept model only when confirmed or merged. Extraction and LLM suggestions never create confirmed data directly." },
+    "suggest": { "title": "LLM suggestions", "intro": "Extract term candidates from interview notes, suggest relations between concepts, or draft definitions. With external adapters off, copy the prompt and paste the JSON answer back. Every result lands in the candidate list.", "task": "Suggestion", "session": "DiscoveryQ session", "makePrompt": "Build prompt", "runLlm": "Ask the LLM", "running": "Asking…", "prompt": "Prompt", "copy": "Copy prompt", "copied": "Copied", "answer": "LLM answer (JSON)", "answerHint": "Paste the JSON the LLM returned", "fromAnswer": "Create candidates from answer" },
     "import": {
       "file": "Glossary workbook", "hint": "Choose an .xlsx file in the LUDA glossary template layout (glossary sheet). Existing terms are updated and aliases added.",
       "applied": "Applied: {{created}} new, {{updated}} updated, {{skipped}} skipped",
@@ -198,6 +199,9 @@
   "cardinality": { "1:1": "1:1", "1:N": "1:N", "N:M": "N:M" },
   "termStatus": { "candidate": "Candidate", "confirmed": "Confirmed", "deprecated": "Deprecated" },
   "candidateStatus": { "open": "Pending review", "accepted": "Confirmed", "merged": "Merged", "ignored": "Ignored" },
+  "candidateKind": { "term": "Term", "concept": "Concept", "attribute": "Attribute", "relation": "Relation" },
+  "candidateSource": { "discovery_session": "DiscoveryQ session", "exmigrate_erd": "ExMigrate ERD", "interface": "I/F", "flowdesk_flow": "FlowDesk", "llm": "LLM suggestion", "manual": "Manual" },
+  "suggestTask": { "terms": "Terms from an interview", "relations": "Relations between concepts", "definitions": "Definition drafts" },
   "adapters": {
     "intro": "Features that send data outside run only through adapters. An FDE requests activation, and it turns on once a customer admin reviews the data-egress scope and approves. In standalone installs without a customer admin, a LUDA admin approves with a reason.",
     "notImplemented": "Only the interface and settings exist for this adapter. It cannot be activated yet.",

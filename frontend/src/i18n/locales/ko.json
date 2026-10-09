@@ -184,7 +184,8 @@
     },
     "term": { "new": "용어 등록", "edit": "용어 수정" },
     "field": { "term": "표준 용어", "definition": "정의", "abbreviation": "약어", "aliases": "부서별 호칭", "department": "부서", "status": "상태", "notes": "비고" },
-    "candidate": { "accept": "확정", "ignore": "무시", "reopen": "다시 열기", "similar": "유사 용어", "mergeInto": "{{term}}에 병합", "fromSession": "DiscoveryQ 세션", "hint": "후보를 확정하면 용어 사전에 추가되고, 병합하면 기존 용어의 호칭으로 등록됩니다." },
+    "candidate": { "accept": "확정", "ignore": "무시", "reopen": "다시 열기", "similar": "유사 항목", "mergeInto": "{{term}}에 병합", "fromSession": "DiscoveryQ 세션", "kind": "종류", "source": "출처", "name": "확정할 이름", "system": "매핑할 시스템", "concept": "소속 개념", "sourceConcept": "출발 개념", "targetConcept": "대상 개념", "auto": "(이름으로 자동 찾기)", "extractTitle": "후보 추출", "extractHint": "확정된 ExMigrate ERD, 등록된 I/F, FlowDesk 문서 노드에서 규칙으로 후보를 뽑습니다. 다시 추출해도 이미 있는 후보는 다시 만들지 않습니다.", "extractFrom": { "exmigrate_erd": "ExMigrate ERD에서 추출", "interface": "I/F에서 추출", "flowdesk_flow": "FlowDesk에서 추출" }, "extracted": "새 후보 {{created}}건, 이미 있는 후보 {{existing}}건", "hint": "후보는 확정·병합해야 용어 사전과 개념 모델에 들어갑니다. 추출이나 LLM 제안은 확정 데이터를 직접 만들지 않습니다." },
+    "suggest": { "title": "LLM 제안", "intro": "인터뷰 기록에서 용어 후보 추출, 개념 간 관계 제안, 정의 초안을 만듭니다. 외부 연동이 꺼져 있으면 프롬프트를 복사해 받은 JSON을 붙여넣으세요. 결과는 모두 후보 목록으로 들어갑니다.", "task": "제안 종류", "session": "DiscoveryQ 세션", "makePrompt": "프롬프트 만들기", "runLlm": "LLM으로 제안 받기", "running": "제안 받는 중…", "prompt": "프롬프트", "copy": "프롬프트 복사", "copied": "복사됨", "answer": "LLM 응답(JSON)", "answerHint": "LLM이 돌려준 JSON을 붙여넣으세요", "fromAnswer": "응답으로 후보 만들기" },
     "import": {
       "file": "용어 사전 엑셀 파일", "hint": "LUDA 용어 사전 템플릿(용어 사전 시트) 형식의 .xlsx 파일을 선택하세요. 기존 용어는 갱신되고 호칭은 추가됩니다.",
       "applied": "반영 완료: 신규 {{created}}건, 갱신 {{updated}}건, 건너뜀 {{skipped}}건",
@@ -198,6 +199,9 @@
   "cardinality": { "1:1": "1:1", "1:N": "1:N", "N:M": "N:M" },
   "termStatus": { "candidate": "후보", "confirmed": "확정", "deprecated": "폐기" },
   "candidateStatus": { "open": "검토 대기", "accepted": "확정됨", "merged": "병합됨", "ignored": "무시됨" },
+  "candidateKind": { "term": "용어", "concept": "개념", "attribute": "속성", "relation": "관계" },
+  "candidateSource": { "discovery_session": "DiscoveryQ 세션", "exmigrate_erd": "ExMigrate ERD", "interface": "I/F", "flowdesk_flow": "FlowDesk", "llm": "LLM 제안", "manual": "직접 입력" },
+  "suggestTask": { "terms": "인터뷰에서 용어 추출", "relations": "개념 간 관계 제안", "definitions": "정의 초안" },
   "adapters": {
     "intro": "외부로 데이터를 보내는 기능은 어댑터를 통해서만 동작합니다. FDE가 활성화를 요청하고, 반출 범위를 확인한 고객사 관리자가 승인해야 켜집니다. 고객사 관리자가 없는 단독 설치에서는 LUDA 관리자가 사유를 남기고 승인합니다.",
     "notImplemented": "연동 규격과 설정만 준비된 어댑터입니다. 아직 활성화할 수 없습니다.",

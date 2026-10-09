@@ -9,6 +9,27 @@ export const CANDIDATE_STATUSES = [
   "ignored",
 ] as const;
 
+export const CANDIDATE_KINDS = [
+  "term",
+  "concept",
+  "attribute",
+  "relation",
+] as const;
+export const CANDIDATE_SOURCES = [
+  "discovery_session",
+  "exmigrate_erd",
+  "interface",
+  "flowdesk_flow",
+  "llm",
+  "manual",
+] as const;
+export const EXTRACT_SOURCES = [
+  "exmigrate_erd",
+  "interface",
+  "flowdesk_flow",
+] as const;
+export const SUGGEST_TASKS = ["terms", "relations", "definitions"] as const;
+
 export const CONCEPT_STATUSES = ["draft", "confirmed", "deprecated"] as const;
 export const DATA_TYPES = [
   "string",

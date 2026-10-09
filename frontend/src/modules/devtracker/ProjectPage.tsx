@@ -1,15 +1,174 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { api, tenantPath } from "../../api/client";
-import type { Page, Project, ProjectDashboard, Prompt, Task } from "../../api/types";
+import type { Issue, Page, Project, ProjectDashboard, Prompt, SpecDocumentSummary, Task } from "../../api/types";
 import { Empty, ErrorText, Field, Loading, NeedTenant, PageHeader, Select, StatusBadge } from "../../components/ui";
 import { useCanWrite, useTenantId } from "../../app/hooks";
 import { PRIORITIES, TASK_STATUSES, groupByStatus } from "./kanban";
 import { fmtDate } from "../../app/format";
 
 const PROJECT_STATUSES = ["planning", "active", "on_hold", "done"] as const;
+const ISSUE_KINDS = ["bug", "improvement", "question"] as const;
+const ISSUE_STATUSES = ["open", "in_progress", "resolved", "closed"] as const;
+
+function LinkedSpecs({ tenantId, project }: { tenantId: string; project: Project }) {
+  const { t } = useTranslation();
+  const docs = useQuery({
+    queryKey: ["specforge", tenantId, "linked", project.engagement_id],
+    queryFn: () =>
+      api<Page<SpecDocumentSummary>>(tenantPath(tenantId, "/specforge/documents"), {
+        query: { limit: 200, engagement_id: project.engagement_id },
+      }),
+    enabled: project.spec_document_ids.length > 0,
+  });
+  if (!project.spec_document_ids.length) return null;
+  const byId = new Map((docs.data?.items ?? []).map((d) => [d.id, d]));
+  return (
+    <section className="card" data-testid="linked-specs">
+      <h2 className="mb-2 font-semibold">{t("devtracker.specDocs")}</h2>
+      <ul className="flex flex-wrap gap-3 text-sm">
+        {project.spec_document_ids.map((id) => {
+          const d = byId.get(id);
+          return (
+            <li key={id}>
+              <Link className="text-blue-700 hover:underline" to={`/specforge?doc=${id}`}>
+                {d ? `${d.title} (${t(`specDocType.${d.doc_type}`)})` : id}
+              </Link>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+function Issues({ tenantId, projectId }: { tenantId: string; projectId: string }) {
+  const { t } = useTranslation();
+  const canWrite = useCanWrite();
+  const qc = useQueryClient();
+  const [params, setParams] = useSearchParams();
+  const sourceId = params.get("issue_from");
+  const [adding, setAdding] = useState(!!sourceId);
+  const [form, setForm] = useState({
+    title: params.get("title") ?? "",
+    kind: "bug",
+    priority: "medium",
+    description: "",
+  });
+  const key = ["issues", tenantId, projectId];
+  const base = tenantPath(tenantId, "/devtracker");
+  const issues = useQuery({
+    queryKey: key,
+    queryFn: () => api<Page<Issue>>(`${base}/projects/${projectId}/issues`, { query: { limit: 200 } }),
+  });
+  const done = () => void qc.invalidateQueries({ queryKey: key });
+  const create = useMutation({
+    mutationFn: () =>
+      api<Issue>(`${base}/projects/${projectId}/issues`, {
+        method: "POST",
+        body: {
+          ...form,
+          description: form.description || null,
+          source: sourceId ? { module: "agenthub", instance_id: sourceId } : null,
+        },
+      }),
+    onSuccess: () => {
+      setForm({ title: "", kind: "bug", priority: "medium", description: "" });
+      setAdding(false);
+      if (sourceId) setParams({});
+      done();
+    },
+  });
+  const patch = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      api<Issue>(`${base}/issues/${id}`, { method: "PATCH", body: { status } }),
+    onSuccess: done,
+  });
+  const submit = (e: FormEvent) => {
+    e.preventDefault();
+    create.mutate();
+  };
+  const list = issues.data?.items ?? [];
+  return (
+    <section className="card space-y-3" data-testid="issues">
+      <div className="flex items-center justify-between">
+        <h2 className="font-semibold">{t("devtracker.issues")}</h2>
+        {canWrite && !adding && (
+          <button type="button" className="btn" onClick={() => setAdding(true)}>
+            {t("devtracker.addIssue")}
+          </button>
+        )}
+      </div>
+      {canWrite && adding && (
+        <form onSubmit={submit} className="grid grid-cols-5 items-end gap-3" data-testid="issue-form">
+          {sourceId && (
+            <p className="col-span-5 text-sm text-blue-700" data-testid="issue-from-agent">
+              {t("devtracker.fromAgent")}
+            </p>
+          )}
+          <Field label={t("common.title")}>
+            <input className="input" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} required />
+          </Field>
+          <Field label={t("devtracker.issueKind")}>
+            <Select value={form.kind} options={ISSUE_KINDS} group="issueKind" onChange={(kind) => setForm({ ...form, kind })} />
+          </Field>
+          <Field label={t("devtracker.priority")}>
+            <Select value={form.priority} options={PRIORITIES} group="priority" onChange={(priority) => setForm({ ...form, priority })} />
+          </Field>
+          <Field label={t("common.description")}>
+            <input className="input" value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} />
+          </Field>
+          <button className="btn btn-primary w-fit">{t("common.save")}</button>
+          <ErrorText error={create.error} />
+        </form>
+      )}
+      <ErrorText error={patch.error} />
+      {!list.length ? (
+        <Empty />
+      ) : (
+        <table className="table">
+          <thead>
+            <tr>
+              <th>{t("common.title")}</th>
+              <th>{t("devtracker.issueKind")}</th>
+              <th>{t("devtracker.priority")}</th>
+              <th>{t("common.status")}</th>
+              <th>{t("devtracker.issueSource")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {list.map((x) => (
+              <tr key={x.id}>
+                <td>
+                  {x.title}
+                  {x.description && <div className="text-xs text-slate-500">{x.description}</div>}
+                </td>
+                <td>{t(`issueKind.${x.kind}`)}</td>
+                <td>{t(`priority.${x.priority}`)}</td>
+                <td className="w-40">
+                  {canWrite ? (
+                    <Select
+                      value={x.status}
+                      options={ISSUE_STATUSES}
+                      group="issueStatus"
+                      onChange={(status) => patch.mutate({ id: x.id, status })}
+                      ariaLabel={t("common.status")}
+                    />
+                  ) : (
+                    t(`issueStatus.${x.status}`)
+                  )}
+                </td>
+                <td>{x.source ? "AgentHub" : "—"}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </section>
+  );
+}
 
 function Dashboard({ d }: { d: ProjectDashboard }) {
   const { t } = useTranslation();
@@ -228,6 +387,7 @@ export function ProjectPage() {
         }
       />
       {dashboard.data && <Dashboard d={dashboard.data} />}
+      <LinkedSpecs tenantId={tenantId} project={project.data} />
       {canWrite && (
         <form onSubmit={submit} className="card grid grid-cols-4 items-end gap-3">
           <Field label={t("common.title")}>
@@ -295,6 +455,7 @@ export function ProjectPage() {
         </div>
         {open && <TaskPanel key={open.id} tenantId={tenantId} task={open} onChanged={refresh} />}
       </div>
+      <Issues tenantId={tenantId} projectId={project.data.id} />
     </div>
   );
 }

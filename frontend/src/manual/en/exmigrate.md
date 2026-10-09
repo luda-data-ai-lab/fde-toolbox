@@ -61,3 +61,7 @@ python load.py source.xlsx --dialect postgresql --url "postgresql://user:pw@host
 ## Exports
 
 At the top of the detail view, download the **Analysis report (MD)** (structure, formulas and warnings) and the **ERD (Mermaid)**. Customer users (read-only) can view results but cannot upload, edit or confirm the ERD, or export.
+
+## Sending to SpecForge
+
+After the ERD is confirmed, **Send to SpecForge** appears on the ERD tab. It opens SpecForge's new-document form with this analysis's ERD selected. Tables, columns and relations of the confirmed ERD go into the "Domain concept model" section of Spec.md and the "Data model" section of Devin.md.

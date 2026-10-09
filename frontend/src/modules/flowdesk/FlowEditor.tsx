@@ -21,6 +21,8 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { api } from "../../api/client";
 import type { Flow, FlowGraph, FlowNodeType, FlowSnapshot, Page, System } from "../../api/types";
+import { Link } from "react-router-dom";
+import { handoffUrl } from "../../app/handoff";
 import { AUDIT_ROLES, useCanWrite, useRole } from "../../app/hooks";
 import { ErrorText, Field, Loading, Select, StatusBadge } from "../../components/ui";
 import {
@@ -337,6 +339,15 @@ function Canvas({
             <button className="btn btn-primary" onClick={() => save.mutate()} disabled={!dirty || save.isPending}>
               {dirty ? t("common.save") : t("flowdesk.saved")}
             </button>
+          )}
+          {canWrite && !dirty && (
+            <Link
+              className="btn"
+              data-testid="send-specforge"
+              to={handoffUrl("/specforge", { engagement: flow.engagement_id, flows: [flow.id] })}
+            >
+              {t("handoff.toSpecForge")}
+            </Link>
           )}
           {canExport && (
             <>

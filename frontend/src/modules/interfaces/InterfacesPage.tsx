@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { handoffUrl } from "../../app/handoff";
 import { api, tenantPath } from "../../api/client";
 import type { Interface, Page } from "../../api/types";
 import {
@@ -372,6 +373,11 @@ export function InterfacesPage() {
         title={t("nav.interfaces")}
         actions={
           <>
+            {canWrite && (
+              <Link className="btn" data-testid="send-specforge" to={handoffUrl("/specforge", { interfaces: true })}>
+                {t("handoff.toSpecForge")}
+              </Link>
+            )}
             <a className="btn" href={`${base}/template.xlsx`}>
               {t("interfaces.template")}
             </a>

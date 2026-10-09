@@ -14,6 +14,7 @@ class SpecSources(BaseModel):
 
     discovery_session_ids: list[str] = Field(default_factory=list, max_length=100)
     flow_ids: list[str] = Field(default_factory=list, max_length=100)
+    erd_analysis_ids: list[str] = Field(default_factory=list, max_length=100)
     interfaces: bool = False
     glossary: bool = False
     requirements: str | None = Field(default=None, max_length=20_000)

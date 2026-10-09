@@ -6,12 +6,16 @@ from sqlalchemy.orm import Session
 
 from app.core.audit.service import audited
 from app.core.errors import AppError
+from app.core.refs import ensure_tenant_ref
 from app.core.tenancy.context import TenantContext
 from app.core.tenancy.repository import TenantScopedRepository
 from app.core.tenants.models import Engagement
 from app.core.users.service import user_has_tenant
-from app.modules.devtracker.models import DevProject, DevPrompt, DevTask
+from app.db.base import Base
+from app.modules.devtracker.models import DevIssue, DevProject, DevPrompt, DevTask
 from app.modules.devtracker.schemas import (
+    IssueIn,
+    IssuePatch,
     PauseIn,
     ProjectDashboard,
     ProjectIn,
@@ -31,15 +35,45 @@ def _check_assignee(db: Session, ctx: TenantContext, assignee_id: str | None) ->
         raise AppError(422, "invalid_reference", detail={"field": "assignee_id"})
 
 
+def _check_spec_documents(db: Session, ctx: TenantContext, engagement_id: str, ids: list[str]) -> None:
+    """Linked SpecForge documents must be confirmed documents of the same tenant and engagement."""
+    unique = set(ids)
+    if not unique:
+        return
+    t = Base.metadata.tables["spec_documents"]
+    found: set[str] = set(
+        db.scalars(
+            select(t.c.id).where(
+                t.c.tenant_id == ctx.tenant_id,
+                t.c.engagement_id == engagement_id,
+                t.c.status == "confirmed",
+                t.c.id.in_(unique),
+            )
+        )
+    )
+    if found != unique:
+        raise AppError(422, "invalid_reference", detail={"field": "spec_document_ids"})
+
+
 @audited("devtracker.project_create", "dev_project")
 def create_project(ctx: TenantContext, db: Session, body: ProjectIn) -> DevProject:
     TenantScopedRepository(db, ctx, Engagement).ensure_ref(body.engagement_id, "engagement_id")
-    return TenantScopedRepository(db, ctx, DevProject).create(**body.model_dump())
+    _check_spec_documents(db, ctx, body.engagement_id, body.spec_document_ids)
+    data = body.model_dump()
+    data["spec_document_ids"] = list(dict.fromkeys(body.spec_document_ids))
+    return TenantScopedRepository(db, ctx, DevProject).create(**data)
 
 
 @audited("devtracker.project_update", "dev_project")
 def update_project(ctx: TenantContext, db: Session, obj: DevProject, body: ProjectPatch) -> DevProject:
-    return TenantScopedRepository(db, ctx, DevProject).update(obj, **body.model_dump(exclude_unset=True))
+    data = body.model_dump(exclude_unset=True)
+    if data.get("spec_document_ids") is not None:
+        added = [i for i in data["spec_document_ids"] if i not in obj.spec_document_ids]
+        _check_spec_documents(db, ctx, obj.engagement_id, added)
+        data["spec_document_ids"] = list(dict.fromkeys(data["spec_document_ids"]))
+    elif "spec_document_ids" in data:
+        data["spec_document_ids"] = []
+    return TenantScopedRepository(db, ctx, DevProject).update(obj, **data)
 
 
 @audited("devtracker.project_delete", "dev_project")
@@ -93,6 +127,36 @@ def update_prompt(ctx: TenantContext, db: Session, obj: DevPrompt, body: PromptP
 @audited("devtracker.prompt_delete", "dev_prompt")
 def delete_prompt(ctx: TenantContext, db: Session, obj: DevPrompt) -> str:
     TenantScopedRepository(db, ctx, DevPrompt).delete(obj)
+    return obj.id
+
+
+def _check_issue_source(db: Session, ctx: TenantContext, project: DevProject, body: IssueIn) -> None:
+    if body.source is None:
+        return
+    ensure_tenant_ref(db, ctx, "agent_instances", body.source.instance_id, "source.instance_id")
+    t = Base.metadata.tables["agent_instances"]
+    engagement = db.scalar(
+        select(t.c.engagement_id).where(t.c.tenant_id == ctx.tenant_id, t.c.id == body.source.instance_id)
+    )
+    if engagement != project.engagement_id:
+        raise AppError(422, "invalid_reference", detail={"field": "source.instance_id"})
+
+
+@audited("devtracker.issue_create", "dev_issue")
+def create_issue(ctx: TenantContext, db: Session, project: DevProject, body: IssueIn) -> DevIssue:
+    _check_issue_source(db, ctx, project, body)
+    data = body.model_dump()
+    return TenantScopedRepository(db, ctx, DevIssue).create(project_id=project.id, **data)
+
+
+@audited("devtracker.issue_update", "dev_issue")
+def update_issue(ctx: TenantContext, db: Session, obj: DevIssue, body: IssuePatch) -> DevIssue:
+    return TenantScopedRepository(db, ctx, DevIssue).update(obj, **body.model_dump(exclude_unset=True))
+
+
+@audited("devtracker.issue_delete", "dev_issue")
+def delete_issue(ctx: TenantContext, db: Session, obj: DevIssue) -> str:
+    TenantScopedRepository(db, ctx, DevIssue).delete(obj)
     return obj.id
 
 

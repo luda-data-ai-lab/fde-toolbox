@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from typing import Any
 
 from sqlalchemy import JSON, Date, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
@@ -8,6 +9,8 @@ from app.db.base import TenantScopedModel, utcnow
 PROJECT_STATUSES = ("planning", "active", "on_hold", "done")
 TASK_STATUSES = ("todo", "in_progress", "review", "done", "on_hold")
 TASK_PRIORITIES = ("low", "medium", "high", "urgent")
+ISSUE_KINDS = ("bug", "improvement", "question")
+ISSUE_STATUSES = ("open", "in_progress", "resolved", "closed")
 
 
 class DevProject(TenantScopedModel):
@@ -52,3 +55,19 @@ class DevPrompt(TenantScopedModel):
     prompt: Mapped[str] = mapped_column(Text, nullable=False)
     result_summary: Mapped[str | None] = mapped_column(Text, nullable=True)
     at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False, default=utcnow)
+
+
+class DevIssue(TenantScopedModel):
+    """Bug / improvement / question; `source` records where it was raised (e.g. an AgentHub instance)."""
+
+    __tablename__ = "dev_issues"
+
+    project_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("dev_projects.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    title: Mapped[str] = mapped_column(String(300), nullable=False)
+    kind: Mapped[str] = mapped_column(String(20), nullable=False, default="bug")
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="open")
+    priority: Mapped[str] = mapped_column(String(20), nullable=False, default="medium")
+    description: Mapped[str | None] = mapped_column(Text, nullable=True)
+    source: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)

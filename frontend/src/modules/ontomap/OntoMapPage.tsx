@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { handoffUrl } from "../../app/handoff";
 import { NeedTenant, PageHeader } from "../../components/ui";
 import {
   AUDIT_ROLES,
@@ -31,6 +32,11 @@ export function OntoMapPage() {
         title={t("nav.ontomap")}
         actions={
           <>
+            {canWrite && (
+              <Link className="btn" data-testid="send-specforge" to={handoffUrl("/specforge", { glossary: true })}>
+                {t("handoff.toSpecForge")}
+              </Link>
+            )}
             <a className="btn" href={`${base}/template.xlsx`}>
               {t("interfaces.template")}
             </a>

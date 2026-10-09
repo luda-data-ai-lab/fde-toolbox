@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { api } from "../../api/client";
 import type { Flow, FlowSummary, FlowTemplate, Page } from "../../api/types";
 import { useCanWrite, useTenantId } from "../../app/hooks";
+import { listParam } from "../../app/handoff";
 import { useWorkspace } from "../../app/store";
 import { Empty, ErrorText, Field, Loading, NeedTenant, PageHeader, Select, StatusBadge } from "../../components/ui";
 import { EngagementSelect } from "../discoveryq/EngagementSelect";
@@ -36,7 +37,9 @@ function FlowList({ tenantId, onOpen }: { tenantId: string; onOpen: (id: string)
   const canWrite = useCanWrite();
   const qc = useQueryClient();
   const workspaceEngagement = useWorkspace((s) => s.engagementId);
-  const [engagementId, setEngagementId] = useState("");
+  const [params] = useSearchParams();
+  const handedInsights = listParam(params, "insights");
+  const [engagementId, setEngagementId] = useState(params.get("engagement") ?? "");
   const [kind, setKind] = useState("");
   const engagement = engagementId || workspaceEngagement || "";
   const keys = flowKeys(tenantId);
@@ -60,7 +63,15 @@ function FlowList({ tenantId, onOpen }: { tenantId: string; onOpen: (id: string)
         </Field>
       </div>
       {canWrite && <CreateFlow tenantId={tenantId} engagementId={engagement} onCreated={created} />}
-      {canWrite && engagement && <GenerateFlow tenantId={tenantId} engagementId={engagement} onCreated={created} />}
+      {canWrite && engagement && (
+        <GenerateFlow
+          key={engagement}
+          tenantId={tenantId}
+          engagementId={engagement}
+          initialInsights={handedInsights}
+          onCreated={created}
+        />
+      )}
       <div className="card">
         {isLoading ? (
           <Loading />

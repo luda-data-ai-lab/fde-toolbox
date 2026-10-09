@@ -79,3 +79,7 @@ Keep versions of the graph at important moments (right after an interview, befor
 **Import JSON** on the list screen adds the selected file as a new flow in the current engagement. Links to another customer's systems are not imported.
 
 > SVG/PNG images are made in the browser; JSON and Mermaid exports are recorded in the audit log. Nothing is sent outside.
+
+## Sending to SpecForge
+
+On a saved flow, **Send to SpecForge** at the top of the canvas opens SpecForge's new-document form with this flow selected. The button is hidden while there are unsaved changes, so save first. When you arrive from a DiscoveryQ session via **Send to FlowDesk**, that session's insights are preselected in flow generation.

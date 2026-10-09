@@ -34,3 +34,7 @@ Phrases registered from a [DiscoveryQ](/manual/discoveryq) worksheet appear on *
 ## Exports
 
 **Export Excel** produces the template format, which can be imported again. **Export CSV** has standard term, definition, department aliases, abbreviation, related concepts, notes and status columns.
+
+## Sending to SpecForge
+
+**Send to SpecForge** at the top opens SpecForge's new-document form with the "OntoMap glossary" input selected.

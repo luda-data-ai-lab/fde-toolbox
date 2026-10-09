@@ -6,8 +6,12 @@ from app.core.auth.deps import DB
 from app.core.pagination import Page
 from app.core.tenancy.deps import Ctx, WriteCtx, path_entity, repo
 from app.modules.devtracker import service
-from app.modules.devtracker.models import DevProject, DevPrompt, DevTask
+from app.modules.devtracker.models import DevIssue, DevProject, DevPrompt, DevTask
 from app.modules.devtracker.schemas import (
+    IssueIn,
+    IssueOut,
+    IssuePatch,
+    IssueStatus,
     PauseIn,
     ProjectDashboard,
     ProjectIn,
@@ -27,6 +31,7 @@ router = APIRouter(prefix="/t/{tenant_id}/devtracker", tags=["devtracker"])
 ProjectDep = Annotated[DevProject, Depends(path_entity(DevProject, "project_id"))]
 TaskDep = Annotated[DevTask, Depends(path_entity(DevTask, "task_id"))]
 PromptDep = Annotated[DevPrompt, Depends(path_entity(DevPrompt, "prompt_id"))]
+IssueDep = Annotated[DevIssue, Depends(path_entity(DevIssue, "issue_id"))]
 
 
 @router.get("/projects", response_model=Page[ProjectOut])
@@ -135,4 +140,37 @@ def update_prompt(obj: PromptDep, body: PromptPatch, ctx: WriteCtx, db: DB) -> P
 @router.delete("/prompts/{prompt_id}", status_code=204)
 def delete_prompt(obj: PromptDep, ctx: WriteCtx, db: DB) -> Response:
     service.delete_prompt(ctx, db, obj)
+    return Response(status_code=204)
+
+
+@router.get("/projects/{project_id}/issues", response_model=Page[IssueOut])
+def list_issues(
+    obj: ProjectDep, ctx: Ctx, db: DB, limit: int = 200, cursor: str | None = None, status: IssueStatus | None = None
+) -> Page[IssueOut]:
+    r = repo(db, ctx, DevIssue)
+    stmt = r.query().where(DevIssue.project_id == obj.id)
+    if status:
+        stmt = stmt.where(DevIssue.status == status)
+    rows, nxt = r.page(limit=limit, cursor=cursor, stmt=stmt)
+    return Page(items=[IssueOut.model_validate(x) for x in rows], next_cursor=nxt)
+
+
+@router.post("/projects/{project_id}/issues", response_model=IssueOut, status_code=201)
+def create_issue(obj: ProjectDep, body: IssueIn, ctx: WriteCtx, db: DB) -> IssueOut:
+    return IssueOut.model_validate(service.create_issue(ctx, db, obj, body))
+
+
+@router.get("/issues/{issue_id}", response_model=IssueOut)
+def get_issue(obj: IssueDep) -> IssueOut:
+    return IssueOut.model_validate(obj)
+
+
+@router.patch("/issues/{issue_id}", response_model=IssueOut)
+def update_issue(obj: IssueDep, body: IssuePatch, ctx: WriteCtx, db: DB) -> IssueOut:
+    return IssueOut.model_validate(service.update_issue(ctx, db, obj, body))
+
+
+@router.delete("/issues/{issue_id}", status_code=204)
+def delete_issue(obj: IssueDep, ctx: WriteCtx, db: DB) -> Response:
+    service.delete_issue(ctx, db, obj)
     return Response(status_code=204)

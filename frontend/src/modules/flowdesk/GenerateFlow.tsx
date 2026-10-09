@@ -9,15 +9,17 @@ import { FLOW_KINDS, PERSPECTIVES, flowKeys, flowPath } from "./shared";
 export function GenerateFlow({
   tenantId,
   engagementId,
+  initialInsights = [],
   onCreated,
 }: {
   tenantId: string;
   engagementId: string;
+  initialInsights?: string[];
   onCreated: (f: Flow) => void;
 }) {
   const { t, i18n } = useTranslation();
   const [form, setForm] = useState({ title: "", kind: "as_is", perspective: "business", description: "" });
-  const [picked, setPicked] = useState<string[]>([]);
+  const [picked, setPicked] = useState<string[]>(initialInsights);
   const [answer, setAnswer] = useState("");
   const [copied, setCopied] = useState(false);
   const insights = useQuery({

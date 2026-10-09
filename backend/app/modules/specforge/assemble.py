@@ -44,11 +44,19 @@ class FlowInfo:
 
 
 @dataclass
+class ErdInfo:
+    filename: str
+    tables: list[dict[str, Any]]
+    relations: list[dict[str, Any]]
+
+
+@dataclass
 class Inputs:
     engagement: Engagement
     requirements: str | None = None
     sessions: list[SessionInfo] = field(default_factory=list)
     flows: list[FlowInfo] = field(default_factory=list)
+    erds: list[ErdInfo] = field(default_factory=list)
     interfaces: list[dict[str, Any]] | None = None
     glossary: list[dict[str, Any]] | None = None
     rules: list[tuple[str, list[str]]] = field(default_factory=list)
@@ -78,6 +86,7 @@ def validate_sources(db: Session, ctx: TenantContext, engagement_id: str, source
         db, ctx, "discovery_sessions", sources.discovery_session_ids, engagement_id, "sources.discovery_session_ids"
     )
     _rows_in_engagement(db, ctx, "flows", sources.flow_ids, engagement_id, "sources.flow_ids")
+    _erds(db, ctx, engagement_id, sources.erd_analysis_ids)
 
 
 def _system_names(db: Session, ctx: TenantContext, ids: set[str]) -> dict[str, str]:
@@ -124,6 +133,26 @@ def _flows(db: Session, ctx: TenantContext, engagement_id: str, ids: list[str]) 
     return result
 
 
+def _erds(db: Session, ctx: TenantContext, engagement_id: str, ids: list[str]) -> list[ErdInfo]:
+    """Confirmed ExMigrate ERDs of the given analyses; an unconfirmed ERD is rejected."""
+    rows = _rows_in_engagement(db, ctx, "xl_analyses", ids, engagement_id, "sources.erd_analysis_ids")
+    if not rows:
+        return []
+    t = _t("xl_erd_drafts")
+    drafts = {
+        r.analysis_id: r
+        for r in db.execute(select(t).where(t.c.tenant_id == ctx.tenant_id, t.c.analysis_id.in_([r.id for r in rows])))
+    }
+    out = []
+    for r in rows:
+        draft = drafts.get(r.id)
+        if draft is None or not draft.confirmed:
+            raise AppError(422, "invalid_reference", detail={"field": "sources.erd_analysis_ids"})
+        erd = draft.erd if isinstance(draft.erd, dict) else {}
+        out.append(ErdInfo(r.filename, list(erd.get("tables", [])), list(erd.get("relations", []))))
+    return out
+
+
 def _interfaces(db: Session, ctx: TenantContext) -> list[dict[str, Any]]:
     t = _t("interfaces")
     rows = db.execute(select(t).where(t.c.tenant_id == ctx.tenant_id).order_by(t.c.if_code)).all()
@@ -165,6 +194,7 @@ def collect(
         requirements=(sources.requirements or "").strip() or None,
         sessions=_sessions(db, ctx, engagement.id, sources.discovery_session_ids),
         flows=_flows(db, ctx, engagement.id, sources.flow_ids),
+        erds=_erds(db, ctx, engagement.id, sources.erd_analysis_ids),
         interfaces=_interfaces(db, ctx) if sources.interfaces else None,
         glossary=_glossary(db, ctx) if sources.glossary else None,
         rules=rules,
@@ -257,9 +287,43 @@ def _rules_md(i: Inputs) -> list[str]:
     return out
 
 
+def _erd_md(e: ErdInfo) -> str:
+    lines = [f"**ERD: {_cell(e.filename)}** (ExMigrate)"]
+    for tbl in e.tables:
+        cols = [c for c in tbl.get("columns", []) if isinstance(c, dict)]
+        lines += ["", f"`{tbl.get('name')}` {_cell(tbl.get('label') or '')}".rstrip(), ""]
+        lines.append(
+            _table(
+                ["컬럼", "이름", "타입", "PK", "NULL"],
+                [
+                    [
+                        c.get("name"),
+                        c.get("label"),
+                        c.get("type"),
+                        "Y" if c.get("primary_key") else "",
+                        "Y" if c.get("nullable") else "",
+                    ]
+                    for c in cols
+                ],
+            )
+        )
+    if e.relations:
+        lines += ["", "관계:"]
+        lines += [
+            f"- `{r.get('from_table')}.{r.get('from_column')}` → `{r.get('to_table')}.{r.get('to_column')}`"
+            for r in e.relations
+        ]
+    return "\n".join(lines)
+
+
 def _data_model_md(i: Inputs) -> list[str]:
     glossary = _glossary_md(i)
-    return [DATA_MODEL_DIRECTIVE, *glossary] if glossary else []
+    erds = [_erd_md(e) for e in i.erds]
+    return ([DATA_MODEL_DIRECTIVE, *glossary] if glossary else []) + erds
+
+
+def _domain_md(i: Inputs) -> list[str]:
+    return [_erd_md(e) for e in i.erds]
 
 
 SECTION_BUILDERS = {
@@ -268,6 +332,7 @@ SECTION_BUILDERS = {
     "terms": _glossary_md,
     "structure": _structure_md,
     "features": _features_md,
+    "domain": _domain_md,
     "rules": _rules_md,
     "data_model": _data_model_md,
     "steps": _actions_md,

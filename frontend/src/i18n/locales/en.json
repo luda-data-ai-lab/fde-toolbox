@@ -53,10 +53,15 @@
     "priority": "Priority", "due": "Due", "progress": "Progress", "totalTasks": "Total tasks", "overdue": "Overdue",
     "recentPrompts": "Recent prompts", "pauseNote": "Pause note", "resumeNote": "Resume note", "pause": "Pause",
     "resume": "Resume", "prompts": "Prompt log", "tool": "Tool", "prompt": "Prompt",
-    "resultSummary": "Result summary", "addPrompt": "Log prompt"
+    "resultSummary": "Result summary", "addPrompt": "Log prompt",
+    "fromSpec": "Creates a project with the confirmed SpecForge document attached.", "specDocs": "Linked SpecForge documents", "issues": "Issues",
+    "addIssue": "Add issue", "issueKind": "Type", "issueSource": "Source", "fromAgent": "Creating an issue from an AgentHub operation record."
   },
   "projectStatus": { "planning": "Planning", "active": "Active", "on_hold": "On hold", "done": "Done" },
   "taskStatus": { "todo": "To do", "in_progress": "In progress", "review": "Review", "done": "Done", "on_hold": "On hold" },
+  "issueKind": { "bug": "Bug", "improvement": "Improvement", "question": "Question" },
+  "issueStatus": { "open": "Open", "in_progress": "In progress", "resolved": "Resolved", "closed": "Closed" },
+  "handoff": { "toFlowDesk": "Send to FlowDesk", "toSpecForge": "Send to SpecForge", "toDevTracker": "Send to DevTracker", "toIssue": "Send to DevTracker issue" },
   "priority": { "low": "Low", "medium": "Medium", "high": "High", "urgent": "Urgent" },
   "agenthub": {
     "templates": "Agent templates", "template": "Template", "instances": "Deployed instances", "deployment": "Deployment",

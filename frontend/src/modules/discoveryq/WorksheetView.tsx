@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { api } from "../../api/client";
 import type {
   DiscoverySession,
@@ -17,6 +18,7 @@ import {
   Select,
   StatusBadge,
 } from "../../components/ui";
+import { handoffUrl } from "../../app/handoff";
 import { AUDIT_ROLES, useCanWrite, useRole } from "../../app/hooks";
 import { ontoKeys, ontoPath } from "../ontomap/shared";
 import { ActionItemRow } from "./ActionItemsView";
@@ -605,8 +607,30 @@ export function WorksheetView({
             {ws.session.title}
           </h2>
         </div>
+        <div className="flex items-center gap-2">
+          {canWrite && ws.insights.length > 0 && (
+            <Link
+              className="btn"
+              data-testid="send-flowdesk"
+              to={handoffUrl("/flowdesk", {
+                engagement: ws.session.engagement_id,
+                insights: ws.insights.map((i) => i.id),
+              })}
+            >
+              {t("handoff.toFlowDesk")}
+            </Link>
+          )}
+          {canWrite && (
+            <Link
+              className="btn"
+              data-testid="send-specforge"
+              to={handoffUrl("/specforge", { engagement: ws.session.engagement_id, sessions: [sessionId] })}
+            >
+              {t("handoff.toSpecForge")}
+            </Link>
+          )}
         {role && AUDIT_ROLES.includes(role) && (
-          <div className="flex items-center gap-2">
+          <>
             <a
               className="btn"
               href={`/api/v1/t/${tenantId}/discoveryq/sessions/${sessionId}/export.md?lang=${lang}`}
@@ -619,8 +643,9 @@ export function WorksheetView({
             >
               {t("discoveryq.reportDocx")}
             </a>
-          </div>
+          </>
         )}
+        </div>
       </div>
       <SessionMeta key={ws.session.updated_at} tenantId={tenantId} ws={ws} />
       <div className="grid gap-4 lg:grid-cols-3">

@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
+import { handoffUrl } from "../../app/handoff";
 import { api, tenantPath } from "../../api/client";
 import type { AssetSummary, Engagement, EvalCase, EvalRun, Instance, Page, Project, System } from "../../api/types";
 import { Empty, ErrorText, Field, Loading, NeedTenant, PageHeader, Select, StatusBadge } from "../../components/ui";
@@ -204,6 +205,7 @@ export function AgentHubPage() {
                     <th>{t("agenthub.template")}</th>
                     <th>{t("agenthub.deployment")}</th>
                     <th>{t("common.status")}</th>
+                    <th />
                   </tr>
                 </thead>
                 <tbody>
@@ -225,6 +227,17 @@ export function AgentHubPage() {
                           />
                         ) : (
                           <StatusBadge group="instanceStatus" value={i.status} />
+                        )}
+                      </td>
+                      <td>
+                        {canWrite && i.dev_project_id && (
+                          <Link
+                            className="btn"
+                            data-testid="send-issue"
+                            to={handoffUrl(`/devtracker/projects/${i.dev_project_id}`, { issue_from: i.id, title: i.name })}
+                          >
+                            {t("handoff.toIssue")}
+                          </Link>
                         )}
                       </td>
                     </tr>

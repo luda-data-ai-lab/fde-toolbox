@@ -137,6 +137,16 @@ export interface Prompt extends Base {
   result_summary: string | null;
   at: string;
 }
+export interface Issue extends Base {
+  tenant_id: string;
+  project_id: string;
+  title: string;
+  kind: string;
+  status: string;
+  priority: string;
+  description: string | null;
+  source: { module: "agenthub"; instance_id: string; note: string | null } | null;
+}
 export interface ProjectDashboard {
   project: Project;
   status_counts: Record<string, number>;
@@ -529,6 +539,7 @@ export type SpecDocStatus = "draft" | "confirmed";
 export interface SpecSources {
   discovery_session_ids: string[];
   flow_ids: string[];
+  erd_analysis_ids: string[];
   interfaces: boolean;
   glossary: boolean;
   requirements: string | null;

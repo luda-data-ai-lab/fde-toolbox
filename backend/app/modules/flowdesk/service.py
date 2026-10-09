@@ -5,6 +5,7 @@ from pydantic import ValidationError
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
+from app.adapters.registry import get_llm
 from app.core.assets.models import AssetItem
 from app.core.audit.service import audited, record
 from app.core.errors import AppError
@@ -14,6 +15,7 @@ from app.core.tenancy.context import TenantContext
 from app.core.tenancy.repository import TenantScopedRepository
 from app.core.tenants.models import Engagement
 from app.db.base import Base
+from app.modules.flowdesk import generation
 from app.modules.flowdesk.mermaid import to_mermaid
 from app.modules.flowdesk.models import Flow, FlowSnapshot
 from app.modules.flowdesk.schemas import (
@@ -24,6 +26,9 @@ from app.modules.flowdesk.schemas import (
     FlowOut,
     FlowPatch,
     FlowSummary,
+    GenerateIn,
+    GeneratePrompt,
+    GenerateRun,
     GraphEdge,
     GraphNode,
     ImportIn,
@@ -345,3 +350,47 @@ def import_flow(ctx: TenantContext, db: Session, body: ImportIn) -> Flow:
         description=meta.description,
         graph=_dump(graph),
     )
+
+
+# --- generation --------------------------------------------------------------
+
+
+def generate_prompt(ctx: TenantContext, db: Session, body: GenerateIn) -> GeneratePrompt:
+    _check_engagement(db, ctx, body.engagement_id)
+    insights = generation.selected_insights(db, ctx, body)
+    prompt = generation.copy_prompt(body, insights, generation.registered_systems(db, ctx))
+    return GeneratePrompt(prompt=prompt, llm_available=generation.llm_available(ctx, db))
+
+
+def generate_flow(ctx: TenantContext, db: Session, body: GenerateRun) -> Flow:
+    """Create a flow from a pasted answer (copy mode) or, without one, from the LLM adapter."""
+    _check_engagement(db, ctx, body.engagement_id)
+    insights = generation.selected_insights(db, ctx, body)
+    systems = generation.registered_systems(db, ctx)
+    if body.answer is not None:
+        mode, result = "copy", generation.parse_answer(body.answer)
+    else:
+        prompt = generation.build_prompt(body, insights, systems)
+        mode = "llm"
+        result = get_llm(ctx, db).generate_json(prompt, generation.GeneratedFlow, feature=generation.FEATURE)
+    graph = generation.to_graph(result, systems)
+    flow = _flows(db, ctx).create(
+        engagement_id=body.engagement_id,
+        kind=body.kind,
+        perspective=body.perspective,
+        title=body.title,
+        description=body.description.strip() or None,
+        graph=_dump(graph),
+    )
+    record(
+        db,
+        action="flowdesk.flow_generate",
+        actor_id=ctx.user_id,
+        tenant_id=ctx.tenant_id,
+        target_type="flow",
+        target_id=flow.id,
+        detail={"mode": mode, "perspective": body.perspective, "insights": len(insights), "nodes": len(graph.nodes)},
+        ip=ctx.ip,
+    )
+    db.commit()
+    return flow

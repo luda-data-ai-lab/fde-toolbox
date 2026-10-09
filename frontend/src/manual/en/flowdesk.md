@@ -11,6 +11,30 @@ FlowDesk is a canvas for drawing and editing business flows. Steps sit on swimla
 
 The list can be filtered by engagement and kind; flows with a counterpart show "Paired".
 
+## Generating a flow (prompt / LLM)
+
+Draft a flow from a process description or DiscoveryQ interview insights. After you pick an engagement, the list screen shows a **Generate a flow (prompt / LLM)** section.
+
+1. Set the title, kind (As-Is/To-Be) and perspective. The prompt changes with the perspective.
+   - Business: departments, documents, manual and waiting steps in detail (12-25 steps)
+   - PM: owners, deliverables, approvals and bottlenecks (10-20 steps)
+   - Developer: the system behind each step, data and interface points between systems, exception branches (15-30 steps)
+   - Executive: only key stages and decisions (5-10 steps)
+   - Consultant: note nodes that point out problems (As-Is) or improvements (To-Be) (10-20 steps)
+2. Write a **Process description** or pick one or more **DiscoveryQ insights**. At least one of them is required.
+3. Click **Build prompt**. The prompt contains your inputs, the names in the tenant's system registry and the expected JSON format.
+4. There are two ways to get the result.
+   - **Prompt-copy mode** (default): click **Copy prompt**, paste it into an LLM your organisation allows, paste the returned JSON into **Paste LLM result** and click **Create flow from result**.
+   - **Generate with LLM**: shown only when the LLM adapter is approved and active under [External integrations](/manual/adapters). It sends the same prompt through the LLM adapter, and the call is recorded in the audit log.
+5. A new flow is created and opens in the editor. Lanes come from the departments or roles in the result, and nodes are laid out left to right in connection order.
+
+FlowDesk cleans up the result when it builds the flow.
+- Unknown node types become **Task**; duplicate nodes and connections to missing nodes are dropped.
+- A node's system name is linked to the registry system with the same name or short name (case-insensitive).
+- If the answer isn't JSON or doesn't match the format, you get "Couldn't turn the LLM result into a flow" and no flow is created.
+
+> In prompt-copy mode FDE Toolbox makes no external calls. The copied prompt contains your description, the selected insights and system names, so paste it only into an LLM the customer allows.
+
 ## Editing the canvas
 
 | To | Do this |

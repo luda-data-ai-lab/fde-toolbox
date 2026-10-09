@@ -132,6 +132,7 @@
     "createToBe": "To-Be 만들기", "createAsIs": "As-Is 만들기", "openToBe": "To-Be 열기", "openAsIs": "As-Is 열기",
     "snapshots": "스냅샷", "snapshotNote": "스냅샷 메모", "takeSnapshot": "스냅샷 저장", "saveFirst": "변경 사항을 먼저 저장하세요.", "restore": "복원",
     "confirmRestore": "이 스냅샷으로 캔버스를 되돌릴까요? 저장하지 않은 변경은 사라집니다.", "confirmDelete": "이 흐름과 스냅샷을 삭제할까요?",
+    "gen": {"title": "흐름 생성(프롬프트·LLM)", "intro": "업무 설명이나 DiscoveryQ 인사이트로 흐름도를 만듭니다. 외부 연동이 꺼져 있으면 프롬프트를 복사해 외부 LLM에 붙여넣고, 받은 JSON 결과를 아래에 붙여넣으세요.", "description": "업무 설명", "descriptionHint": "예: 영업팀이 주문을 접수하면 생산팀이 재고를 확인하고…", "insights": "DiscoveryQ 인사이트", "noInsights": "이 인게이지먼트에 인사이트가 없습니다.", "makePrompt": "프롬프트 만들기", "runLlm": "LLM으로 자동 생성", "running": "생성 중…", "prompt": "프롬프트", "copy": "프롬프트 복사", "copied": "복사됨", "answer": "LLM 결과 붙여넣기", "answerHint": "LLM이 돌려준 JSON을 그대로 붙여넣으세요.", "fromAnswer": "결과로 흐름 만들기"},
     "field": { "title": "제목", "kind": "구분", "perspective": "관점", "template": "템플릿", "pair": "짝 흐름", "nodes": "노드 수", "nodeType": "노드 유형", "label": "이름", "system": "시스템", "lane": "레인", "condition": "조건" }
   },
   "flowKind": { "as_is": "As-Is", "to_be": "To-Be" },
@@ -170,6 +171,7 @@
   "adapterStatus": { "not_configured": "미설정", "requested": "승인 대기", "active": "활성", "disabled": "비활성" },
   "errors": {
     "workbook_invalid": "엑셀 파일을 읽을 수 없습니다.", "erd_invalid": "ERD에 고칠 점이 있어 확정할 수 없습니다.", "erd_not_confirmed": "먼저 ERD를 확정하세요.",
+    "flow_result_invalid": "LLM 결과를 흐름으로 바꾸지 못했습니다. JSON 형식과 노드·연결선을 확인하세요.",
     "unknown": "요청을 처리하지 못했습니다.", "invalid_json": "JSON 형식이 올바르지 않습니다.",
     "not_found": "대상을 찾을 수 없습니다.", "forbidden": "권한이 없습니다.", "unauthorized": "로그인이 필요합니다.",
     "invalid_credentials": "이메일 또는 비밀번호가 올바르지 않습니다.", "validation_error": "입력값을 확인하세요.",

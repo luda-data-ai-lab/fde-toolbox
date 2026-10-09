@@ -1,6 +1,12 @@
 import json
+from collections.abc import Iterator
 from typing import Any
 
+import pytest
+
+from app.adapters.llm import LlmConfig
+from app.adapters.registry import LLM
+from app.config import get_settings
 from app.modules.flowdesk.mermaid import to_mermaid
 from app.modules.flowdesk.schemas import FlowGraph
 from app.modules.flowdesk.service import LANE_HEIGHT, template_graph
@@ -231,3 +237,139 @@ def test_export_and_import_roundtrip(world: World) -> None:
         == 422
     )
     assert "flowdesk.flow_export" in _actions(world) and "flowdesk.flow_import" in _actions(world)
+
+
+# --- generation ----------------------------------------------------------------
+
+GENERATED = {
+    "lanes": ["영업", "생산"],
+    "nodes": [
+        {"id": "n1", "type": "start", "label": "시작", "lane": "영업"},
+        {"id": "n2", "type": "task", "label": "수주 접수", "lane": "영업", "system": "erp {code}"},
+        {"id": "n3", "type": "Decision", "label": "재고?", "lane": "생산"},
+        {"id": "n4", "type": "gateway", "label": "긴급 생산", "lane": "품질"},
+        {"id": "n4", "type": "task", "label": "중복"},
+        {"id": "n5", "type": "end", "label": "종료", "lane": "생산"},
+    ],
+    "edges": [
+        {"source": "n1", "target": "n2"},
+        {"source": "n2", "target": "n3"},
+        {"source": "n3", "target": "n5", "label": "있음"},
+        {"source": "n3", "target": "n4", "label": "없음"},
+        {"source": "n4", "target": "zz"},
+    ],
+}
+
+
+def _generated(world: World) -> str:
+    code = world.a.ids["system_id"]
+    name = world.a.fde.get(f"/api/v1/t/{world.a.tenant_id}/systems/{code}").json()["name"]
+    return json.dumps(GENERATED, ensure_ascii=False).replace("erp {code}", name.lower())
+
+
+def _gen_body(world: World, **extra: Any) -> dict[str, Any]:
+    return {
+        "engagement_id": world.a.ids["engagement_id"],
+        "title": "생성 흐름",
+        "perspective": "developer",
+        "description": "주문을 받아 생산 후 출하한다.",
+        "insight_ids": [world.a.ids["insight_id"]],
+        **extra,
+    }
+
+
+@pytest.fixture
+def adapters_allowed() -> Iterator[None]:
+    settings = get_settings()
+    prev, settings.adapters_allowed = settings.adapters_allowed, True
+    yield
+    settings.adapters_allowed = prev
+
+
+class FakeTransport:
+    def __init__(self, replies: list[str]) -> None:
+        self.replies = replies
+        self.prompts: list[str] = []
+
+    def complete(self, prompt: str, *, config: LlmConfig, api_key: str) -> str:
+        self.prompts.append(prompt)
+        return self.replies.pop(0)
+
+
+def test_insight_options_are_engagement_and_tenant_scoped(world: World) -> None:
+    r = world.a.fde.get(f"{_base(world)}/insights", params={"engagement_id": world.a.ids["engagement_id"]})
+    assert r.status_code == 200
+    assert [x["id"] for x in r.json()] == [world.a.ids["insight_id"]]
+    other = world.a.fde.get(f"{_base(world)}/insights", params={"engagement_id": world.b.ids["engagement_id"]})
+    assert other.json() == []
+
+
+def test_prompt_contains_perspective_inputs_and_schema(world: World) -> None:
+    r = world.a.fde.post(f"{_base(world)}/generate/prompt", json=_gen_body(world))
+    assert r.status_code == 200, r.text
+    body = r.json()
+    assert body["llm_available"] is False
+    prompt = body["prompt"]
+    assert "Developer:" in prompt and "생성 흐름" in prompt and "주문을 받아" in prompt
+    assert f"Insight {world.a.code}" in prompt and f"ERP {world.a.code}" in prompt
+    assert "JSON Schema" in prompt and "Korean" in prompt
+    executive = world.a.fde.post(f"{_base(world)}/generate/prompt", json=_gen_body(world, perspective="executive"))
+    assert "Executive:" in executive.json()["prompt"] and "Developer:" not in executive.json()["prompt"]
+
+
+def test_prompt_rejects_missing_input_and_foreign_insights(world: World) -> None:
+    empty = world.a.fde.post(f"{_base(world)}/generate/prompt", json=_gen_body(world, description="", insight_ids=[]))
+    assert empty.status_code == 422
+    foreign = _gen_body(world, insight_ids=[world.b.ids["insight_id"]])
+    assert world.a.fde.post(f"{_base(world)}/generate/prompt", json=foreign).status_code == 422
+    assert world.a.client_user.post(f"{_base(world)}/generate/prompt", json=_gen_body(world)).status_code == 403
+
+
+def test_copy_mode_answer_becomes_normalised_flow(world: World) -> None:
+    r = world.a.fde.post(f"{_base(world)}/generate", json=_gen_body(world, answer=f"```json\n{_generated(world)}\n```"))
+    assert r.status_code == 201, r.text
+    flow = r.json()
+    graph = flow["graph"]
+    assert flow["perspective"] == "developer" and flow["title"] == "생성 흐름"
+    assert graph["lanes"] == ["영업", "생산", "품질"]
+    nodes = {n["id"]: n for n in graph["nodes"]}
+    assert list(nodes) == ["n1", "n2", "n3", "n4", "n5"]
+    assert nodes["n2"]["system_id"] == world.a.ids["system_id"]
+    assert nodes["n3"]["type"] == "decision" and nodes["n4"]["type"] == "task"
+    assert [(e["source"], e["target"], e["label"]) for e in graph["edges"]] == [
+        ("n1", "n2", None),
+        ("n2", "n3", None),
+        ("n3", "n5", "있음"),
+        ("n3", "n4", "없음"),
+    ]
+    xs = {k: v["position"]["x"] for k, v in nodes.items()}
+    assert xs["n1"] < xs["n2"] < xs["n3"] < xs["n5"]
+    assert len({(v["position"]["x"], v["position"]["y"]) for v in nodes.values()}) == 5
+    assert "flowdesk.flow_generate" in _actions(world)
+
+
+def test_copy_mode_invalid_answer(world: World) -> None:
+    for answer in ("설명만 있음", '{"nodes": []}'):
+        r = world.a.fde.post(f"{_base(world)}/generate", json=_gen_body(world, answer=answer))
+        assert r.status_code == 422
+        assert r.json()["error"]["code"] == "flow_result_invalid"
+
+
+def test_llm_mode_disabled_then_generates(
+    world: World, adapters_allowed: None, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    url = f"{_base(world)}/generate"
+    disabled = world.a.fde.post(url, json=_gen_body(world))
+    assert disabled.status_code == 409 and disabled.json()["error"]["code"] == "adapter_disabled"
+    aid = world.a.ids["activation_id"]
+    approve = world.a.client_admin.post(
+        f"/api/v1/t/{world.a.tenant_id}/adapters/activations/{aid}/approve", json={"acknowledged_egress": True}
+    )
+    assert approve.status_code == 200, approve.text
+    assert world.a.fde.post(f"{url}/prompt", json=_gen_body(world)).json()["llm_available"] is True
+    fake = FakeTransport([_generated(world)])
+    monkeypatch.setattr(LLM, "transport", fake)
+    r = world.a.fde.post(url, json=_gen_body(world))
+    assert r.status_code == 201, r.text
+    assert len(r.json()["graph"]["nodes"]) == 5
+    assert "Developer:" in fake.prompts[0] and "JSON Schema" in fake.prompts[0]

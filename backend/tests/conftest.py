@@ -233,6 +233,15 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
             },
         )
     )["id"]
+    ids["issue_id"] = _ok(
+        fde.post(
+            f"{base}/devtracker/projects/{ids['project_id']}/issues",
+            json={
+                "title": f"Issue {code}",
+                "source": {"module": "agenthub", "instance_id": ids["instance_id"]},
+            },
+        )
+    )["id"]
     flows = f"{base}/flowdesk/flows"
     ids["flow_id"] = _ok(
         fde.post(

@@ -51,3 +51,47 @@ def test_home_dashboard(world: World) -> None:
     assert home["tenants"][0]["agenthub"]["instances_by_status"] == {"ready": 1}
     admin_home = world.admin.get("/api/v1/home").json()
     assert admin_home["totals"]["tenants"] == 2 and admin_home["totals"]["assets"] == 4
+
+
+def test_issues_crud_and_agenthub_source(world: World) -> None:
+    base = f"/api/v1/t/{world.a.tenant_id}/devtracker"
+    fde = world.a.fde
+    pid = world.a.ids["project_id"]
+    iid = world.a.ids["instance_id"]
+    issues = fde.get(f"{base}/projects/{pid}/issues").json()["items"]
+    assert [x["title"] for x in issues] == ["Issue TA"]
+    assert issues[0]["source"] == {"module": "agenthub", "instance_id": iid, "note": None}
+    created = fde.post(
+        f"{base}/projects/{pid}/issues",
+        json={"title": "Wrong answer", "kind": "improvement", "priority": "high", "description": "d"},
+    )
+    assert created.status_code == 201 and created.json()["status"] == "open"
+    issue = created.json()
+    r = fde.patch(f"{base}/issues/{issue['id']}", json={"status": "resolved"})
+    assert r.json()["status"] == "resolved"
+    assert fde.patch(f"{base}/issues/{issue['id']}", json={"kind": "bogus"}).status_code == 422
+    resolved = fde.get(f"{base}/projects/{pid}/issues", params={"status": "resolved"}).json()["items"]
+    assert [x["id"] for x in resolved] == [issue["id"]]
+    foreign = {"module": "agenthub", "instance_id": world.b.ids["instance_id"]}
+    r = fde.post(f"{base}/projects/{pid}/issues", json={"title": "x", "source": foreign})
+    assert r.status_code == 422 and r.json()["error"]["code"] == "invalid_reference"
+    assert world.a.client_user.post(f"{base}/projects/{pid}/issues", json={"title": "x"}).status_code == 403
+    assert world.a.client_user.get(f"{base}/issues/{issue['id']}").status_code == 200
+    assert fde.delete(f"{base}/issues/{issue['id']}").status_code == 204
+
+
+def test_project_links_only_confirmed_spec_documents(world: World) -> None:
+    t = world.a.tenant_id
+    fde = world.a.fde
+    eid = world.a.ids["engagement_id"]
+    doc = world.a.ids["document_id"]
+    projects = f"/api/v1/t/{t}/devtracker/projects"
+    body = {"engagement_id": eid, "name": "From spec", "spec_document_ids": [doc]}
+    r = fde.post(projects, json=body)
+    assert r.status_code == 422 and r.json()["error"]["detail"]["field"] == "spec_document_ids"
+    assert fde.patch(f"/api/v1/t/{t}/specforge/documents/{doc}", json={"status": "confirmed"}).status_code == 200
+    r = fde.post(projects, json={**body, "spec_document_ids": [doc, doc]})
+    assert r.status_code == 201 and r.json()["spec_document_ids"] == [doc]
+    foreign = fde.post(projects, json={**body, "spec_document_ids": [world.b.ids["document_id"]]})
+    assert foreign.status_code == 422
+    assert fde.patch(f"{projects}/{r.json()['id']}", json={"spec_document_ids": []}).json()["spec_document_ids"] == []

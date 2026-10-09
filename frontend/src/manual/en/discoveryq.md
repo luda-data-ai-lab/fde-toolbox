@@ -55,3 +55,10 @@ On **Action items**, manage assignee, due date and status (open / in progress / 
 | Action items CSV | Action items tab | The action item list |
 
 Reports are generated on the server and never sent outside. LUDA admins, FDEs and customer admins can export, and every export is recorded in the audit log.
+
+## Sending to the next step
+
+The buttons at the top of a session hand its results to the next module. Nothing is synchronised automatically; a handoff happens only when you click.
+
+- **Send to FlowDesk**: opens FlowDesk flow generation for the same engagement with all of this session's insights selected. Untick the ones you don't need, then build the prompt. Shown only when the session has insights.
+- **Send to SpecForge**: opens SpecForge's new-document form with this session selected as an input.

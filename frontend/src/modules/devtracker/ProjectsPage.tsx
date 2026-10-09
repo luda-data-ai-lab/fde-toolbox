@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { api, tenantPath } from "../../api/client";
 import type { Engagement, Page, Project } from "../../api/types";
 import { Empty, ErrorText, Field, NeedTenant, PageHeader, StatusBadge } from "../../components/ui";
@@ -14,7 +14,15 @@ export function ProjectsPage() {
   const engagementId = useWorkspace((s) => s.engagementId);
   const canWrite = useCanWrite();
   const qc = useQueryClient();
-  const [form, setForm] = useState({ name: "", engagement_id: "", stack: "", description: "" });
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const specId = params.get("spec");
+  const [form, setForm] = useState({
+    name: params.get("name") ?? "",
+    engagement_id: params.get("engagement") ?? "",
+    stack: "",
+    description: "",
+  });
   const key = ["projects", tenantId, engagementId];
   const { data } = useQuery({
     queryKey: key,
@@ -33,11 +41,16 @@ export function ProjectsPage() {
     mutationFn: () =>
       api<Project>(tenantPath(tenantId, "/devtracker/projects"), {
         method: "POST",
-        body: { ...form, engagement_id: form.engagement_id || engagementId },
+        body: {
+          ...form,
+          engagement_id: form.engagement_id || engagementId,
+          spec_document_ids: specId ? [specId] : [],
+        },
       }),
-    onSuccess: () => {
+    onSuccess: (p) => {
       setForm({ name: "", engagement_id: "", stack: "", description: "" });
       void qc.invalidateQueries({ queryKey: ["projects"] });
+      if (specId) navigate(`/devtracker/projects/${p.id}`);
     },
   });
   if (!tenantId) return <NeedTenant />;
@@ -50,7 +63,12 @@ export function ProjectsPage() {
     <div className="space-y-4">
       <PageHeader title={`${t("nav.devtracker")} · ${t("devtracker.projects")}`} />
       {canWrite && (
-        <form onSubmit={submit} className="card grid grid-cols-5 items-end gap-3">
+        <form onSubmit={submit} className="card grid grid-cols-5 items-end gap-3" data-testid="project-form">
+          {specId && (
+            <p className="col-span-5 text-sm text-blue-700" data-testid="project-from-spec">
+              {t("devtracker.fromSpec")}
+            </p>
+          )}
           <Field label={t("nav.engagements")}>
             <select
               className="input"

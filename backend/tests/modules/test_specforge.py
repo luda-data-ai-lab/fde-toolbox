@@ -220,3 +220,20 @@ def test_enrich_with_active_llm_returns_unsaved_draft(world: World, monkeypatch:
     assert r.json()["content_md"].endswith("다듬은 내용\n")
     assert "# Spec TA" in fake.prompts[0]
     assert world.a.fde.get(url).json()["content_md"] != r.json()["content_md"]
+
+
+def test_confirmed_erd_lands_in_domain_section(world: World) -> None:
+    aid = world.a.ids["analysis_id"]
+    doc = _create(world, sources={"erd_analysis_ids": [aid]})
+    md = str(doc["content_md"])
+    assert "**ERD: xl-TA.xlsx** (ExMigrate)" in md and "| 컬럼 | 이름 | 타입 | PK | NULL |" in md
+    r = world.a.fde.post(
+        f"{_base(world)}/documents",
+        json={
+            "engagement_id": world.a.ids["engagement_id"],
+            "doc_type": "spec",
+            "title": "x",
+            "sources": {"erd_analysis_ids": [world.b.ids["analysis_id"]]},
+        },
+    )
+    assert (r.status_code, r.json()["error"]["detail"]["field"]) == (422, "sources.erd_analysis_ids")

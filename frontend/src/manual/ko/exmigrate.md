@@ -61,3 +61,7 @@ python load.py 원본.xlsx --dialect postgresql --url "postgresql://user:pw@host
 ## 내보내기
 
 상세 화면 위쪽에서 **분석 보고서(MD)**(구조·수식·경고 요약)와 **ERD(Mermaid)**를 내려받습니다. 고객사 사용자(조회 권한)는 결과를 볼 수 있지만 업로드, ERD 수정·확정, 내보내기는 할 수 없습니다.
+
+## SpecForge로 보내기
+
+ERD를 확정하면 ERD 탭에 **SpecForge로 보내기**가 나타납니다. 누르면 SpecForge의 새 문서 조립 화면이 열리고 이 분석의 ERD가 입력으로 선택됩니다. 확정된 ERD의 테이블·컬럼·관계는 Spec.md "도메인 개념 모델", Devin.md "데이터 모델" 섹션에 표로 들어갑니다.

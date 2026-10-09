@@ -33,3 +33,7 @@ On **List**, filter by system, status and link type, or search. FDEs and LUDA ad
 ## Exports
 
 **Export Excel** and **Export CSV** download the current list. Cell values are escaped so they cannot run as formulas.
+
+## Sending to SpecForge
+
+**Send to SpecForge** at the top opens SpecForge's new-document form with the "I/F list" input selected.

@@ -1,9 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
 import { api } from "../../api/client";
 import type { SpecDiff, SpecDocument, SpecVersion } from "../../api/types";
 import { fmtDate } from "../../app/format";
+import { handoffUrl } from "../../app/handoff";
 import { AUDIT_ROLES, useCanWrite, useRole } from "../../app/hooks";
 import { Empty, ErrorText, Field, Loading, StatusBadge } from "../../components/ui";
 import { DiffView } from "../../core/AssetsPage";
@@ -96,6 +98,15 @@ export function SpecEditor({ tenantId, docId, onBack }: { tenantId: string; docI
                 {confirmed ? t("specforge.reopen") : t("specforge.confirm")}
               </button>
             </>
+          )}
+          {canWrite && confirmed && !dirty && (
+            <Link
+              className="btn"
+              data-testid="send-devtracker"
+              to={handoffUrl("/devtracker", { engagement: doc.engagement_id, spec: doc.id, name: doc.title })}
+            >
+              {t("handoff.toDevTracker")}
+            </Link>
           )}
           {canExport && (
             <a className="btn" href={`/api/v1${url}/export.md`} data-testid="spec-export-md">

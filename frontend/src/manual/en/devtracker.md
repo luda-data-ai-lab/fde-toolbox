@@ -27,3 +27,17 @@ The top of the project page shows total tasks, progress, overdue tasks (open tas
 ## Prompt log
 
 Use **Log prompt** to record the tool used (Devin, Claude, etc.), the prompt and a summary of the result, for reference the next time.
+
+## Creating a project from a SpecForge document
+
+**Send to DevTracker** on a confirmed SpecForge document prefills the project form with the document title and engagement. After **Create**, the project opens and **Linked SpecForge documents** links back to the document. Only confirmed documents of the same customer and engagement can be linked.
+
+## Issues
+
+Record bugs, improvements and questions under **Issues** at the bottom of a project.
+
+1. Enter title, type, priority and description, then click **Add issue**.
+2. Change the status (open / in progress / resolved / closed) directly in the list.
+3. Arriving from **Send to DevTracker issue** on an AgentHub deployment prefills the title with the instance name and records the source as "AgentHub".
+
+Client users can only view issues.

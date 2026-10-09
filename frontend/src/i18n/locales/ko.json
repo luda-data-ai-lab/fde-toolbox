@@ -53,10 +53,15 @@
     "priority": "우선순위", "due": "마감일", "progress": "진행률", "totalTasks": "전체 태스크", "overdue": "지연 태스크",
     "recentPrompts": "최근 프롬프트", "pauseNote": "중단 메모", "resumeNote": "재개 메모", "pause": "작업 중단",
     "resume": "작업 재개", "prompts": "프롬프트 기록", "tool": "도구", "prompt": "프롬프트",
-    "resultSummary": "결과 요약", "addPrompt": "프롬프트 기록"
+    "resultSummary": "결과 요약", "addPrompt": "프롬프트 기록",
+    "fromSpec": "SpecForge 확정 문서를 첨부한 프로젝트를 만듭니다.", "specDocs": "연결된 SpecForge 문서", "issues": "이슈",
+    "addIssue": "이슈 추가", "issueKind": "유형", "issueSource": "출처", "fromAgent": "AgentHub 운영 기록에서 이슈를 만듭니다."
   },
   "projectStatus": { "planning": "계획", "active": "진행", "on_hold": "보류", "done": "완료" },
   "taskStatus": { "todo": "할 일", "in_progress": "진행 중", "review": "검토", "done": "완료", "on_hold": "보류" },
+  "issueKind": { "bug": "버그", "improvement": "개선", "question": "질문" },
+  "issueStatus": { "open": "열림", "in_progress": "처리 중", "resolved": "해결", "closed": "닫힘" },
+  "handoff": { "toFlowDesk": "FlowDesk로 보내기", "toSpecForge": "SpecForge로 보내기", "toDevTracker": "DevTracker로 보내기", "toIssue": "DevTracker 이슈로 보내기" },
   "priority": { "low": "낮음", "medium": "보통", "high": "높음", "urgent": "긴급" },
   "agenthub": {
     "templates": "에이전트 템플릿", "template": "템플릿", "instances": "배포 인스턴스", "deployment": "배포 형태",

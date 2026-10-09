@@ -1,5 +1,5 @@
 from datetime import date, datetime
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -8,6 +8,8 @@ from app.core.schemas import ORMModel
 ProjectStatus = Literal["planning", "active", "on_hold", "done"]
 TaskStatus = Literal["todo", "in_progress", "review", "done", "on_hold"]
 TaskPriority = Literal["low", "medium", "high", "urgent"]
+IssueKind = Literal["bug", "improvement", "question"]
+IssueStatus = Literal["open", "in_progress", "resolved", "closed"]
 
 
 class ProjectIn(BaseModel):
@@ -114,3 +116,37 @@ class ProjectDashboard(BaseModel):
     overdue_tasks: list[TaskOut]
     paused_tasks: list[TaskOut]
     recent_prompts: list[PromptOut]
+
+
+class IssueSource(BaseModel):
+    module: Literal["agenthub"]
+    instance_id: str
+    note: str | None = Field(default=None, max_length=2000)
+
+
+class IssueIn(BaseModel):
+    title: str = Field(min_length=1, max_length=300)
+    kind: IssueKind = "bug"
+    status: IssueStatus = "open"
+    priority: TaskPriority = "medium"
+    description: str | None = None
+    source: IssueSource | None = None
+
+
+class IssuePatch(BaseModel):
+    title: str | None = Field(default=None, min_length=1, max_length=300)
+    kind: IssueKind | None = None
+    status: IssueStatus | None = None
+    priority: TaskPriority | None = None
+    description: str | None = None
+
+
+class IssueOut(ORMModel):
+    tenant_id: str
+    project_id: str
+    title: str
+    kind: str
+    status: str
+    priority: str
+    description: str | None
+    source: dict[str, Any] | None

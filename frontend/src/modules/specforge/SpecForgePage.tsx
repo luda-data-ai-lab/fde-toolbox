@@ -12,8 +12,10 @@ import type {
   SpecDocumentSummary,
   SpecRulePack,
   SpecTemplate,
+  XlAnalysisSummary,
 } from "../../api/types";
 import { fmtDate } from "../../app/format";
+import { listParam } from "../../app/handoff";
 import { AUDIT_ROLES, useCanWrite, useRole, useTenantId } from "../../app/hooks";
 import { useWorkspace } from "../../app/store";
 import { Empty, ErrorText, Field, Loading, NeedTenant, PageHeader, Select, StatusBadge } from "../../components/ui";
@@ -47,7 +49,8 @@ function DocList({ tenantId, onOpen }: { tenantId: string; onOpen: (id: string) 
   const canExport = role !== undefined && AUDIT_ROLES.includes(role);
   const qc = useQueryClient();
   const workspaceEngagement = useWorkspace((s) => s.engagementId);
-  const [engagementId, setEngagementId] = useState("");
+  const [params] = useSearchParams();
+  const [engagementId, setEngagementId] = useState(params.get("engagement") ?? "");
   const engagement = engagementId || workspaceEngagement || "";
   const keys = specKeys(tenantId);
   const { data, isLoading } = useQuery({
@@ -71,6 +74,8 @@ function DocList({ tenantId, onOpen }: { tenantId: string; onOpen: (id: string) 
       </div>
       {canWrite && (
         <CreateDoc
+          key={engagement}
+          params={params}
           tenantId={tenantId}
           engagementId={engagement}
           onCreated={(d) => {
@@ -120,10 +125,12 @@ function DocList({ tenantId, onOpen }: { tenantId: string; onOpen: (id: string) 
 }
 
 function CreateDoc({
+  params,
   tenantId,
   engagementId,
   onCreated,
 }: {
+  params: URLSearchParams;
   tenantId: string;
   engagementId: string;
   onCreated: (d: SpecDocument) => void;
@@ -134,9 +141,10 @@ function CreateDoc({
   const [title, setTitle] = useState("");
   const [templateId, setTemplateId] = useState("");
   const [packs, setPacks] = useState<string[]>([]);
-  const [sessionIds, setSessionIds] = useState<string[]>([]);
-  const [flowIds, setFlowIds] = useState<string[]>([]);
-  const [interfaces, setInterfaces] = useState(false);
+  const [sessionIds, setSessionIds] = useState<string[]>(() => listParam(params, "sessions"));
+  const [flowIds, setFlowIds] = useState<string[]>(() => listParam(params, "flows"));
+  const [erdIds, setErdIds] = useState<string[]>(() => listParam(params, "analyses"));
+  const [interfaces, setInterfaces] = useState(params.get("interfaces") === "1");
   const [glossary, setGlossary] = useState(true);
   const [requirements, setRequirements] = useState("");
   const templates = useQuery({
@@ -163,6 +171,14 @@ function CreateDoc({
         query: { limit: 200, engagement_id: engagementId },
       }),
   }).data?.items;
+  const erds = useQuery({
+    queryKey: ["specforge", tenantId, "erds", engagementId],
+    enabled: !!engagementId,
+    queryFn: () =>
+      api<Page<XlAnalysisSummary>>(`/t/${tenantId}/exmigrate/analyses`, {
+        query: { limit: 200, engagement_id: engagementId },
+      }),
+  }).data?.items.filter((a) => a.erd_confirmed);
   const forType = (templates ?? []).filter((x) => x.doc === docType);
   const template = forType.find((x) => x.asset_id === templateId) ?? forType[0];
   const create = useMutation({
@@ -180,6 +196,7 @@ function CreateDoc({
           sources: {
             discovery_session_ids: sessionIds,
             flow_ids: flowIds,
+            erd_analysis_ids: erdIds,
             interfaces,
             glossary,
             requirements: requirements || null,
@@ -268,6 +285,16 @@ function CreateDoc({
                 onChange={() => setFlowIds((x) => toggle(x, f.id))}
               />
               {f.title}
+            </label>
+          ))}
+        </div>
+        <div className="text-sm">
+          <span className="mr-2 text-slate-500">ExMigrate ERD:</span>
+          {(erds ?? []).length === 0 && <span className="text-slate-400">—</span>}
+          {(erds ?? []).map((a) => (
+            <label key={a.id} className="mr-4 inline-flex items-center gap-1">
+              <input type="checkbox" checked={erdIds.includes(a.id)} onChange={() => setErdIds((x) => toggle(x, a.id))} />
+              {a.filename}
             </label>
           ))}
         </div>

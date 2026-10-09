@@ -1,9 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { api, tenantPath } from "../../api/client";
 import type { Page, XlAnalysis, XlAnalysisSummary, XlErd, XlErdDraft, XlSheetReport } from "../../api/types";
+import { handoffUrl } from "../../app/handoff";
 import { useCanWrite, useTenantId } from "../../app/hooks";
 import { useWorkspace } from "../../app/store";
 import { Empty, ErrorText, Loading, NeedTenant, PageHeader, Select, StatusBadge } from "../../components/ui";
@@ -204,7 +205,7 @@ function AnalysisDetail({ tenantId, id, onBack }: { tenantId: string; id: string
       </div>
       {tab === "structure" && report.sheets.map((s) => <SheetStructure key={s.name} sheet={s} />)}
       {tab === "formulas" && <Formulas analysis={data} />}
-      {tab === "erd" && <ErdEditor tenantId={tenantId} id={id} />}
+      {tab === "erd" && <ErdEditor tenantId={tenantId} id={id} engagementId={data.engagement_id} />}
       {tab === "scripts" && <Scripts tenantId={tenantId} id={id} base={base} />}
     </div>
   );
@@ -328,7 +329,7 @@ function Formulas({ analysis }: { analysis: XlAnalysis }) {
   );
 }
 
-function ErdEditor({ tenantId, id }: { tenantId: string; id: string }) {
+function ErdEditor({ tenantId, id, engagementId }: { tenantId: string; id: string; engagementId: string }) {
   const { t } = useTranslation();
   const canWrite = useCanWrite();
   const qc = useQueryClient();
@@ -391,6 +392,15 @@ function ErdEditor({ tenantId, id }: { tenantId: string; id: string }) {
               {t("exmigrate.confirm")}
             </button>
             {data.confirmed && <span className="text-xs text-slate-500">{t("exmigrate.editAgain")}</span>}
+            {data.confirmed && !dirty && engagementId && (
+              <Link
+                className="btn"
+                data-testid="send-specforge"
+                to={handoffUrl("/specforge", { engagement: engagementId, analyses: [id] })}
+              >
+                {t("handoff.toSpecForge")}
+              </Link>
+            )}
           </>
         )}
         <ErrorText error={save.error ?? confirm.error} />

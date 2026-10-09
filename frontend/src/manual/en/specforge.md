@@ -51,3 +51,9 @@ Edit in the **Markdown editor** on the left; the **Preview** on the right update
 | Client user | View |
 
 Every create, update, version, restore, enrich and export is recorded in the [audit log](/manual/workspace).
+
+## Receiving from other modules and sending to DevTracker
+
+- **Send to SpecForge** on a DiscoveryQ session, FlowDesk flow, confirmed ExMigrate ERD, I/F management or the OntoMap glossary opens the new-document form with that input selected. You can still add other inputs.
+- **ExMigrate ERD**: only analyses of the same engagement whose ERD is confirmed are listed.
+- Once a document is **confirmed**, **Send to DevTracker** appears in the editor. It opens DevTracker's project form prefilled with the document title and engagement; creating the project links the document to it. Unconfirmed documents cannot be linked.

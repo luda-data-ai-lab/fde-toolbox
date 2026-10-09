@@ -160,7 +160,19 @@
   "flowNodeType": { "start": "Start", "end": "End", "task": "Task", "decision": "Decision", "system": "System", "document": "Document", "role": "Role", "note": "Note" },
   "ontomap": {
     "aliasHint": "Production: Recipe sheet; BOM", "noDefinition": "No definition",
-    "tab": { "glossary": "Glossary", "candidates": "Candidates", "import": "Excel import" },
+    "tab": { "glossary": "Glossary", "concepts": "Concept model", "candidates": "Candidates", "validation": "Validation", "import": "Excel import" },
+    "concept": {
+      "new": "Add concept", "name": "Concept name", "parent": "Parent concept", "changeParent": "Change parent", "changeStatus": "Change status", "ownerDept": "Owner department",
+      "tenantConcepts": "Customer concepts", "attributes": "Attributes", "attributeName": "Attribute name", "addAttribute": "Add attribute", "dataType": "Data type", "unit": "Unit", "required": "Required",
+      "origin": "Origin", "own": "Defined here", "inheritedFrom": "Inherited: {{origin}}", "identifier": "Identifier", "setIdentifier": "Set as identifier",
+      "relations": "Relations", "relationName": "Relation name", "addRelation": "Add relation", "source": "Source concept", "target": "Target concept", "cardinality": "Cardinality", "inverse": "Inverse name", "terms": "Linked terms"
+    },
+    "validation": {
+      "hint": "Validation results are warnings and never block saving. Only circular inheritance is rejected on save.", "target": "Target", "issue": "Warning",
+      "orphan_concept": "No parent (inherit an upper-ontology concept or another concept).", "duplicate_concept": "Another concept has the same name.",
+      "term_without_definition": "Confirmed term has no definition.", "dangling_upper_ref": "The inherited upper-ontology concept can't be found.",
+      "type": { "onto_concept": "Concept", "onto_term": "Term" }
+    },
     "term": { "new": "New term", "edit": "Edit term" },
     "field": { "term": "Standard term", "definition": "Definition", "abbreviation": "Abbreviation", "aliases": "Department aliases", "department": "Department", "status": "Status", "notes": "Notes" },
     "candidate": { "accept": "Confirm", "ignore": "Ignore", "reopen": "Reopen", "similar": "Similar terms", "mergeInto": "Merge into {{term}}", "fromSession": "DiscoveryQ session", "hint": "Confirming adds the candidate to the glossary; merging records it as an alias of an existing term." },
@@ -172,6 +184,9 @@
     },
     "register": { "title": "Register as term", "term": "Term candidate", "hint": "Select an expression in the answer, then click", "submit": "Register as term", "done": "Registered as candidate", "listed": "Term candidates from this session" }
   },
+  "conceptStatus": { "draft": "Draft", "confirmed": "Confirmed", "deprecated": "Deprecated" },
+  "dataType": { "string": "Text", "integer": "Integer", "decimal": "Decimal", "boolean": "Yes/No", "date": "Date", "datetime": "Date & time", "code": "Code" },
+  "cardinality": { "1:1": "1:1", "1:N": "1:N", "N:M": "N:M" },
   "termStatus": { "candidate": "Candidate", "confirmed": "Confirmed", "deprecated": "Deprecated" },
   "candidateStatus": { "open": "Pending review", "accepted": "Confirmed", "merged": "Merged", "ignored": "Ignored" },
   "adapters": {
@@ -192,7 +207,7 @@
   "errors": {
     "workbook_invalid": "The Excel file could not be read.", "erd_invalid": "The ERD has problems to fix before confirming.", "erd_not_confirmed": "Confirm the ERD first.",
     "flow_result_invalid": "Couldn't turn the LLM result into a flow. Check the JSON format, nodes and connections.",
-    "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
+    "inheritance_cycle": "This would create circular inheritance. Choose another parent.", "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
     "not_found": "Not found.", "forbidden": "Permission denied.", "unauthorized": "Please sign in.",
     "invalid_credentials": "Invalid email or password.", "validation_error": "Please check the input.",
     "email_taken": "Email already in use.", "tenant_code_taken": "Customer code already in use.",

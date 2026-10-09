@@ -7,6 +7,9 @@
 ### Changed
 - CoachQ를 DiscoveryQ로 이름 변경: 화면·문서, API 경로 `/coachq` → `/discoveryq`, 모듈, 테이블 `coach_*` → `discovery_*`(마이그레이션 0005, 데이터 이전·되돌리기 지원), OntoMap 후보 출처 `coach_session` → `discovery_session`, 질문 뱅크 자산 키 `discoveryq-question-bank`. 이전 경로 별칭은 두지 않으며, 이름 변경 전에 만든 고객사 ZIP은 다시 가져올 수 없다.
 
+### Added — Phase 3
+- OntoMap 개념 모델(개념 모델·검증 탭): `onto_concepts`·`onto_attributes`·`onto_relations`(마이그레이션 0011). 개념(이름·정의·담당 부서·초안/확정/폐기·식별자 속성), 속성(데이터 형식·단위·필수), 관계(카디널리티 1:1/1:N/N:M·역관계 이름) CRUD와 감사 로그. 상속은 게시된 `upper_ontology` 자산 개념(`parent_ref: {asset_id, version, concept_key}`, 읽기 전용) 또는 같은 고객사 개념(`parent_concept_id`) 중 하나만, 순환 상속은 `inheritance_cycle`로 거부, 다른 고객사 참조는 `invalid_reference`. 상세에 상속 경로·상속 속성·상위 온톨로지 관계·연결 용어 표시, 용어에 `concept_id` 연결. `GET /ontomap/validation`은 저장을 막지 않는 경고(상위 없는 개념, 같은 이름 개념, 정의 없는 확정 용어, 찾을 수 없는 상위 온톨로지 참조). 한/영 매뉴얼, E2E `e2e/ontomap-concepts.spec.ts`.
+
 ### Added — Phase 2
 - 사용자 매뉴얼(한/영, 앱 위쪽 **매뉴얼** 버튼 → 지금 보는 화면의 설명서, `/manual/:topic`): 시작하기, DiscoveryQ, I/F 관리, OntoMap, FlowDesk, DevTracker, AgentHub, 공통 화면, 외부 연동, 고객사·사용자 관리, 설치 및 실행. 원문은 `frontend/src/manual/{ko,en}/*.md`이며 화면 언어를 따르고, 외부 링크 없이 번들됨. 기능을 추가·변경하면 같은 PR에서 매뉴얼도 갱신한다.
 - 어댑터 프레임워크(`app/adapters/`): `Adapter` 프로토콜·레지스트리, `ADAPTERS_ALLOWED=false`이면 목록이 비고 `get_adapter`가 `AdapterDisabled`(오프라인 경로 사용)를 던짐. 고객사별 활성화 `adapter_activations`(마이그레이션 0006): FDE 요청 → 반출 범위(전송 대상·데이터·기능) 확인 후 고객사 관리자 승인(고객사 관리자가 없으면 LUDA 관리자가 사유와 함께 승인) → 활성, 반려·비활성화 시 인증 정보 삭제. 인증 정보는 `ENCRYPTION_KEY`로 Fernet 암호화하며 API 응답·감사 로그·고객사 ZIP에 포함하지 않음(가져온 활성화는 비활성으로 표시). 요청·승인·반려·비활성화·외부 호출(`adapter.call`: 기능, 요청/응답 바이트, 결과, 소요 시간, 본문 미저장)을 감사 로그에 기록.

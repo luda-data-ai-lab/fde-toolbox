@@ -160,7 +160,19 @@
   "flowNodeType": { "start": "시작", "end": "종료", "task": "업무", "decision": "분기", "system": "시스템", "document": "문서", "role": "역할", "note": "메모" },
   "ontomap": {
     "aliasHint": "생산팀: 배합표; BOM", "noDefinition": "정의 없음",
-    "tab": { "glossary": "용어 사전", "candidates": "후보", "import": "엑셀 가져오기" },
+    "tab": { "glossary": "용어 사전", "concepts": "개념 모델", "candidates": "후보", "validation": "검증", "import": "엑셀 가져오기" },
+    "concept": {
+      "new": "개념 등록", "name": "개념 이름", "parent": "상위 개념", "changeParent": "상위 개념 변경", "changeStatus": "상태 변경", "ownerDept": "담당 부서",
+      "tenantConcepts": "고객사 개념", "attributes": "속성", "attributeName": "속성 이름", "addAttribute": "속성 추가", "dataType": "데이터 형식", "unit": "단위", "required": "필수",
+      "origin": "출처", "own": "직접 정의", "inheritedFrom": "상속: {{origin}}", "identifier": "식별자", "setIdentifier": "식별자로 지정",
+      "relations": "관계", "relationName": "관계 이름", "addRelation": "관계 추가", "source": "출발 개념", "target": "대상 개념", "cardinality": "카디널리티", "inverse": "역관계 이름", "terms": "연결된 용어"
+    },
+    "validation": {
+      "hint": "검증 결과는 경고일 뿐 저장을 막지 않습니다. 순환 상속만 저장할 때 거부됩니다.", "target": "대상", "issue": "경고",
+      "orphan_concept": "상위 개념이 없습니다(상위 온톨로지나 다른 개념을 상속하세요).", "duplicate_concept": "이름이 같은 개념이 있습니다.",
+      "term_without_definition": "확정된 용어에 정의가 없습니다.", "dangling_upper_ref": "상속한 상위 온톨로지 개념을 찾을 수 없습니다.",
+      "type": { "onto_concept": "개념", "onto_term": "용어" }
+    },
     "term": { "new": "용어 등록", "edit": "용어 수정" },
     "field": { "term": "표준 용어", "definition": "정의", "abbreviation": "약어", "aliases": "부서별 호칭", "department": "부서", "status": "상태", "notes": "비고" },
     "candidate": { "accept": "확정", "ignore": "무시", "reopen": "다시 열기", "similar": "유사 용어", "mergeInto": "{{term}}에 병합", "fromSession": "DiscoveryQ 세션", "hint": "후보를 확정하면 용어 사전에 추가되고, 병합하면 기존 용어의 호칭으로 등록됩니다." },
@@ -172,6 +184,9 @@
     },
     "register": { "title": "용어로 등록", "term": "용어 후보", "hint": "답변에서 표현을 선택한 뒤 클릭", "submit": "용어로 등록", "done": "후보로 등록됨", "listed": "이 세션에서 등록한 용어 후보" }
   },
+  "conceptStatus": { "draft": "초안", "confirmed": "확정", "deprecated": "폐기" },
+  "dataType": { "string": "문자", "integer": "정수", "decimal": "소수", "boolean": "예/아니오", "date": "날짜", "datetime": "일시", "code": "코드" },
+  "cardinality": { "1:1": "1:1", "1:N": "1:N", "N:M": "N:M" },
   "termStatus": { "candidate": "후보", "confirmed": "확정", "deprecated": "폐기" },
   "candidateStatus": { "open": "검토 대기", "accepted": "확정됨", "merged": "병합됨", "ignored": "무시됨" },
   "adapters": {
@@ -192,7 +207,7 @@
   "errors": {
     "workbook_invalid": "엑셀 파일을 읽을 수 없습니다.", "erd_invalid": "ERD에 고칠 점이 있어 확정할 수 없습니다.", "erd_not_confirmed": "먼저 ERD를 확정하세요.",
     "flow_result_invalid": "LLM 결과를 흐름으로 바꾸지 못했습니다. JSON 형식과 노드·연결선을 확인하세요.",
-    "unknown": "요청을 처리하지 못했습니다.", "invalid_json": "JSON 형식이 올바르지 않습니다.",
+    "inheritance_cycle": "순환 상속이 됩니다. 다른 상위 개념을 고르세요.", "unknown": "요청을 처리하지 못했습니다.", "invalid_json": "JSON 형식이 올바르지 않습니다.",
     "not_found": "대상을 찾을 수 없습니다.", "forbidden": "권한이 없습니다.", "unauthorized": "로그인이 필요합니다.",
     "invalid_credentials": "이메일 또는 비밀번호가 올바르지 않습니다.", "validation_error": "입력값을 확인하세요.",
     "email_taken": "이미 사용 중인 이메일입니다.", "tenant_code_taken": "이미 사용 중인 고객사 코드입니다.",

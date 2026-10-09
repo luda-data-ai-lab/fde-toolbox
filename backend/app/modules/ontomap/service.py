@@ -167,6 +167,7 @@ def _create_term(
 
 @audited("ontomap.term_create", "onto_term")
 def create_term(ctx: TenantContext, db: Session, body: TermIn) -> OntoTerm:
+    ensure_tenant_ref(db, ctx, "onto_concepts", body.concept_id, "concept_id")
     return _create_term(db, ctx, body)
 
 
@@ -174,6 +175,7 @@ def create_term(ctx: TenantContext, db: Session, body: TermIn) -> OntoTerm:
 def update_term(ctx: TenantContext, db: Session, term: OntoTerm, body: TermPatch) -> OntoTerm:
     values = dump_patch(body)
     aliases = values.pop("aliases", None)
+    ensure_tenant_ref(db, ctx, "onto_concepts", values.get("concept_id"), "concept_id")
     if values.get("term") is None:
         values.pop("term", None)
     else:

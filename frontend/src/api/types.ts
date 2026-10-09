@@ -696,3 +696,57 @@ export interface FlowGeneratePrompt {
   prompt: string;
   llm_available: boolean;
 }
+export type ConceptStatus = "draft" | "confirmed" | "deprecated";
+export interface UpperRef {
+  asset_id: string;
+  version: number;
+  concept_key: string;
+}
+export interface OntoConcept extends Base {
+  name: string;
+  definition: string | null;
+  parent_ref: UpperRef | null;
+  parent_concept_id: string | null;
+  id_attribute_id: string | null;
+  owner_dept: string | null;
+  status: ConceptStatus;
+}
+export interface OntoAttribute extends Base {
+  concept_id: string;
+  name: string;
+  data_type: string;
+  unit: string | null;
+  required: boolean;
+  constraints: Record<string, unknown>;
+}
+export interface OntoRelation extends Base {
+  source_concept_id: string;
+  name: string;
+  target_concept_id: string;
+  cardinality: "1:1" | "1:N" | "N:M";
+  inverse_name: string | null;
+}
+export interface UpperOntology {
+  asset_id: string;
+  version: number;
+  asset_key: string;
+  title: string;
+  namespace: string | null;
+  concepts: { key: string; name: string; definition: string | null; parent_key: string | null; properties: string[] }[];
+  relations: { source: string; name: string; target: string }[];
+}
+export interface ValidationIssue {
+  code: "orphan_concept" | "duplicate_concept" | "term_without_definition" | "dangling_upper_ref";
+  target_type: "onto_concept" | "onto_term";
+  target_id: string;
+  name: string;
+}
+export interface OntoConceptDetail extends OntoConcept {
+  attributes: OntoAttribute[];
+  relations: OntoRelation[];
+  ancestors: { kind: "concept" | "upper"; id: string; name: string; ontology: string | null }[];
+  inherited_properties: { name: string; data_type: string | null; origin: string }[];
+  inherited_relations: { name: string; target: string; origin: string }[];
+  terms: OntoTerm[];
+  warnings: ValidationIssue[];
+}

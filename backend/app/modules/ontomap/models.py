@@ -1,6 +1,6 @@
 from typing import Any
 
-from sqlalchemy import JSON, ForeignKey, String, Text, UniqueConstraint
+from sqlalchemy import JSON, Boolean, ForeignKey, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import TenantScopedModel
@@ -54,3 +54,51 @@ class OntoCandidate(TenantScopedModel):
     source_id: Mapped[str | None] = mapped_column(String(36), nullable=True, index=True)
     status: Mapped[str] = mapped_column(String(20), nullable=False, default="open", index=True)
     resolved_into_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+
+
+CONCEPT_STATUSES = ("draft", "confirmed", "deprecated")
+DATA_TYPES = ("string", "integer", "decimal", "boolean", "date", "datetime", "code")
+CARDINALITIES = ("1:1", "1:N", "N:M")
+
+
+class OntoConcept(TenantScopedModel):
+    """Customer concept; inherits either an upper-ontology concept (asset ref) or another customer concept."""
+
+    __tablename__ = "onto_concepts"
+
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    definition: Mapped[str | None] = mapped_column(Text, nullable=True)
+    parent_ref: Mapped[dict[str, Any] | None] = mapped_column(JSON, nullable=True)
+    parent_concept_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("onto_concepts.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    id_attribute_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
+    owner_dept: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    status: Mapped[str] = mapped_column(String(20), nullable=False, default="draft", index=True)
+
+
+class OntoAttribute(TenantScopedModel):
+    __tablename__ = "onto_attributes"
+
+    concept_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("onto_concepts.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    data_type: Mapped[str] = mapped_column(String(20), nullable=False, default="string")
+    unit: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    required: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    constraints: Mapped[dict[str, Any]] = mapped_column(JSON, nullable=False, default=dict)
+
+
+class OntoRelation(TenantScopedModel):
+    __tablename__ = "onto_relations"
+
+    source_concept_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("onto_concepts.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    name: Mapped[str] = mapped_column(String(200), nullable=False)
+    target_concept_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("onto_concepts.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    cardinality: Mapped[str] = mapped_column(String(10), nullable=False, default="1:N")
+    inverse_name: Mapped[str | None] = mapped_column(String(200), nullable=True)

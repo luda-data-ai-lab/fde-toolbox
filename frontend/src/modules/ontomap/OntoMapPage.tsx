@@ -9,10 +9,18 @@ import {
   useTenantId,
 } from "../../app/hooks";
 import { CandidatesView } from "./CandidatesView";
+import { ConceptsView } from "./ConceptsView";
 import { GlossaryView } from "./GlossaryView";
 import { ImportPanel } from "./ImportPanel";
+import { ValidationView } from "./ValidationView";
 
-const TABS = ["glossary", "candidates", "import"] as const;
+const TABS = [
+  "glossary",
+  "concepts",
+  "candidates",
+  "validation",
+  "import",
+] as const;
 type Tab = (typeof TABS)[number];
 
 export function OntoMapPage() {
@@ -67,7 +75,9 @@ export function OntoMapPage() {
         ))}
       </div>
       {tab === "glossary" && <GlossaryView tenantId={tenantId} />}
+      {tab === "concepts" && <ConceptsView tenantId={tenantId} />}
       {tab === "candidates" && <CandidatesView tenantId={tenantId} />}
+      {tab === "validation" && <ValidationView tenantId={tenantId} />}
       {tab === "import" && canWrite && <ImportPanel tenantId={tenantId} />}
     </div>
   );

@@ -8,7 +8,7 @@ Standardize the customer's business terms and keep the names each department use
 | --- | --- |
 | Glossary | Standard terms, create/edit, Excel/CSV export |
 | Concept model | Edit concepts, attributes and relations; upper-ontology inheritance |
-| Candidates | Term candidates raised from DiscoveryQ interviews |
+| Candidates | Extract and review candidates from DiscoveryQ, ERDs, I/Fs, FlowDesk and LLM suggestions |
 | Mapping coverage | Mapped systems and unmapped attributes per concept |
 | Validation | Warnings for the concept model and glossary |
 | Excel import | Upload the LUDA glossary template |
@@ -61,13 +61,42 @@ The **Validation** tab lists these warnings. Warnings never block saving.
 - Inherited upper-ontology concepts that can't be found
 - Confirmed concepts without a data mapping
 
-## Reviewing candidates from interviews
+## Reviewing candidates
 
-Phrases registered from a [DiscoveryQ](/manual/discoveryq) worksheet appear on **Candidates** as "Pending review", with their source session, department and similar existing terms.
+The **Candidates** tab collects term, concept, attribute and relation candidates as "Pending review". Nothing reaches the glossary or the concept model until a candidate is confirmed or merged. Filter the list by kind, source and status.
 
-- **Confirm**: adds it to the glossary as a new standard term.
-- **Merge into {term}**: adds it as a department alias of a similar existing term.
-- **Ignore**: keeps it out of the glossary. **Reopen** undoes this.
+- **DiscoveryQ**: phrases registered with **Register as term** → term candidates
+- **ExMigrate ERD** (confirmed only): tables → concepts, columns → attributes ("Concept.Attribute"), relations between tables → relation candidates
+- **I/F**: the data name left after dropping words such as "transfer", "sync" or "I/F" → concept candidates (the description is shown as context)
+- **FlowDesk**: document nodes of a flow → concept candidates (the lane is shown as the department)
+- **LLM suggestions**: see "LLM suggestions" below
+
+### Extracting candidates
+
+In **Extract candidates**, click **Extract from ExMigrate ERDs**, **Extract from I/Fs** or **Extract from FlowDesk**. Extraction is rule-based: no LLM and no external calls. Re-running never recreates a candidate that already exists, including confirmed, merged or ignored ones.
+
+### Confirm, merge, ignore
+
+Each candidate shows its source, its location (table/column, I/F code, flow title) and similar existing items.
+
+- **Confirm**
+  - Term: adds a new standard term to the glossary.
+  - Concept: creates a confirmed concept. For ERD concepts, pick a **System to map** to add the table mapping too; I/F concepts get an I/F mapping.
+  - Attribute: adds the attribute to the **Owning concept**. Leave it empty to match the concept by name. If that concept has an ERD table mapping, a column mapping is added as well.
+  - Relation: creates a relation between the **Source concept** and **Target concept**, matched by name when left empty. Confirm the concept candidates first if the concepts don't exist yet.
+  - Type a **Name to confirm** to use it instead of the candidate name.
+- **Merge into {item}**: merges into a similar existing item. Terms become department aliases; definition drafts fill an empty definition.
+- **Ignore**: leaves it out. **Reopen** undoes this.
+
+### LLM suggestions
+
+In **LLM suggestions**, pick a suggestion:
+
+- **Terms from an interview**: term candidates from the answers and insights of the chosen DiscoveryQ session.
+- **Relations between concepts**: relation candidates from the tenant's concept list (needs at least two concepts).
+- **Definition drafts**: draft definitions for terms and concepts that have none.
+
+With external adapters off, click **Build prompt** → **Copy prompt**, paste it into an approved LLM, put the JSON answer into **LLM answer (JSON)** and click **Create candidates from answer**. When the LLM adapter is approved and active, **Ask the LLM** does this directly. Either way the results only enter the candidate list and an FDE confirms them. Suggested relations that point to unknown concepts are dropped.
 
 ## Importing from Excel
 

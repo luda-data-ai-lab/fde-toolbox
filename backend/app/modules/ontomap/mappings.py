@@ -88,6 +88,11 @@ def _clean(values: dict[str, Any]) -> dict[str, Any]:
 
 @audited("ontomap.mapping_create", "onto_mapping")
 def create_mapping(ctx: TenantContext, db: Session, body: MappingIn) -> OntoMapping:
+    return insert_mapping(db, ctx, body)
+
+
+def insert_mapping(db: Session, ctx: TenantContext, body: MappingIn) -> OntoMapping:
+    """Validated insert without its own audit/commit, for callers that write in one transaction."""
     values = _clean(body.model_dump())
     concept_id = _owner(db, ctx, body.target_kind, body.target_id)
     _check(db, ctx, body.target_kind, values)

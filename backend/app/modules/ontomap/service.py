@@ -23,7 +23,6 @@ from app.modules.ontomap.schemas import (
     AliasIn,
     AliasOut,
     CandidateIn,
-    CandidateOut,
     ImportResult,
     ImportRow,
     ImportRowError,
@@ -224,20 +223,18 @@ def similar_terms(db: Session, ctx: TenantContext, names: list[str]) -> dict[str
     return out
 
 
-def candidates_out(db: Session, ctx: TenantContext, rows: list[OntoCandidate]) -> list[CandidateOut]:
-    similar = similar_terms(db, ctx, [c.name for c in rows if c.status == "open"])
-    return [
-        CandidateOut.model_validate(c).model_copy(update={"similar": similar.get(c.name, [])})
-        if c.status == "open"
-        else CandidateOut.model_validate(c)
-        for c in rows
-    ]
-
-
 def candidate_filter(
-    ctx: TenantContext, db: Session, *, status: str | None, source_type: str | None, source_id: str | None
+    ctx: TenantContext,
+    db: Session,
+    *,
+    status: str | None,
+    source_type: str | None,
+    source_id: str | None,
+    kind: str | None = None,
 ) -> Select[OntoCandidate]:
     stmt = TenantScopedRepository(db, ctx, OntoCandidate).query()
+    if kind:
+        stmt = stmt.where(OntoCandidate.kind == kind)
     if status:
         stmt = stmt.where(OntoCandidate.status == status)
     if source_type:
@@ -285,14 +282,13 @@ def register_candidate(ctx: TenantContext, db: Session, body: CandidateIn) -> tu
     return _create_candidate(ctx, db, body), True
 
 
-def _ensure_open(candidate: OntoCandidate) -> None:
+def ensure_open(candidate: OntoCandidate) -> None:
     if candidate.status != "open":
         raise AppError(409, "candidate_resolved")
 
 
-@audited("ontomap.candidate_accept", "onto_candidate")
-def accept_candidate(ctx: TenantContext, db: Session, candidate: OntoCandidate, body: AcceptIn) -> OntoCandidate:
-    _ensure_open(candidate)
+def accept_term_candidate(ctx: TenantContext, db: Session, candidate: OntoCandidate, body: AcceptIn) -> OntoCandidate:
+    ensure_open(candidate)
     dept = candidate.payload.get("department")
     name = body.term or candidate.name
     aliases = list(body.aliases)
@@ -313,14 +309,16 @@ def accept_candidate(ctx: TenantContext, db: Session, candidate: OntoCandidate, 
     return candidate
 
 
-@audited("ontomap.candidate_merge", "onto_candidate")
-def merge_candidate(ctx: TenantContext, db: Session, candidate: OntoCandidate, body: MergeIn) -> OntoCandidate:
-    _ensure_open(candidate)
-    term = _terms(db, ctx).get(body.term_id)
+def merge_term_candidate(ctx: TenantContext, db: Session, candidate: OntoCandidate, body: MergeIn) -> OntoCandidate:
+    ensure_open(candidate)
+    term = _terms(db, ctx).get(body.target)
     if term is None:
-        raise AppError(422, "invalid_reference", detail={"field": "term_id"})
+        raise AppError(422, "invalid_reference", detail={"field": "term_id" if body.term_id else "target_id"})
     dept = body.department if body.department is not None else candidate.payload.get("department")
-    _add_aliases(db, ctx, term, [AliasIn(alias=candidate.name, department=dept)])
+    if candidate.name != term.term or dept:
+        _add_aliases(db, ctx, term, [AliasIn(alias=candidate.name, department=dept)])
+    if not term.definition and candidate.payload.get("definition"):
+        term.definition = candidate.payload["definition"]
     candidate.status = "merged"
     candidate.resolved_into_id = term.id
     db.flush()
@@ -329,7 +327,7 @@ def merge_candidate(ctx: TenantContext, db: Session, candidate: OntoCandidate, b
 
 @audited("ontomap.candidate_ignore", "onto_candidate")
 def ignore_candidate(ctx: TenantContext, db: Session, candidate: OntoCandidate) -> OntoCandidate:
-    _ensure_open(candidate)
+    ensure_open(candidate)
     candidate.status = "ignored"
     db.flush()
     return candidate

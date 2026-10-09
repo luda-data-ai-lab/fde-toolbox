@@ -406,14 +406,27 @@ export interface SimilarTerm {
   matched: string;
   score: number;
 }
+export type CandidateKind = "term" | "concept" | "attribute" | "relation";
 export interface OntoCandidate extends Base {
-  kind: string;
+  kind: CandidateKind;
   name: string;
   payload: {
     context?: string;
     definition?: string;
     department?: string;
     session_question_id?: string;
+    concept?: string;
+    attribute?: string;
+    source?: string;
+    target?: string;
+    relation?: string;
+    table?: string;
+    column?: string;
+    data_type?: string;
+    cardinality?: string;
+    if_code?: string;
+    flow?: string;
+    task?: string;
   };
   source_type: string;
   source_id: string | null;
@@ -777,6 +790,15 @@ export interface OntoMapping extends Base {
   interface_id: string | null;
   origin: MappingOrigin;
   notes: string | null;
+}
+export interface CandidateExtractResult {
+  created: number;
+  existing: number;
+  by_kind: Partial<Record<CandidateKind, number>>;
+}
+export interface CandidateSuggestPrompt {
+  prompt: string;
+  llm_available: boolean;
 }
 export interface MappingSources {
   systems: { id: string; name: string }[];

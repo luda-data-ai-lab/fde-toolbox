@@ -8,6 +8,7 @@
 - CoachQ를 DiscoveryQ로 이름 변경: 화면·문서, API 경로 `/coachq` → `/discoveryq`, 모듈, 테이블 `coach_*` → `discovery_*`(마이그레이션 0005, 데이터 이전·되돌리기 지원), OntoMap 후보 출처 `coach_session` → `discovery_session`, 질문 뱅크 자산 키 `discoveryq-question-bank`. 이전 경로 별칭은 두지 않으며, 이름 변경 전에 만든 고객사 ZIP은 다시 가져올 수 없다.
 
 ### Added — Phase 3
+- OntoMap 데이터 매핑(개념 상세 **데이터 매핑**, **매핑 커버리지** 탭): `onto_mappings`(마이그레이션 0012: `target_kind` concept/attribute/relation, `target_id`, 소유 개념 `concept_id`, 시스템·테이블·컬럼·I/F, 출처 수동/ExMigrate/I/F). 대상별 필수 위치(개념=시스템, 속성=컬럼, 관계=I/F 또는 컬럼, 출처 I/F=I/F, ExMigrate=테이블)가 없으면 `mapping_incomplete`, 다른 고객사 대상·시스템·I/F는 `invalid_reference`. 대상 삭제 시 매핑도 삭제. `GET /ontomap/mapping-sources`(시스템, I/F, 확정 ExMigrate ERD 테이블·컬럼), `GET /ontomap/coverage`(개념별 매핑 수·매핑된 시스템·미매핑 속성). 검증에 `unmapped_concept`(매핑 없는 확정 개념) 추가. 한/영 매뉴얼, E2E `e2e/ontomap-mappings.spec.ts`.
 - OntoMap 개념 모델(개념 모델·검증 탭): `onto_concepts`·`onto_attributes`·`onto_relations`(마이그레이션 0011). 개념(이름·정의·담당 부서·초안/확정/폐기·식별자 속성), 속성(데이터 형식·단위·필수), 관계(카디널리티 1:1/1:N/N:M·역관계 이름) CRUD와 감사 로그. 상속은 게시된 `upper_ontology` 자산 개념(`parent_ref: {asset_id, version, concept_key}`, 읽기 전용) 또는 같은 고객사 개념(`parent_concept_id`) 중 하나만, 순환 상속은 `inheritance_cycle`로 거부, 다른 고객사 참조는 `invalid_reference`. 상세에 상속 경로·상속 속성·상위 온톨로지 관계·연결 용어 표시, 용어에 `concept_id` 연결. `GET /ontomap/validation`은 저장을 막지 않는 경고(상위 없는 개념, 같은 이름 개념, 정의 없는 확정 용어, 찾을 수 없는 상위 온톨로지 참조). 한/영 매뉴얼, E2E `e2e/ontomap-concepts.spec.ts`.
 
 ### Added — Phase 2

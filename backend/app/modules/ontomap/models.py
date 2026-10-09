@@ -102,3 +102,29 @@ class OntoRelation(TenantScopedModel):
     )
     cardinality: Mapped[str] = mapped_column(String(10), nullable=False, default="1:N")
     inverse_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+
+
+MAPPING_KINDS = ("concept", "attribute", "relation")
+MAPPING_ORIGINS = ("manual", "exmigrate", "interface")
+
+
+class OntoMapping(TenantScopedModel):
+    """Where a concept/attribute/relation lives (system + table/column, or an I/F); `concept_id` is its owner."""
+
+    __tablename__ = "onto_mappings"
+
+    target_kind: Mapped[str] = mapped_column(String(20), nullable=False)
+    target_id: Mapped[str] = mapped_column(String(36), nullable=False, index=True)
+    concept_id: Mapped[str] = mapped_column(
+        String(36), ForeignKey("onto_concepts.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    system_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("systems.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    table_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    column_name: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    interface_id: Mapped[str | None] = mapped_column(
+        String(36), ForeignKey("interfaces.id", ondelete="CASCADE"), nullable=True, index=True
+    )
+    origin: Mapped[str] = mapped_column(String(20), nullable=False, default="manual")
+    notes: Mapped[str | None] = mapped_column(Text, nullable=True)

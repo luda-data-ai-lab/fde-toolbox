@@ -6,8 +6,8 @@ from app.core.auth.deps import DB
 from app.core.exports import attachment
 from app.core.pagination import Page
 from app.core.tenancy.deps import Ctx, ExportCtx, WriteCtx, path_entity, repo
-from app.modules.ontomap import concepts, service
-from app.modules.ontomap.models import OntoAttribute, OntoCandidate, OntoConcept, OntoRelation, OntoTerm
+from app.modules.ontomap import concepts, mappings, service
+from app.modules.ontomap.models import OntoAttribute, OntoCandidate, OntoConcept, OntoMapping, OntoRelation, OntoTerm
 from app.modules.ontomap.schemas import (
     AcceptIn,
     AttributeIn,
@@ -22,7 +22,12 @@ from app.modules.ontomap.schemas import (
     ConceptOut,
     ConceptPatch,
     ConceptStatus,
+    CoverageRow,
     ImportResult,
+    MappingIn,
+    MappingOut,
+    MappingPatch,
+    MappingSources,
     MergeIn,
     RelationIn,
     RelationOut,
@@ -42,6 +47,7 @@ CandidateDep = Annotated[OntoCandidate, Depends(path_entity(OntoCandidate, "cand
 ConceptDep = Annotated[OntoConcept, Depends(path_entity(OntoConcept, "concept_id"))]
 AttributeDep = Annotated[OntoAttribute, Depends(path_entity(OntoAttribute, "attribute_id"))]
 RelationDep = Annotated[OntoRelation, Depends(path_entity(OntoRelation, "relation_id"))]
+MappingDep = Annotated[OntoMapping, Depends(path_entity(OntoMapping, "mapping_id"))]
 XLSX = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
 
 
@@ -241,3 +247,43 @@ def delete_relation(rel: RelationDep, ctx: WriteCtx, db: DB) -> Response:
 @router.get("/validation", response_model=ValidationReport)
 def validation(ctx: Ctx, db: DB) -> ValidationReport:
     return ValidationReport(issues=concepts.validate(db, ctx))
+
+
+@router.get("/mappings", response_model=Page[MappingOut])
+def list_mappings(
+    ctx: Ctx,
+    db: DB,
+    limit: int = 200,
+    cursor: str | None = None,
+    concept_id: str | None = None,
+    system_id: str | None = None,
+) -> Page[MappingOut]:
+    stmt = mappings.mapping_filter(ctx, db, concept_id=concept_id, system_id=system_id)
+    rows, nxt = repo(db, ctx, OntoMapping).page(limit=limit, cursor=cursor, stmt=stmt)
+    return Page(items=[MappingOut.model_validate(m) for m in rows], next_cursor=nxt)
+
+
+@router.post("/mappings", response_model=MappingOut, status_code=201)
+def create_mapping(body: MappingIn, ctx: WriteCtx, db: DB) -> MappingOut:
+    return MappingOut.model_validate(mappings.create_mapping(ctx, db, body))
+
+
+@router.patch("/mappings/{mapping_id}", response_model=MappingOut)
+def update_mapping(mapping: MappingDep, body: MappingPatch, ctx: WriteCtx, db: DB) -> MappingOut:
+    return MappingOut.model_validate(mappings.update_mapping(ctx, db, mapping, body))
+
+
+@router.delete("/mappings/{mapping_id}", status_code=204)
+def delete_mapping(mapping: MappingDep, ctx: WriteCtx, db: DB) -> Response:
+    mappings.delete_mapping(ctx, db, mapping)
+    return Response(status_code=204)
+
+
+@router.get("/mapping-sources", response_model=MappingSources)
+def mapping_sources(ctx: Ctx, db: DB) -> MappingSources:
+    return mappings.sources(db, ctx)
+
+
+@router.get("/coverage", response_model=list[CoverageRow])
+def coverage(ctx: Ctx, db: DB) -> list[CoverageRow]:
+    return mappings.coverage(db, ctx)

@@ -220,6 +220,12 @@ def build_tenant(admin: TestClient, db: Session, code: str, template: dict[str, 
             json={"source_concept_id": ids["concept_id"], "name": "self", "target_concept_id": ids["concept_id"]},
         )
     )["id"]
+    ids["mapping_id"] = _ok(
+        fde.post(
+            f"{onto}/mappings",
+            json={"target_kind": "concept", "target_id": ids["concept_id"], "system_id": ids["system_id"]},
+        )
+    )["id"]
     ref = {"asset_id": template["asset_id"], "version": 2}
     ids["run_id"] = _ok(
         fde.post(

@@ -351,15 +351,90 @@ class InheritedRelation(BaseModel):
 
 
 class ValidationIssue(BaseModel):
-    code: Literal["orphan_concept", "duplicate_concept", "term_without_definition", "dangling_upper_ref"]
+    code: Literal[
+        "orphan_concept", "duplicate_concept", "term_without_definition", "dangling_upper_ref", "unmapped_concept"
+    ]
     target_type: Literal["onto_concept", "onto_term"]
     target_id: str
     name: str
 
 
+MappingKind = Literal["concept", "attribute", "relation"]
+MappingOrigin = Literal["manual", "exmigrate", "interface"]
+
+
+class MappingIn(BaseModel):
+    target_kind: MappingKind
+    target_id: str
+    system_id: str | None = None
+    table_name: str | None = Field(default=None, max_length=200)
+    column_name: str | None = Field(default=None, max_length=200)
+    interface_id: str | None = None
+    origin: MappingOrigin = "manual"
+    notes: str | None = None
+
+
+class MappingPatch(BaseModel):
+    system_id: str | None = None
+    table_name: str | None = Field(default=None, max_length=200)
+    column_name: str | None = Field(default=None, max_length=200)
+    interface_id: str | None = None
+    origin: MappingOrigin | None = None
+    notes: str | None = None
+
+
+class MappingOut(ORMModel):
+    tenant_id: str
+    target_kind: MappingKind
+    target_id: str
+    concept_id: str
+    system_id: str | None
+    table_name: str | None
+    column_name: str | None
+    interface_id: str | None
+    origin: MappingOrigin
+    notes: str | None
+
+
+class CoverageRow(BaseModel):
+    concept_id: str
+    name: str
+    status: str
+    mapping_count: int
+    systems: list[str]
+    attributes_total: int
+    unmapped_attributes: list[str]
+
+
+class SourceSystem(BaseModel):
+    id: str
+    name: str
+
+
+class SourceInterface(BaseModel):
+    id: str
+    if_code: str
+    name: str
+
+
+class SourceErdTable(BaseModel):
+    analysis_id: str
+    filename: str
+    table: str
+    label: str
+    columns: list[str]
+
+
+class MappingSources(BaseModel):
+    systems: list[SourceSystem]
+    interfaces: list[SourceInterface]
+    erd_tables: list[SourceErdTable]
+
+
 class ConceptDetail(ConceptOut):
     attributes: list[AttributeOut]
     relations: list[RelationOut]
+    mappings: list[MappingOut]
     ancestors: list[Ancestor]
     inherited_properties: list[InheritedProperty]
     inherited_relations: list[InheritedRelation]

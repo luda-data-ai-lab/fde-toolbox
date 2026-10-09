@@ -160,7 +160,7 @@
   "flowNodeType": { "start": "Start", "end": "End", "task": "Task", "decision": "Decision", "system": "System", "document": "Document", "role": "Role", "note": "Note" },
   "ontomap": {
     "aliasHint": "Production: Recipe sheet; BOM", "noDefinition": "No definition",
-    "tab": { "glossary": "Glossary", "concepts": "Concept model", "candidates": "Candidates", "validation": "Validation", "import": "Excel import" },
+    "tab": { "glossary": "Glossary", "concepts": "Concept model", "candidates": "Candidates", "coverage": "Mapping coverage", "validation": "Validation", "import": "Excel import" },
     "concept": {
       "new": "Add concept", "name": "Concept name", "parent": "Parent concept", "changeParent": "Change parent", "changeStatus": "Change status", "ownerDept": "Owner department",
       "tenantConcepts": "Customer concepts", "attributes": "Attributes", "attributeName": "Attribute name", "addAttribute": "Add attribute", "dataType": "Data type", "unit": "Unit", "required": "Required",
@@ -171,7 +171,16 @@
       "hint": "Validation results are warnings and never block saving. Only circular inheritance is rejected on save.", "target": "Target", "issue": "Warning",
       "orphan_concept": "No parent (inherit an upper-ontology concept or another concept).", "duplicate_concept": "Another concept has the same name.",
       "term_without_definition": "Confirmed term has no definition.", "dangling_upper_ref": "The inherited upper-ontology concept can't be found.",
+      "unmapped_concept": "Confirmed concept has no data mapping.",
       "type": { "onto_concept": "Concept", "onto_term": "Term" }
+    },
+    "mapping": {
+      "title": "Data mappings", "hint": "Map concepts to a system (+ table), attributes to a column, relations to a foreign-key column or an I/F.", "target": "Mapping target", "system": "System", "table": "Table", "column": "Column",
+      "interface": "I/F", "origin": "Mapping origin", "notes": "Notes", "add": "Add mapping", "kind": { "concept": "Concept", "attribute": "Attribute", "relation": "Relation" },
+      "originValue": { "manual": "Manual", "exmigrate": "ExMigrate", "interface": "I/F" }, "erdHint": "Tables and columns from ERDs confirmed in ExMigrate are offered as suggestions."
+    },
+    "coverage": {
+      "hint": "Per concept: how many systems it is mapped to and which attributes are still unmapped.", "concept": "Concept", "mappings": "Mappings", "systems": "Mapped systems", "attributes": "Attribute mappings", "unmapped": "Unmapped attributes"
     },
     "term": { "new": "New term", "edit": "Edit term" },
     "field": { "term": "Standard term", "definition": "Definition", "abbreviation": "Abbreviation", "aliases": "Department aliases", "department": "Department", "status": "Status", "notes": "Notes" },
@@ -207,7 +216,7 @@
   "errors": {
     "workbook_invalid": "The Excel file could not be read.", "erd_invalid": "The ERD has problems to fix before confirming.", "erd_not_confirmed": "Confirm the ERD first.",
     "flow_result_invalid": "Couldn't turn the LLM result into a flow. Check the JSON format, nodes and connections.",
-    "inheritance_cycle": "This would create circular inheritance. Choose another parent.", "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
+    "inheritance_cycle": "This would create circular inheritance. Choose another parent.", "mapping_incomplete": "The mapping needs a location: a system for concepts, a column for attributes, an I/F or column for relations.", "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
     "not_found": "Not found.", "forbidden": "Permission denied.", "unauthorized": "Please sign in.",
     "invalid_credentials": "Invalid email or password.", "validation_error": "Please check the input.",
     "email_taken": "Email already in use.", "tenant_code_taken": "Customer code already in use.",

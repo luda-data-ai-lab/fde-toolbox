@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "홈", "diagnose": "진단", "analyze": "분석", "design": "설계", "build": "구축", "operate": "운영", "common": "공통" },
     "home": "홈", "engagements": "프로젝트(인게이지먼트)", "systems": "시스템 레지스트리", "files": "첨부파일",
-    "interfaces": "I/F 관리", "ontomap": "OntoMap 용어 사전", "flowdesk": "FlowDesk", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "외부 연동(어댑터)", "assets": "자산 라이브러리", "audit": "감사 로그",
+    "interfaces": "I/F 관리", "ontomap": "OntoMap 용어 사전", "exmigrate": "ExMigrate 엑셀 분석", "flowdesk": "FlowDesk", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "외부 연동(어댑터)", "assets": "자산 라이브러리", "audit": "감사 로그",
     "tenants": "고객사 관리", "users": "사용자 관리"
   },
   "layout": {
@@ -108,6 +108,23 @@
   "sessionType": { "interview": "현장 인터뷰", "coaching": "코칭" },
   "discoverySessionStatus": { "planned": "예정", "in_progress": "진행 중", "done": "완료" },
   "actionStatus": { "open": "미착수", "in_progress": "진행 중", "done": "완료", "cancelled": "취소" },
+  "exmigrate": {
+    "intro": "엑셀 파일의 구조와 수식을 분석해 ERD 초안과 DB 이관 스크립트를 만듭니다. 매크로는 실행하지 않고, 외부 DB에 직접 적재하지 않습니다.",
+    "needEngagement": "먼저 인게이지먼트를 선택하세요.", "file": "엑셀 파일(.xlsx, .xlsm)", "upload": "업로드·분석", "back": "목록으로", "delete": "삭제", "confirmDelete": "이 분석을 삭제할까요?",
+    "field": { "filename": "파일", "sheets": "시트", "formulas": "수식", "erd": "ERD", "created": "분석일", "headerRow": "헤더 행", "dataRows": "데이터 행", "column": "열", "name": "이름", "type": "타입", "nullRatio": "빈 값 %", "distinct": "고유값", "samples": "예시", "formulaCells": "수식 셀", "function": "함수", "count": "사용 수식 수", "simple": "단순 함수", "cell": "셀", "formula": "수식", "label": "원래 이름", "nullable": "NULL 허용", "pk": "PK", "source": "원본 열" },
+    "erdConfirmed": "확정됨", "erdDraft": "초안", "macros": "매크로가 포함된 파일입니다(실행하지 않음).", "complex": "복잡 수식 {{count}}건은 해석하지 않습니다(범위 외).",
+    "tab": { "structure": "구조 분석", "formulas": "수식 분석", "erd": "ERD", "scripts": "스크립트" },
+    "references": "다른 시트 참조", "noFormulas": "수식이 없습니다.", "warnings": "품질 경고", "moreCells": "처음 {{count}}개 셀만 표시합니다.",
+    "warning": { "merged_cells": "병합 셀", "blank_rows": "중간 빈 행", "empty_header": "헤더가 빈 열", "duplicate_header": "중복 헤더", "mixed_types": "타입 혼재", "empty_sheet": "빈 시트", "truncated_rows": "행이 많아 일부만 분석", "truncated_columns": "열이 많아 일부만 분석", "external_reference": "외부 통합문서 참조" },
+    "tables": "테이블", "relations": "관계", "table": "테이블 이름", "addColumn": "열 추가", "removeTable": "테이블 제외", "removeColumn": "열 제외", "addRelation": "관계 추가",
+    "fromTable": "자식 테이블", "fromColumn": "자식 열", "toTable": "부모 테이블", "toColumn": "부모 열", "origin": "근거", "remove": "삭제",
+    "save": "ERD 저장", "saved": "저장됨", "confirm": "ERD 확정", "issues": "확정 전에 고칠 점", "editAgain": "수정하면 확정이 풀립니다.",
+    "dialect": "대상 DB", "preview": "DDL 미리보기", "downloadScripts": "스크립트 ZIP 내려받기", "needConfirm": "ERD를 확정하면 DDL과 적재 스크립트를 만들 수 있습니다.",
+    "report": "분석 보고서(MD)", "mermaid": "ERD(Mermaid)"
+  },
+  "dialect": { "postgresql": "PostgreSQL", "mssql": "SQL Server", "sqlite": "SQLite" },
+  "relationOrigin": { "formula": "수식 참조", "name": "이름 일치", "manual": "직접 추가" },
+  "columnType": { "integer": "정수", "decimal": "소수", "boolean": "참/거짓", "date": "날짜", "datetime": "날짜시간", "text": "텍스트" },
   "flowdesk": {
     "new": "새 흐름", "blank": "빈 캔버스", "needEngagement": "먼저 인게이지먼트를 선택하세요.", "importJson": "JSON 가져오기", "paired": "짝 있음",
     "back": "목록으로", "saved": "저장됨", "add": "추가", "addNode": "노드 추가", "node": "노드", "edge": "연결선", "lanes": "스윔레인", "laneName": "레인 이름",
@@ -153,6 +170,7 @@
   },
   "adapterStatus": { "not_configured": "미설정", "requested": "승인 대기", "active": "활성", "disabled": "비활성" },
   "errors": {
+    "workbook_invalid": "엑셀 파일을 읽을 수 없습니다.", "erd_invalid": "ERD에 고칠 점이 있어 확정할 수 없습니다.", "erd_not_confirmed": "먼저 ERD를 확정하세요.",
     "flow_result_invalid": "LLM 결과를 흐름으로 바꾸지 못했습니다. JSON 형식과 노드·연결선을 확인하세요.",
     "unknown": "요청을 처리하지 못했습니다.", "invalid_json": "JSON 형식이 올바르지 않습니다.",
     "not_found": "대상을 찾을 수 없습니다.", "forbidden": "권한이 없습니다.", "unauthorized": "로그인이 필요합니다.",

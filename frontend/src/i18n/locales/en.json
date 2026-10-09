@@ -3,7 +3,7 @@
   "nav": {
     "group": { "home": "Home", "diagnose": "Diagnose", "analyze": "Analyze", "design": "Design", "build": "Build", "operate": "Operate", "common": "Common" },
     "home": "Home", "engagements": "Engagements", "systems": "System registry", "files": "Attachments",
-    "interfaces": "Interfaces", "ontomap": "OntoMap glossary", "flowdesk": "FlowDesk", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "Adapters", "assets": "Asset library", "audit": "Audit log",
+    "interfaces": "Interfaces", "ontomap": "OntoMap glossary", "exmigrate": "ExMigrate (Excel)", "flowdesk": "FlowDesk", "discoveryq": "DiscoveryQ", "devtracker": "DevTracker", "agenthub": "AgentHub", "adapters": "Adapters", "assets": "Asset library", "audit": "Audit log",
     "tenants": "Customers", "users": "Users"
   },
   "layout": {
@@ -108,6 +108,23 @@
   "sessionType": { "interview": "Field interview", "coaching": "Coaching" },
   "discoverySessionStatus": { "planned": "Planned", "in_progress": "In progress", "done": "Done" },
   "actionStatus": { "open": "Open", "in_progress": "In progress", "done": "Done", "cancelled": "Cancelled" },
+  "exmigrate": {
+    "intro": "Analyze the structure and formulas of an Excel workbook to draft an ERD and DB migration scripts. Macros are never executed and nothing is loaded into an external database.",
+    "needEngagement": "Select an engagement first.", "file": "Excel file (.xlsx, .xlsm)", "upload": "Upload and analyze", "back": "Back to list", "delete": "Delete", "confirmDelete": "Delete this analysis?",
+    "field": { "filename": "File", "sheets": "Sheets", "formulas": "Formulas", "erd": "ERD", "created": "Analyzed", "headerRow": "Header row", "dataRows": "Data rows", "column": "Col", "name": "Name", "type": "Type", "nullRatio": "Empty %", "distinct": "Distinct", "samples": "Samples", "formulaCells": "Formula cells", "function": "Function", "count": "Formulas using it", "simple": "Simple", "cell": "Cell", "formula": "Formula", "label": "Original name", "nullable": "Nullable", "pk": "PK", "source": "Source col" },
+    "erdConfirmed": "Confirmed", "erdDraft": "Draft", "macros": "This file contains macros (not executed).", "complex": "{{count}} complex formulas are not interpreted (out of scope).",
+    "tab": { "structure": "Structure", "formulas": "Formulas", "erd": "ERD", "scripts": "Scripts" },
+    "references": "Cross-sheet references", "noFormulas": "No formulas.", "warnings": "Quality warnings", "moreCells": "Showing the first {{count}} cells.",
+    "warning": { "merged_cells": "Merged cells", "blank_rows": "Blank rows inside data", "empty_header": "Column without header", "duplicate_header": "Duplicate header", "mixed_types": "Mixed types", "empty_sheet": "Empty sheet", "truncated_rows": "Too many rows, partially analyzed", "truncated_columns": "Too many columns, partially analyzed", "external_reference": "External workbook reference" },
+    "tables": "Tables", "relations": "Relations", "table": "Table name", "addColumn": "Add column", "removeTable": "Drop table", "removeColumn": "Drop column", "addRelation": "Add relation",
+    "fromTable": "Child table", "fromColumn": "Child column", "toTable": "Parent table", "toColumn": "Parent column", "origin": "Basis", "remove": "Remove",
+    "save": "Save ERD", "saved": "Saved", "confirm": "Confirm ERD", "issues": "Fix before confirming", "editAgain": "Editing unconfirms the ERD.",
+    "dialect": "Target DB", "preview": "DDL preview", "downloadScripts": "Download scripts ZIP", "needConfirm": "Confirm the ERD to generate DDL and load scripts.",
+    "report": "Analysis report (MD)", "mermaid": "ERD (Mermaid)"
+  },
+  "dialect": { "postgresql": "PostgreSQL", "mssql": "SQL Server", "sqlite": "SQLite" },
+  "relationOrigin": { "formula": "Formula reference", "name": "Name match", "manual": "Manual" },
+  "columnType": { "integer": "Integer", "decimal": "Decimal", "boolean": "Boolean", "date": "Date", "datetime": "Date-time", "text": "Text" },
   "flowdesk": {
     "new": "New flow", "blank": "Blank canvas", "needEngagement": "Select an engagement first.", "importJson": "Import JSON", "paired": "Paired",
     "back": "Back to list", "saved": "Saved", "add": "Add", "addNode": "Add node", "node": "Node", "edge": "Connection", "lanes": "Swimlanes", "laneName": "Lane name",
@@ -153,6 +170,7 @@
   },
   "adapterStatus": { "not_configured": "Not configured", "requested": "Awaiting approval", "active": "Active", "disabled": "Disabled" },
   "errors": {
+    "workbook_invalid": "The Excel file could not be read.", "erd_invalid": "The ERD has problems to fix before confirming.", "erd_not_confirmed": "Confirm the ERD first.",
     "flow_result_invalid": "Couldn't turn the LLM result into a flow. Check the JSON format, nodes and connections.",
     "unknown": "The request could not be processed.", "invalid_json": "Invalid JSON.",
     "not_found": "Not found.", "forbidden": "Permission denied.", "unauthorized": "Please sign in.",

@@ -9,7 +9,7 @@ FDE Toolbox lets a forward-deployed engineer (FDE) carry a customer engagement t
 
 ## Screen layout
 
-- **Left menu**: grouped by stage. Diagnose (DiscoveryQ), Analyze (I/F management, OntoMap glossary), Design (FlowDesk), Build (DevTracker), Operate (AgentHub), Common (engagements, system registry, files, asset library, audit log and more).
+- **Left menu**: grouped by stage. Diagnose (DiscoveryQ), Analyze (I/F management, OntoMap glossary, ExMigrate), Design (FlowDesk), Build (DevTracker), Operate (AgentHub), Common (engagements, system registry, files, asset library, audit log and more).
 - **Customer selector** (top): the customer you are working on. Every screen shows only that customer's data.
 - **Engagement selector** (top): narrows screens to one engagement. "All engagements" shows the whole customer.
 - **Manual**: opens the manual page for the screen you are on.
@@ -34,6 +34,6 @@ Home shows a summary for your role. LUDA admins see customer, user and asset cou
 
 1. In the [common screens](/manual/workspace), create an engagement and register the customer's systems.
 2. Record field interviews with [DiscoveryQ](/manual/discoveryq).
-3. Organize system interfaces and terms with [I/F management](/manual/interfaces) and [OntoMap](/manual/ontomap).
+3. Organize system interfaces and terms with [I/F management](/manual/interfaces) and [OntoMap](/manual/ontomap), and turn data kept in Excel into DB migration scripts with [ExMigrate](/manual/exmigrate).
 4. Draw As-Is/To-Be business flows in [FlowDesk](/manual/flowdesk).
 5. Track build work in [DevTracker](/manual/devtracker) and deployed agents in [AgentHub](/manual/agenthub).

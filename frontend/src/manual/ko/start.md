@@ -9,7 +9,7 @@ FDE Toolbox는 고객사 현장의 FDE가 **진단 → 분석 → 설계 → 구
 
 ## 화면 구성
 
-- **왼쪽 메뉴**: 단계별로 묶여 있습니다. 진단(DiscoveryQ), 분석(I/F 관리, OntoMap 용어 사전), 설계(FlowDesk), 구축(DevTracker), 운영(AgentHub), 공통(인게이지먼트, 시스템 레지스트리, 첨부파일, 자산 라이브러리, 감사 로그 등).
+- **왼쪽 메뉴**: 단계별로 묶여 있습니다. 진단(DiscoveryQ), 분석(I/F 관리, OntoMap 용어 사전, ExMigrate 엑셀 분석), 설계(FlowDesk), 구축(DevTracker), 운영(AgentHub), 공통(인게이지먼트, 시스템 레지스트리, 첨부파일, 자산 라이브러리, 감사 로그 등).
 - **위쪽 고객사 선택**: 지금 작업할 고객사를 고릅니다. 모든 화면은 선택한 고객사의 데이터만 보여 줍니다.
 - **위쪽 인게이지먼트 선택**: 특정 인게이지먼트로 범위를 좁힙니다. "전체 인게이지먼트"면 고객사 전체가 보입니다.
 - **매뉴얼**: 지금 보고 있는 화면의 설명서를 엽니다.
@@ -34,6 +34,6 @@ FDE Toolbox는 고객사 현장의 FDE가 **진단 → 분석 → 설계 → 구
 
 1. [공통 화면](/manual/workspace)에서 인게이지먼트를 만들고 고객사 시스템을 등록합니다.
 2. [DiscoveryQ](/manual/discoveryq)로 현업 인터뷰를 기록합니다.
-3. [I/F 관리](/manual/interfaces)와 [OntoMap](/manual/ontomap)으로 시스템 연동과 용어를 정리합니다.
+3. [I/F 관리](/manual/interfaces)와 [OntoMap](/manual/ontomap)으로 시스템 연동과 용어를 정리하고, 엑셀로 관리하던 데이터는 [ExMigrate](/manual/exmigrate)로 분석해 DB 이관 스크립트를 만듭니다.
 4. [FlowDesk](/manual/flowdesk)로 As-Is/To-Be 업무 흐름을 그립니다.
 5. [DevTracker](/manual/devtracker)로 구축 작업을, [AgentHub](/manual/agenthub)로 운영 중인 에이전트를 관리합니다.
